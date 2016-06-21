@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Nest"
+         Version="2.2"
+         Author="Sebastien Warin"
+         Icon="nest.png"
+         URL="http://sebastien.warin.fr"
+         Description="Connect Nest devices to Constellation"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="AccessToken" isRequired="true" type="String" ignoreLocalValue="true" description="See the README file to know how create an access token" />
+  </Settings>
+</Package>

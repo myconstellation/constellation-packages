@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Wemo"
+         Icon="icon.png"
+         Version="1.1"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         PackageUrl="https://github.com/myconstellation/Wemo"
+         Description="Belkin/Wemo Connector for Constellation">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="DeviceQueryInterval" type="Int32" defaultValue="1" description="The refresh interval in second to query each device (1 second by default)" />
+    <Setting name="DiscoveryInterval" type="Int32" defaultValue="600" description="The refresh interval in second to discover Wemo devices (10 minutes by default)" />
+  </Settings>
+</Package>

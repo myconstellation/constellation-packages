@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Rfxcom"
+         Icon="icon.png"
+         Version="1.0.2"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         PackageUrl="https://github.com/myconstellation/rfxcom"
+         Description="RfxCom Connector for Constellation">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="PortName" type="String" description="The communications port" defaultValue="COM1" isRequired="true" />
+    <Setting name="Verbose" type="Boolean" description="Verbose mode write all messages from/to RFX on Constellation" defaultValue="false" isRequired="false" ignoreLocalValue="true" />
+    <Setting name="ProtocolsEnabled" type="String" description="List of protocols to enabled separated by comma" isRequired="false" />
+    <Setting name="ForwardRawMessageToGroup" type="String" description="The name of the group used to forward all messages (leave this setting empty to disable the forward)" />
+    <Setting name="SensorStateObjectLifetime" type="Int32" description="The default StateObject lifetime for sensor data (5min by default)" defaultValue="300" isRequired="false" />
+    <Setting name="StateObjectCustomNames" type="JsonObject" description="Custom names for StateObjects" isRequired="false" ignoreLocalValue="true" ignoreDefaultValue="true">
+      <defaultContent>{ "SensorName": "CustomName", "SensorName2": "CustomName2"  }</defaultContent>
+    </Setting>
+  </Settings>
+</Package>

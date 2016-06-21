@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="FreeboxTV"
+         Version="0.3"
+         Author="Hydro, Gclem"
+         Icon="Free.png"
+         URL="http://www.myconstellation.io"
+         Description="Control your Freebox Player"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="RemoteKey" isRequired="true" type="Int32" description="Your Freebox TV remote key"/>
+  </Settings>
+</Package>

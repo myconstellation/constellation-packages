@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetAtmo", "NetAtmo\NetAtmo.csproj", "{0BB6DE77-3421-47A5-86CE-2DE5A8F55D13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetatmoBot", "NetAtmoBot\NetatmoBot\NetatmoBot.csproj", "{7D0C3A35-2C98-4FE0-8B36-28CA51EE2ECE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0BB6DE77-3421-47A5-86CE-2DE5A8F55D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BB6DE77-3421-47A5-86CE-2DE5A8F55D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BB6DE77-3421-47A5-86CE-2DE5A8F55D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BB6DE77-3421-47A5-86CE-2DE5A8F55D13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D0C3A35-2C98-4FE0-8B36-28CA51EE2ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D0C3A35-2C98-4FE0-8B36-28CA51EE2ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D0C3A35-2C98-4FE0-8B36-28CA51EE2ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D0C3A35-2C98-4FE0-8B36-28CA51EE2ECE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

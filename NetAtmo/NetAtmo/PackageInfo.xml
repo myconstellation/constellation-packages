@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="NetAtmo"
+         Icon="netatmo-logo.png"
+         Version="1.2.4"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Connect NetAtmo sensors to Constellation"
+         PackageUrl="https://github.com/myconstellation/Netatmo">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="RefreshInterval" type="Int32" isRequired="false" defaultValue="300" description="Refresh interval in second" />
+    <Setting name="Netatmo.ClientId" type="String" isRequired="true" description="The ClientId of your application" />
+    <Setting name="Netatmo.ClientSecret" type="String" isRequired="true" description="The ClientSecret of your application" />
+    <Setting name="Netatmo.Username" type="String" isRequired="true" description="Your NetAtmo username" />
+    <Setting name="Netatmo.Password" type="String" isRequired="true" description="Your NetAtmo password" />
+  </Settings>
+</Package>

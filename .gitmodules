@@ -1,0 +1,3 @@
+[submodule "NetAtmo/NetAtmoBot"]
+	path = NetAtmo/NetAtmoBot
+	url = https://github.com/sebastienwarin/NetatmoBot.git

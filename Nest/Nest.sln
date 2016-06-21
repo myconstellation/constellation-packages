@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nest", "Nest\Nest.csproj", "{A9D4F57B-7D28-47F9-954F-248481EE1F7C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E26A76D4-C8BC-4466-9413-1A030B3EDCC4}"
+	ProjectSection(SolutionItems) = preProject
+		GetNestAccessToken.ps1 = GetNestAccessToken.ps1
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9D4F57B-7D28-47F9-954F-248481EE1F7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9D4F57B-7D28-47F9-954F-248481EE1F7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9D4F57B-7D28-47F9-954F-248481EE1F7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9D4F57B-7D28-47F9-954F-248481EE1F7C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

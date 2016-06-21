@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="PerfCounter"
+         Icon="perfcounter.png"
+         Version="1.0"
+         Author="Sébastien Warin"
+         URL="http://sebastien.warin.fr"         
+         Description="Inject Windows Performance Counters into Constellation">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Unix" isCompliant="false" />
+      <Platform id="MacOSX" isCompliant="false" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="RefreshInterval" type="Int32" description="The refresh interval in millisecond" defaultValue="1000" />
+    <Setting name="PerfCounters" type="ConfigurationSection" description="The PerfCounters configuration" isRequired="true" ignoreDefaultValue="true" ignoreLocalValue="true"  schemaXSD="PerfCounterConfiguration.csd.xsd">
+      <defaultContent>
+        <perfCounterSection xmlns="urn:PerfCounter">
+          <perfCounters>
+            <!-- Processor -->
+            <perfCounter id="ProcessorTime" categoryName="Processor" counterName="% Processor Time" instanceName="_Total" />
+            <perfCounter id="ProcessorQueueLength" categoryName="System" counterName="Processor Queue Length" />
+            <!-- Memory -->
+            <perfCounter id="MemoryAvailableMBytes" categoryName="Memory" counterName="Available MBytes"  />
+            <perfCounter id="MemoryPagesPerSec" categoryName="Memory" counterName="Pages/sec"  />
+            <perfCounter id="MemoryCacheBytes" categoryName="Memory" counterName="Cache Bytes"  />
+            <!-- Paging File -->
+            <perfCounter id="PagingFileUsage" categoryName="Paging File" counterName="% Usage" instanceName="_Total"  />
+            <!-- .NET CLR -->
+            <perfCounter id="DotNetExceptionThrownPerSec" categoryName=".NET CLR Exceptions" counterName="# of Exceps Thrown / Sec" instanceName="_Global_" />
+            <perfCounter id="DotNetTotalCommittedBytes" categoryName=".NET CLR Memory" counterName="# Total Committed Bytes" instanceName="_Global_" />
+            <!-- ASP.NET -->
+            <perfCounter id="AspNetRequestPerSec" categoryName="ASP.NET Applications" counterName="Requests/Sec" instanceName="__Total__" />
+            <perfCounter id="AspNetApplicationRestart" categoryName="ASP.NET" counterName="Application Restarts" />
+            <perfCounter id="AspNetRequestWaitTime" categoryName="ASP.NET" counterName="Request Wait Time" />
+            <perfCounter id="AspNetRequestQueued" categoryName="ASP.NET" counterName="Requests Queued" />
+            <!-- IIS -->
+            <perfCounter id="IISGetRequestPerSec" categoryName="Web Service" counterName="Get Requests/sec" instanceName="_Total"  />
+            <perfCounter id="IISPostRequestPerSec" categoryName="Web Service" counterName="Post Requests/sec" instanceName="_Total"  />
+            <perfCounter id="IISCurrentConnections" categoryName="Web Service" counterName="Current Connections" instanceName="_Total"  />
+          </perfCounters>
+        </perfCounterSection>
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>

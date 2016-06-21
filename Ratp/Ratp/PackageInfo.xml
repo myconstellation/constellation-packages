@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Ratp"
+         Version="1.0"
+         Author="Hydro"
+         Icon="ratp.png"
+         URL="http://www.myconstellation.io/"
+         Description="Constellation package to get informations from RATP"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+  </Settings>
+</Package>
