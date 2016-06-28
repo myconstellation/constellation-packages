@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="PushBullet"
+         Icon="pushbullet.png"
+         Version="2.0"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Send notifications, links and files to your devices or friends and more.">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="token" type="String" isRequired="true" description="PushBullet access token" />
+    <Setting name="PushDevicesAsStateObjects" type="Boolean" defaultValue="true" description="Push PushBullet's devices as StateObjects" />
+    <Setting name="PushChatsAsStateObjects" type="Boolean" defaultValue="true" description="Push PushBullet's chats as StateObjects" />
+    <Setting name="PushCurrentUserAsStateObject" type="Boolean" defaultValue="true" description="Push PushBullet's current user as StateObject" />
+    <Setting name="SendPushesReceivedToGroup" type="String" defaultValue="PushBullet" description="Send pushes received to Constellation group. Leave blank to disable!" />
+    <Setting name="SendEphemeralsReceivedToGroup" type="String" defaultValue="PushBullet" description="Send ephemerals received to Constellation group. Leave blank to disable!" />
+  </Settings>
+</Package>
