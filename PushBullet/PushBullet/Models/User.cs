@@ -42,7 +42,7 @@ namespace PushBullet.Models
         /// The Canonical email address.
         /// </value>
         [PushBulletProperty("email_normalized")]
-        public string EmailNormalizedl { get; set; }
+        public string EmailNormalized { get; set; }
 
         /// <summary>
         /// Gets or sets the Full name if available.
