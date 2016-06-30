@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="PushBullet"
          Icon="pushbullet.png"
-         Version="2.0.1"
+         Version="2.1"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Send notifications, links and files to your devices or friends and more.">

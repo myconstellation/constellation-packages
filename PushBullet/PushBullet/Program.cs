@@ -50,6 +50,11 @@ namespace PushBullet
         /// </summary>
         public override void OnStart()
         {
+            if (string.IsNullOrEmpty(PackageHost.GetSettingValue("token")))
+            {
+                throw new Exception("Access Token not defined!");
+            }
+
             // Init the Realtime Event Stream
             this._webSocket = new WebSocket(WS_ROOT_URI + PackageHost.GetSettingValue("token"));
             this._webSocket.OnOpen += (s, e) => PackageHost.WriteInfo("Connected to the realtime event stream");
@@ -168,7 +173,7 @@ namespace PushBullet
         [MessageCallback]
         public void SendSMS(string userId, string deviceId, string to, string message)
         {
-            this.SendEphemeral(new
+            this.PushEphemeral(new
             {
                 type = "messaging_extension_reply",
                 package_name = "com.pushbullet.android",
@@ -188,7 +193,7 @@ namespace PushBullet
         [MessageCallback]
         public void CopyToClipboard(string userId, string deviceId, string body)
         {
-            this.SendEphemeral(new
+            this.PushEphemeral(new
             {
                 type = "clip",
                 source_user_iden = userId,
@@ -198,66 +203,24 @@ namespace PushBullet
         }
 
         /// <summary>
-        /// Uploads the file.
-        /// </summary>
-        /// <param name="filepath">The path of the file you want to upload.</param>
-        /// <param name="requestUploadAuthorization">The request upload authorization (optional).</param>
-        /// <returns></returns>
-        /// <exception cref="System.IO.FileNotFoundException">File not found</exception>
-        /// <exception cref="System.Exception"></exception>
-        [MessageCallback]
-        public RequestUploadAuthorization UploadFile(string filepath, RequestUploadAuthorization requestUploadAuthorization = null)
-        {
-            if (!File.Exists(filepath))
-            {
-                throw new FileNotFoundException("File not found", filepath);
-            }
-            if (requestUploadAuthorization == null)
-            {
-                requestUploadAuthorization = this.GetRequestUploadAuthorization(Path.GetFileName(filepath), MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filepath)));
-            }
-            var client = new System.Net.Http.HttpClient();
-            var content = new System.Net.Http.MultipartFormDataContent();
-            content.Add(new System.Net.Http.StreamContent(File.Open(filepath, FileMode.Open)), requestUploadAuthorization.Filename, requestUploadAuthorization.Filename);
-            var result = client.PostAsync(requestUploadAuthorization.UploadURL, content);
-            if (result.Result.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                throw result.Exception ?? new Exception(string.Format("Code {0} : {1}", (int)result.Result.StatusCode, result.Result.ReasonPhrase));
-            }
-            return requestUploadAuthorization;
-        }
-
-        /// <summary>
-        /// Gets the request authorization to upload a file.
-        /// </summary>
-        /// <param name="filename">The name of the file you want to upload.</param>
-        /// <param name="filetype">The MIME type of the file.</param>
-        /// <returns></returns>
-        [MessageCallback]
-        public RequestUploadAuthorization GetRequestUploadAuthorization(string filename, string filetype)
-        {
-            return JsonConvert.DeserializeObject<RequestUploadAuthorization>(this.DoRequest($"/upload-request?file_name={filename}&file_type={filetype}", "POST"));
-        }
-
-        /// <summary>
-        /// Sends a note.
+        /// Push a note to a device or another person.
         /// </summary>
         /// <param name="title">The note's title.</param>
         /// <param name="body">The note's message.</param>
         /// <param name="target">The target type to send the push.</param>
         /// <param name="targetArgument">The target argument to send the push.</param>
         [MessageCallback]
-        public void SendPushNote(string title, string body, PushTargetType target = PushTargetType.Device, string targetArgument = null)
+        public void PushNote(string title, string body, PushTargetType target = PushTargetType.Device, string targetArgument = null)
         {
             dynamic data = new ExpandoObject();
             data.type = "note";
             data.title = title;
             data.body = body;
-            this.SendPush(data, target, targetArgument);
+            this.Push(data, target, targetArgument);
         }
 
         /// <summary>
-        /// Sends a Link.
+        /// Push a Link to a device or another person.
         /// </summary>
         /// <param name="title">The link's title.</param>
         /// <param name="body">A message associated with the link.</param>
@@ -265,31 +228,85 @@ namespace PushBullet
         /// <param name="target">The target type to send the push.</param>
         /// <param name="targetArgument">The target argument to send the push.</param>
         [MessageCallback]
-        public void SendPushLink(string title, string body, string url, PushTargetType target = PushTargetType.Device, string targetArgument = null)
+        public void PushLink(string title, string body, string url, PushTargetType target = PushTargetType.Device, string targetArgument = null)
         {
             dynamic data = new ExpandoObject();
             data.type = "link";
             data.title = title;
             data.body = body;
             data.url = url;
-            this.SendPush(data, target, targetArgument);
+            this.Push(data, target, targetArgument);
         }
 
         /// <summary>
-        /// Upload and send a file to a device or another person.
+        /// Upload and Push a file to a device or another person.
         /// </summary>
-        /// <param name="filepath">The path of the file you want to send.</param>
+        /// <param name="fileUri">The URI of the file you want to send.</param>
         /// <param name="body">A message to go with the file.</param>
         /// <param name="target">The target type to send the push.</param>
         /// <param name="targetArgument">The target argument to send the push.</param>
         [MessageCallback]
-        public void SendPushFile(string filepath, string body, PushTargetType target = PushTargetType.Device, string targetArgument = null)
+        public void PushFile(string fileUri, string body, PushTargetType target = PushTargetType.Device, string targetArgument = null)
         {
-            var upload = this.UploadFile(filepath);
-            this.SendPushFile(upload.Filename, upload.FileType, upload.FileURL, body, target, targetArgument);
+            var upload = this.UploadFile(fileUri);
+            this.PushFile(upload.Filename, upload.FileType, upload.FileURL, body, target, targetArgument);
         }
 
-        private void SendPushFile(string file_name, string file_type, string file_url, string body, PushTargetType target = PushTargetType.Device, string targetArgument = null)
+        private RequestUploadAuthorization UploadFile(string fileUri, RequestUploadAuthorization requestUploadAuthorization = null)
+        {
+            if (string.IsNullOrEmpty(fileUri))
+            {
+                throw new ArgumentNullException("FileURI cannot be null", fileUri);
+            }
+            // Get local file path
+            Uri uri = null; string localFilepath = null;
+            if (Uri.TryCreate(fileUri, UriKind.RelativeOrAbsolute, out uri))
+            {
+                if (uri.Scheme == Uri.UriSchemeFile)
+                {
+                    localFilepath = uri.LocalPath;
+                }
+                else
+                {
+                    localFilepath = Path.Combine(Path.GetTempPath(), uri.Segments.Last());
+                    using (WebClient wc = new WebClient())
+                    {
+                        wc.DownloadFile(uri, localFilepath);
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException("Invalid file URI", fileUri);
+            }
+            if (!File.Exists(localFilepath))
+            {
+                throw new FileNotFoundException("File not found", localFilepath);
+            }
+            // Get the request upload authorization
+            if (requestUploadAuthorization == null)
+            {
+                requestUploadAuthorization = this.GetRequestUploadAuthorization(Path.GetFileName(localFilepath), MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(localFilepath)));
+            }
+            // Create the MultipartFormDataContent
+            var formDataContent = new System.Net.Http.MultipartFormDataContent();
+            formDataContent.Add(new System.Net.Http.StreamContent(File.OpenRead(localFilepath)), "file", requestUploadAuthorization.Filename);
+            // Post the file
+            var httpClient = new System.Net.Http.HttpClient();
+            var result = httpClient.PostAsync(requestUploadAuthorization.UploadURL, formDataContent);
+            if (result.Result.StatusCode != System.Net.HttpStatusCode.NoContent)
+            {
+                throw result.Exception ?? new Exception(string.Format("Code {0} : {1}", (int)result.Result.StatusCode, result.Result.ReasonPhrase));
+            }
+            return requestUploadAuthorization;
+        }
+        
+        private RequestUploadAuthorization GetRequestUploadAuthorization(string filename, string filetype)
+        {
+            return JsonConvert.DeserializeObject<RequestUploadAuthorization>(this.DoRequest("/upload-request", new { file_name = filename, file_type = filetype }), PushBulletContractResolver.Settings);
+        }
+
+        private void PushFile(string file_name, string file_type, string file_url, string body, PushTargetType target = PushTargetType.Device, string targetArgument = null)
         {
             dynamic data = new ExpandoObject();
             data.type = "file";
@@ -297,15 +314,15 @@ namespace PushBullet
             data.file_type = file_type;
             data.file_url = file_url;
             data.body = body;
-            this.SendPush(data, target, targetArgument);
+            this.Push(data, target, targetArgument);
         }
 
-        private void SendEphemeral(object data)
+        private void PushEphemeral(object data)
         {
             this.DoRequest("/ephemerals", new { type = "push", push = data });
         }
 
-        private void SendPush(dynamic data, PushTargetType target, string targetArgument = null)
+        private void Push(dynamic data, PushTargetType target, string targetArgument = null)
         {
             switch (target)
             {
@@ -344,10 +361,11 @@ namespace PushBullet
                 request.Headers.Add("Access-Token", PackageHost.GetSettingValue("token"));
                 if (method == "POST" && !string.IsNullOrEmpty(payload))
                 {
+                    byte[] payloadData = UTF8Encoding.UTF8.GetBytes(payload);
                     request.ContentType = "application/json";
+                    request.ContentLength = payloadData.Length;
                     using (Stream requestBody = request.GetRequestStream())
                     {
-                        byte[] payloadData = UTF8Encoding.UTF8.GetBytes(payload);
                         requestBody.Write(payloadData, 0, payloadData.Length);
                         requestBody.Close();
                     }
@@ -374,12 +392,12 @@ namespace PushBullet
                 {
                     using (StreamReader reader = new StreamReader(ex.Response.GetResponseStream()))
                     {
-                        PackageHost.WriteError("Error ({0} {1}) : {2}", reader.ReadToEnd());
+                        PackageHost.WriteError("Response error: {0}", reader.ReadToEnd());
                     }
                 }
                 catch
                 {
-                    PackageHost.WriteError("Error ({0} {1}) : {2}", ex.ToString());
+                    PackageHost.WriteError("Response error: {0}", ex.ToString());
                 }
                 return string.Empty;
             }

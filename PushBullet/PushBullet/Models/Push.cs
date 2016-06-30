@@ -362,7 +362,7 @@ namespace PushBullet.Models
         /// </summary>
         Device,
         /// <summary>
-        /// Send the push to this email address. If that email address is associated with a Pushbullet user, we will send it directly to that user, otherwise we will fallback to sending an email to the email address (this will also happen if a user exists but has no devices registered).
+        /// Send the push to this email address. If that email address is associated with a Pushbullet user, we will send it directly to that user, otherwise we will fallback to sending an email to the email address.
         /// </summary>
         Email,
         /// <summary>

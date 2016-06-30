@@ -11,11 +11,9 @@ API official Documentation : [http://docs.pushbullet.com/http/](http://docs.push
  - GetCurrentUser :  Gets the currently logged in user.
  - SendSMS : Sends the SMS from your phone (for Android devices only).
  - CopyToClipboard : Copy a String to the Device's Clipboard (PushBullet premium feature).
- - UploadFile : Uploads  file.
- - GetRequestUploadAuthorization : Gets the request authorization to upload a file.
- - SendPushNote : Sends a note.
- - SendPushLink : Sends a Link.
- - SendPushFile : Uploads and sends a file to a device or another person.
+ - PushNote : Push a note to a device or another person.
+ - PushLink : Push a Link to a device or another person.
+ - PushFile : Uploads and Push a file to a device or another person.
 
 ### StateObjects
  - CurrentUser : user currently logged in
