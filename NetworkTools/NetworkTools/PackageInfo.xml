@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="NetworkTools"
+         Version="1.0"
+         Icon="internet.png"
+         Author="Sebastien Warin, Hydro"
+         URL="http://www.myconstellation.io"
+         Description="Network tools for Constellation (ping, TCP port scanner, Wake on LAN, HTTP monitoring and more)">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+  </Settings>
+</Package>
