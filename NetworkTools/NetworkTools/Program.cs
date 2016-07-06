@@ -30,13 +30,52 @@ namespace NetworkTools
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
+    using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public class Program : PackageBase
     {
+        private Dictionary<string, DateTime> monitoringChecks = new Dictionary<string, DateTime>();
+
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
+        }
+
+        /// <summary>
+        /// Called when the package is started.
+        /// </summary>
+        public override void OnStart()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                while (PackageHost.IsRunning)
+                {
+                    try
+                    {
+                        if (PackageHost.ContainsSetting("Monitoring"))
+                        {
+                            dynamic config = PackageHost.GetSettingAsJsonObject("Monitoring", true);
+                            foreach (dynamic ressource in config)
+                            {
+                                string name = ressource.Name.Value;
+                                if (monitoringChecks.ContainsKey(name) == false ||
+                                    DateTime.Now.Subtract(monitoringChecks[name]).TotalSeconds >= (ressource["Interval"] != null ? ressource.Interval.Value : 60))
+                                {
+                                    this.CheckRessource(name, ressource.Type.Value, ressource);
+                                    monitoringChecks[name] = DateTime.Now;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        PackageHost.WriteError("Monitor task error : " + ex.Message);
+                    }
+                    Thread.Sleep(1000);
+                }
+            }, TaskCreationOptions.LongRunning);
         }
 
         /// <summary>
@@ -48,17 +87,16 @@ namespace NetworkTools
         [MessageCallback]
         public long Ping(string host, int timeout = 5000)
         {
-            PackageHost.WriteInfo("Pinging {0}:", host);
             Ping pingSender = new Ping();
             PingReply reply = pingSender.Send(host, timeout);
             if (reply.Status == IPStatus.Success)
             {
-                PackageHost.WriteInfo($"Reply from {host}: bytes={reply.Buffer.Length} time={reply.RoundtripTime}ms TTL={reply.Options.Ttl}");
+                PackageHost.WriteInfo($"Reply from {host}: bytes={reply.Buffer.Length} time={reply.RoundtripTime}ms TTL={reply.Options?.Ttl ?? 0}");
                 return reply.RoundtripTime;
             }
             else
             {
-                PackageHost.WriteInfo("Requesty failed : " + reply.Status.ToString());
+                PackageHost.WriteInfo("Request to {0} failed : {1}", host, reply.Status.ToString());
                 return -1;
             }
         }
@@ -80,7 +118,7 @@ namespace NetworkTools
                 tcpClient.BeginConnect(host, port, null, null);
                 for (reply = 0; reply <= timeout; reply++)
                 {
-                    System.Threading.Thread.Sleep(1);
+                    Thread.Sleep(1);
                     if (tcpClient.Connected)
                     {
                         PackageHost.WriteInfo($"{host}:{port} is open");
@@ -96,8 +134,6 @@ namespace NetworkTools
                     tcpClient.Close();
                 }
             }
-
-            //PackageHost.WriteWarn($"{host}:{port} is close");
             return -1;
         }
 
@@ -188,6 +224,61 @@ namespace NetworkTools
             catch
             {
                 return new string[0];
+            }
+        }
+
+        private void CheckRessource(string name, string type, dynamic jObject)
+        {
+            try
+            {
+                long result = -1;
+                bool? state = null;
+                var metadatas = new Dictionary<string, object>()
+                {
+                    ["Type"] = type
+                };
+                switch (type.ToLower())
+                {
+                    case "ping":
+                        metadatas.Add("Hostname", jObject.Hostname.Value);
+                        PingReply reply = new Ping().Send(jObject.Hostname.Value);
+                        if (reply.Status == IPStatus.Success)
+                        {
+                            result = reply.RoundtripTime;
+                        }
+                        break;
+                    case "tcp":
+                        result = CheckPort(jObject.Hostname.Value, (int)jObject.Port.Value);
+                        metadatas.Add("Hostname", jObject.Hostname.Value);
+                        metadatas.Add("Port", jObject.Port.Value);
+                        break;
+                    case "http":
+                        metadatas.Add("Address", jObject.Address.Value);
+                        var client = new ExtendedWebClient();
+                        try
+                        {
+                            var sw = Stopwatch.StartNew();
+                            var response = client.DownloadString(jObject.Address.Value);
+                            sw.Stop();
+                            result = sw.ElapsedMilliseconds;
+                            if (jObject["Regex"] != null)
+                            {
+                                metadatas.Add("Regex", jObject.Regex.Value);
+                                var rex = new Regex(jObject.Regex.Value);
+                                state = rex.IsMatch(response);
+                            }
+                        }
+                        catch { }
+                        break;
+                    default:
+                        PackageHost.WriteWarn("Unknow type : " + type);
+                        return;
+                }
+                PackageHost.PushStateObject<MonitoringResult>(name, new MonitoringResult { ResponseTime = result, State = state.HasValue ? state.Value : result >= 0 }, metadatas: metadatas);
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError("Unable to monitor '{0}' ({1}) : {2}", name, type, ex.Message);
             }
         }
     }

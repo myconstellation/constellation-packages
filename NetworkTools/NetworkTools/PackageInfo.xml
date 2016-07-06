@@ -1,12 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="NetworkTools"
-         Version="1.0"
+         Version="1.1"
          Icon="internet.png"
          Author="Sebastien Warin, Hydro"
          URL="http://www.myconstellation.io"
          Description="Network tools for Constellation (ping, TCP port scanner, Wake on LAN, HTTP monitoring and more)">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
   <Settings>
+    <Setting name="Monitoring" type="JsonObject" isRequired="false" ignoreDefaultValue="true" ignoreLocalValue="true" description="">
+      <defaultContent>
+        [
+          { Name: "Ping local", Type: "Ping", Hostname: "localhost", Interval: 10 },
+          { Name: "Test Local Constellation", Type: "Tcp",  Hostname: "localhost", Port: 8088 },
+          { Name: "Check Sebastien.warin.fr", Type: "Http", Address: "http://sebastien.warin.fr", Regex: "Le blog personnel et technique de Sebastien Warin", Interval: 30 }
+        ]
+      </defaultContent>
+    </Setting>
   </Settings>
 </Package>
