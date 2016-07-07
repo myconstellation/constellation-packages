@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Constellation.Common, Version=1.8.0.0, Culture=neutral, PublicKeyToken=324a4f45ff674ee1, processorArchitecture=MSIL">
-      <HintPath>..\packages\Constellation.1.8.0.16109\lib\net45\Constellation.Common.dll</HintPath>
+      <HintPath>..\packages\Constellation.1.8.0.16182\lib\net45\Constellation.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

@@ -54,7 +54,7 @@ namespace RfxCom.Packets
             this.SubTypeName = rfx_subtype_50[(byte)this.SubType];
             this.SensorID = int.Parse(packet[4].ToString("X2") + packet[5].ToString("X2"), System.Globalization.NumberStyles.HexNumber);
             this.Channel = packet[5];
-            this.Temperature = (double)packet[7] / 10d;  // ((packet[6] & 0x7f) * 256 + packet[7]) / 10;
+            this.Temperature = ((packet[6] & 0x7f) * 256 + packet[7]) / 10d;
             var signbit = packet[6] & 0x80;
             if (signbit != 0)
             {
