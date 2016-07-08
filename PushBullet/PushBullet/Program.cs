@@ -259,12 +259,13 @@ namespace PushBullet
                 throw new ArgumentNullException("FileURI cannot be null", fileUri);
             }
             // Get local file path
-            Uri uri = null; string localFilepath = null;
+            Uri uri = null; string localFilepath = null, contentType = null;
             if (Uri.TryCreate(fileUri, UriKind.RelativeOrAbsolute, out uri))
             {
                 if (uri.Scheme == Uri.UriSchemeFile)
                 {
                     localFilepath = uri.LocalPath;
+                    contentType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(localFilepath));
                 }
                 else
                 {
@@ -272,6 +273,7 @@ namespace PushBullet
                     using (WebClient wc = new WebClient())
                     {
                         wc.DownloadFile(uri, localFilepath);
+                        contentType = wc.ResponseHeaders["Content-Type"];
                     }
                 }
             }
@@ -286,7 +288,7 @@ namespace PushBullet
             // Get the request upload authorization
             if (requestUploadAuthorization == null)
             {
-                requestUploadAuthorization = this.GetRequestUploadAuthorization(Path.GetFileName(localFilepath), MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(localFilepath)));
+                requestUploadAuthorization = this.GetRequestUploadAuthorization(Path.GetFileName(localFilepath), contentType);
             }
             // Create the MultipartFormDataContent
             var formDataContent = new System.Net.Http.MultipartFormDataContent();
