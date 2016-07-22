@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Vigilance
+namespace VigilanceMeteoFrance
 {
     public class Program : PackageBase
     {
@@ -32,7 +32,7 @@ namespace Vigilance
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
             this.RefreshInterval = PackageHost.GetSettingValue<int>("RefreshInterval");
             this.Departement = PackageHost.GetSettingValue<string>("Departement");
-            if (Departement.Any())
+            if (Departement!="00")
             {
                 Task.Factory.StartNew(() =>
                 {
@@ -104,12 +104,12 @@ namespace Vigilance
                             risque = "aucun";
                             break;
                     }
-                    Type.Add(new Type() { Name =  risque});
+                    Type.Add(new Type() { Name = risque });
                     Test.Level = Int32.Parse(x.Parent.Attribute("coul").Value);
                     PackageHost.WriteInfo("Vigilance {0} niveau {1} pour le département {2}", risque, Test.Level, Departement);
                 }
                 Test.Type = Type;
-                
+
                 return Test;
             }
             else
@@ -127,7 +127,7 @@ namespace Vigilance
         }
 
         /// <summary>
-        /// Gets or sets the number.
+        /// Vigilance.
         /// </summary>
         [StateObject]
         public class Vigilance
