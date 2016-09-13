@@ -1,3 +1,6 @@
 [submodule "NetAtmo/NetAtmoBot"]
 	path = NetAtmo/NetAtmoBot
 	url = https://github.com/sebastienwarin/NetatmoBot.git
+[submodule "Vera/VeraNet"]
+	path = Vera/VeraNet
+	url = https://github.com/sebastienwarin/VeraNet

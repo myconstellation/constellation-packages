@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Vera"
+         Version="1.5.3"
+         Author="Sebastien Warin"
+         Icon="vera.png"
+         URL="http://sebastien.warin.fr"
+         Description="Connect your Vera to Constellation"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="VeraHost" type="String" isRequired="true" description="The Vera address (hostname or IP)" />
+  </Settings>
+</Package>
