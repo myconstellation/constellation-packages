@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Pushover"
+         Icon="pushover.png"
+         Version="1.0"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Send notifications to your devices and friends.">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="Token" type="String" isRequired="true" description="Your Pushover application's API token" />
+    <Setting name="UserId" type="String" isRequired="true" description="Your user key (not e-mail address) viewable when logged into the Pushover dashboard" />
+    <Setting name="DefaultEmergencyRetry" type="Int32" isRequired="false" defaultValue="60" description="Specifies how often (in seconds) the Pushover servers will send the same notification to the user if the notification has not been acknowledged and is not expired. This parameter must have a value of at least 30 seconds between retries." />
+    <Setting name="DefaultEmergencyExpiration" type="Int32" isRequired="false" defaultValue="3600" description="Specifies how many seconds your notification will continue to be retried for (every retry seconds).  This parameter must have a maximum value of at most 86400 seconds (24 hours)." />
+  </Settings>
+</Package>
