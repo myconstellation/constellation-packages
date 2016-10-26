@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="RelayBoard"
+         Version="1.2"
+         Author="Sébastien Warin"
+         Icon="SaintSmart.png"
+         URL="http://sebastien.warin.fr"
+         Description="Control your SainSmart USB Relay Board from the Constellation"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Unix" isCompliant="false" />
+      <Platform id="MacOS" isCompliant="false" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="SerialNumber" type="String" description="SainSmart USB Relay Board serial number. If not set, the package will try to connect to the first connected device" isRequired="false" />
+    <Setting name="RelayCount" type="Int32" description="Number of relays on the board (2, 4 or 8)" isRequired="false" defaultValue="8" />
+  </Settings>
+</Package>
