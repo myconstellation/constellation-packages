@@ -62,6 +62,7 @@ namespace Ratp
         /// <param name="type">Le type de transport dont vous souhaitez avoir les informations..</param>
         /// <param name="ligneId">Le nom de la ligne du type de transport spécifié.</param>
         /// <returns></returns>
+        [MessageCallback]
         Response<StationList> GetStations(LineType type, int ligneId)
         {
             return this.GetResponse<StationList>($"{type}/{ligneId}/stations");
