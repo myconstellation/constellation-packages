@@ -96,7 +96,14 @@ namespace HWMonitor
         private void PushHardwaresList()
         {
             PackageHost.WriteInfo("Hardware changed");
-            PackageHost.PushStateObject("Hardware", this.computer.Hardware.Select(hw => new HardwareDevice () { Name = hw.Name, Identifier = hw.Identifier.ToString(), Type = hw.HardwareType }).ToList(), lifetime: DEFAULT_LIFETIME);
+            PackageHost.PushStateObject("Hardware",
+                this.computer.Hardware
+                    .Select(hw => new HardwareDevice()
+                    {
+                        Name = hw.Name,
+                        Identifier = hw.Identifier.ToString(),
+                        Type = hw.HardwareType
+                    }).ToList());
         }
 
         private void PushHardware(IHardware hardware, int level = 0)
@@ -157,13 +164,10 @@ namespace HWMonitor
                         MediaType = this.GetWmiValue(mo, "MediaType"),
                         Manufacturer = this.GetWmiValue(mo, "Manufacturer"),
                         Caption = this.GetWmiValue(mo, "Caption")
-                    }, lifetime: DEFAULT_LIFETIME);
+                    });
                 }
             }
-            if (this.pushHardwareListOnChange)
-            {
-                this.PushHardwaresList();
-            }
+            this.PushHardwaresList();
         }
 
         private string GetWmiValue(ManagementObject mo, string name)
