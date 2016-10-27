@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HWMonitor", "HWMonitor\HWMonitor.csproj", "{49ED0361-9C83-4549-A9FF-A208910E8FF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{147F4B2A-07D1-46B2-806B-3F4E461FF5D6}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49ED0361-9C83-4549-A9FF-A208910E8FF2}.Debug|x86.ActiveCfg = Debug|x86
+		{49ED0361-9C83-4549-A9FF-A208910E8FF2}.Debug|x86.Build.0 = Debug|x86
+		{49ED0361-9C83-4549-A9FF-A208910E8FF2}.Release|x86.ActiveCfg = Release|x86
+		{49ED0361-9C83-4549-A9FF-A208910E8FF2}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
