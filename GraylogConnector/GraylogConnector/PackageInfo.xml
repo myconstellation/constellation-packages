@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
-         Name="Graylog Connector"
-         ExecutableFilename="GraylogConnector.exe"
+         Name="GraylogConnector"
          Icon="graylog_icon.png"
          Version="1.5.3"
          Author="Sebastien Warin"
