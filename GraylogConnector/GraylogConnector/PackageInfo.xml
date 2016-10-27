@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Graylog Connector"
+         ExecutableFilename="GraylogConnector.exe"
+         Icon="graylog_icon.png"
+         Version="1.5.3"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Send StateObjects, Package logs, Sentinel updates or Package states to a GELF server (Graylog, logstash, ...)"
+         EnableControlHub="true">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting isRequired="true" type="ConfigurationSection" name="graylogConfiguration" schemaXSD="GraylogConfigurationSection.csd.xsd" >
+      <defaultContent>
+        <graylogConfiguration xmlns="urn:GraylogConnector" sendPackageLogs="true" sendPackageStates="true" sendSentinelUpdates="true">
+          <subscriptions>           
+            <subscription package="HWMonitor" name="/intelcpu/0/load/0">
+              <aggregation>
+                <aggregateProperty propertyName="Value" />
+              </aggregation>
+            </subscription>
+            <subscription package="HWMonitor" name="/ram/load/0">
+              <aggregation>
+                <aggregateProperty propertyName="Value" />
+              </aggregation>
+            </subscription>
+            <subscription package="ddwrt">
+              <exclusions>
+                <exclusion type="ddwrt.LANStatus" />
+                <exclusion type="ddwrt.StatInterface" />
+                <exclusion type="ddwrt.WirelessClientStatus" />
+              </exclusions>
+            </subscription>
+            <subscription package="ddwrt" type="ddwrt.StatInterface">
+              <aggregation>
+                <aggregateProperty includeAggregateInfo="true" propertyName="ReceiveBytes" />
+                <aggregateProperty includeAggregateInfo="true" propertyName="ReceivePackets" />
+                <aggregateProperty includeAggregateInfo="true" propertyName="TransmitBytes" />
+                <aggregateProperty includeAggregateInfo="true" propertyName="TransmitPackets" />
+                <aggregateProperty includeAggregateInfo="true" propertyName="BandwidthIn" />
+                <aggregateProperty includeAggregateInfo="true" propertyName="BandwidthOut" />
+              </aggregation>
+            </subscription>
+            <subscription package="NetAtmo" />
+            <subscription package="Vera">
+              <exclusions>
+                <exclusion name="Home Energy Monitor" />
+              </exclusions>
+            </subscription>
+            <subscription package="Nest" /> 
+          </subscriptions>
+          <outputs>
+            <gelfOutput name="Log-Server UDP AJSINFO" host="log-server.ajsinfo.loc" port="12203" protocol="Udp" />
+          </outputs>
+        </graylogConfiguration>
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
