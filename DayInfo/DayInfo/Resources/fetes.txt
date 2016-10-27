@@ -1,0 +1,367 @@
+﻿Objet						Début	Journéeentière	Afficherladisponibilité	Catégories	Priorité	Privé
+St Sylvestre						31/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Roger						30/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St David						29/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gaspard Innocents						28/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean Apôtre						27/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Etienne Stéphane						26/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Emmanuel - Noël						25/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Adèle						24/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Armand						23/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Françoise-Xavière						22/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Pierre Canisius - Hiver						21/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Théophile Abraham						20/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Urbain						19/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gatien						18/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Judicaël Gaël						17/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Alice						16/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Ninon						15/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Odile						14/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Lucie						13/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Chantal Jeanne-Fr.						12/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Daniel						11/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Romaric						10/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Pierre Fourier						09/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Immaculée Conception						08/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Ambroise						07/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Nicolas						06/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gérald						05/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Barbara						04/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St François-Xavier						03/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Viviane						02/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Florence Eloi - Avent						01/12/2013	VRAI	3	Ephemeride	Normale	FAUX
+St André						30/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Saturnin						29/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jacques de la Marche						28/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Séverin						27/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Delphine						26/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Catherine						25/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Flora - Christ-Roi						24/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Clément						23/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Cécile						22/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gélase - Présentation de Marie						21/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Edmond						20/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Tanguy						19/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Aude						18/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Elisabeth						17/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Marguerite						16/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Albert Arthur Léopold						15/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Sidoine						14/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Brice						13/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Christian						12/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Armistice 1918						11/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Léon						10/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Théodore						09/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Geoffroy						08/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Carine Ernest Ernestine						07/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Bertille						06/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Sylvie Sylviane						05/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Charles						04/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Hubert						03/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Défunts						02/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+Toussaint						01/11/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Wolfgang Quentin						31/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Bienvenue						30/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Narcisse						29/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Simon Jude						28/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Emeline						27/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Dimitri						26/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Doria Crépin						25/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Florentin						24/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean de Capistran						23/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Elodie Salomé						22/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Céline						21/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Adeline Aline						20/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St René						19/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Luc						18/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Baudouin						17/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Edwige						16/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Thérèse d'Avila Aurélie						15/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Juste						14/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Géraud						13/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Wilfried Alfred						12/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Firmin						11/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Ghislain						10/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Denis						09/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Pélagie						08/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Serge Gustave						07/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Bruno						06/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Fleur						05/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St François d'Assise						04/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gérard						03/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Léger						02/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Thérèse de l'Enfant Jésus						01/10/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jérôme						30/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Michel Gabriel						29/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Venceslas						28/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Vincent de Paul						27/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Côme Damien						26/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Hermann						25/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Thècle						24/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Constant						23/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Maurice - Automne						22/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Matthieu						21/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Davy						20/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Emilie Amélie						19/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Nadège						18/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Renaud						17/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Edith						16/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Roland						15/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+La Ste Croix						14/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Aimé						13/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Apollinaire						12/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Adelphe						11/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Inès						10/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Alain						09/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Adrien Adrienne - N.D. Nativité						08/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Reine Réjane						07/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Bertrand Evelyne						06/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Raïssa						05/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Rosalie Irma						04/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Grégoire						03/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Ingrid						02/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gilles						01/09/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Aristide						31/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Fiacre						30/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Sabine						29/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Augustin						28/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Monique						27/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Natacha						26/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Louis						25/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Barthélemy						24/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Rose de Lima						23/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Fabrice						22/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Christophe						21/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Bernard Philibert						20/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean-Eudes						19/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Hélène						18/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Hyacinthe						17/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Armel						16/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Marie - Assomption						15/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Evrard						14/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Hippolyte						13/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Clarisse						12/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Claire Gilberte Suzanne						11/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Laurent						10/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Amour						09/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Dominique						08/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gaétan						07/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Transfiguration						06/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Abel						05/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean-Marie Vianney						04/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Lydie						03/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Pierre-Julien Eymard						02/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Alphonse						01/08/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Ignace de Loyola						31/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Juliette						30/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Marthe						29/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Samson						28/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Nathalie						27/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Anne Joachim Anaïs						26/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jacques le Majeur						25/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Christine						24/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Brigitte						23/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Marie-Madeleine						22/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Victor						21/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Marina						20/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Arsène						19/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Frédéric						18/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Charlotte Carole Caroline						17/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+N.D. du Mt Carmel						16/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Donald						15/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Camille - Fête Nationale						14/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Henri Joël Eugène						13/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Olivier						12/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Benoît Olga						11/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Ulrich						10/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Amandine Marianne						09/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Thibault Edgar						08/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Raoul						07/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Mariette						06/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Antoine						05/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Florent Berthe Eliane						04/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Thomas						03/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Martinien						02/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Thierry						01/07/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Martial						30/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Pierre Paul						29/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Irénée						28/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Fernand						27/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Anthelme						26/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Prosper						25/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean-Baptiste						24/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Audrey						23/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Alban						22/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Rodolphe - Eté						21/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Silvère						20/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Romuald						19/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Léonce						18/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Hervé						17/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean-François Régis - Fête des Pères						16/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Germaine						15/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Elisée						14/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Antoine de Padoue						13/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Guy						12/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Barnabé						11/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Landry						10/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Diane Félicien						09/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Médard						08/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gilbert						07/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Norbert						06/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St lgor						05/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Clotilde						04/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Kevin						03/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Blandine						02/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Justin						01/06/2013	VRAI	3	Ephemeride	Normale	FAUX
+Visitation						31/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Ferdinand						30/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Aymard						29/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Germain						28/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Augustin de C.						27/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Bérenger - Fête des Mères						26/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Sophie						25/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Donatien						24/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Didier						23/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Emile						22/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Constantin						21/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Bernardin - L. de Pentecôte.						20/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Yves Yvonne - Pentecôte						19/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Eric Corinne						18/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Pascal						17/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Honoré						16/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Denise						15/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Matthias						14/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Rolande						13/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Achille						12/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Estelle						11/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Solange						10/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Pacôme - Ascension						09/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Désiré - Victoire 1945						08/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Gisèle						07/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Prudence						06/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Judith						05/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Sylvain						04/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Philippe Jacques						03/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Boris						02/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+Fête du Travail						01/05/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Robert						30/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Catherine de Sienne						29/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Valérie						28/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Zita						27/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Alda						26/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Marc						25/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Fidèle						24/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Georges						23/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Alexandre						22/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Anselme						21/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Odette						20/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Emma						19/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Parfait						18/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Anicet						17/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Benoît-Joseph						16/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Paterne						15/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Maxime						14/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Ida						13/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jules						12/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Stanislas						11/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Fulbert						10/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gautier						09/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Julie						08/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean-Baptiste De la Salle						07/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Marcellin						06/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Irène						05/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Isidore						04/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Richard						03/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Sandrine						02/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Hugues - L. de Pâques						01/04/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Benjamin - Pâques						31/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Amédée						30/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Gladys - Vendredi Saint						29/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gontran						28/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Habib						27/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Larissa						26/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Humbert - Annonciation						25/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Catherine de Suède - Rameaux						24/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Victorien						23/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Léa						22/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Clémence						21/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Herbert - Printemps						20/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Joseph						19/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Cyrille						18/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Patrick						17/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Bénédicte						16/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Louise						15/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Mathilde						14/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Rodrigue						13/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Justine						12/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Rosine						11/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Vivien						10/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Françoise						09/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Jean de Dieu						08/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Félicité - Mi-Carême						07/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Colette						06/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Olive						05/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Casimir						04/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Guénolé						03/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Charles le Bon						02/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Aubin						01/03/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Auguste						29/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Romain						28/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Honorine						27/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Nestor						26/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Roméo						25/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Modeste						24/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Lazare						23/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Isabelle						22/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Pierre-Damien						21/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Aimée						20/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gabin						19/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Bernadette						18/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Alexis - Carême						17/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Julienne						16/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Claude						15/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Valentin						14/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Béatrice - Cendres						13/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Félix - Mardi Gras						12/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Notre-Dame de Lourdes						11/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Arnaud						10/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Apolline						09/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Jacqueline						08/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Eugénie						07/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Dorothée Gaston						06/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Agathe						05/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Véronique						04/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Blaise						03/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Présentation du Seigneur						02/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Ella						01/02/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Marcelle						31/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Martine						30/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Gildas						29/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Thomas d'Aquin						28/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Angèle Julien						27/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Paule Pauline Mélanie						26/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Conversion St Paul						25/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St François de Sales - Soizic						24/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Barnard						23/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Vincent Laura						22/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Agnès						21/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Sébastien Fabien						20/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Marius						19/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Prisca Faustine						18/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Roseline						17/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Marcel						16/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Rémi Rachel						15/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Nina						14/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Yvette						13/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Tatiana						12/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Paulin						11/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Guillaume						10/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Alice Alix Pauline						09/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Lucien						08/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Raymond Cédric						07/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Mélaine - Épiphanie						06/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Edouard						05/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Odilon						04/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Ste Geneviève						03/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+St Basile Stéphanie						02/01/2013	VRAI	3	Ephemeride	Normale	FAUX
+Jour de l'An						01/01/2013	VRAI	3	Ephemeride	Normale	FAUX

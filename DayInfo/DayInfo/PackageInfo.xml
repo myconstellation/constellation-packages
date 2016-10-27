@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="DayInfo"
+         Version="1.2.2"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Get the name day (in French) and sunset/sunrise informations"
+         Icon="calendar157.png">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="TimeZone"  isRequired="true" type="Int32" description="Enter your timezone" />
+    <Setting name="Latitude" isRequired="true" type="Double" description="Enter your latitude GPS Coordinates" />
+    <Setting name="Longitude" isRequired="true" type="Double" description="Enter your longitude GPS Coordinates" />
+  </Settings>
+</Package>
