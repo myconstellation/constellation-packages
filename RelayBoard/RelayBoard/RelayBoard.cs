@@ -29,6 +29,7 @@ namespace RelayBoard
     /// <summary>
     /// SainSmart USB Relay Board control
     /// </summary>
+    [StateObject]
     public class RelayBoard
     {
         private const int BAUD_RATE = 9600;
