@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Hue"
+         Icon="hue.png"
+         Version="1.1.2"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Control your Hue lighting system into your Constellation"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="BridgeAddress" type="String" isRequired="true" description="Hue bridge address"/>
+    <Setting name="BridgeUsername" type="String" isRequired="true" description="Hue bridge username"/>
+  </Settings>
+</Package>
