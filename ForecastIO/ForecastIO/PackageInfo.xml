@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="ForecastIO"
+         Version="1.1.2"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Global weather service for Constellation"
+         Icon="cloud363.png"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="forecastIOConfigurationSection" isRequired="true" type="ConfigurationSection" schemaXSD="ForecastIOConfigurationSection.csd.xsd">
+      <defaultContent>
+        <forecastIOConfigurationSection xmlns="urn:ForecastIO" apiKey="xxxxxxxxxxxxxxxxx" refreshInterval="00:30:00">
+          <stations>
+            <station name="Paris" longitude="2.35" latitude="48.853" />
+            <station name="Lille" longitude="3.05" latitude="50.629" />
+            <station name="London" longitude="-0.14" latitude="51.557" />
+          </stations>
+        </forecastIOConfigurationSection>
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
