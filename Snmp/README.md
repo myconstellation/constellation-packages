@@ -29,12 +29,12 @@ Declare the package in a Sentinel with the following configuration :
 		</setting>	
 	</settings>
 </package>
+```
 
 You can add yours devices to monitoring through SNMP by adding the "device" tag.
 
 For each device, you must define the host (IP or DNS hostname) and optionally the community name ('public' if not set).
 
-```
 License
 ----
 
