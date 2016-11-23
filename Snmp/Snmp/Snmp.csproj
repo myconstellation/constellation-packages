@@ -101,7 +101,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="icon.png" />
+    <Content Include="icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="PackageInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
