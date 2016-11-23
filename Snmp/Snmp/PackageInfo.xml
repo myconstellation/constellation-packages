@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="SNMP"
+         Icon="icon.png"
+         Version="1.0"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Monitor your system's hardware, operating-system and networking software via SNMP">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="snmpConfiguration" isRequired="false" ignoreLocalValue="true" ignoreDefaultValue="true" schemaXSD="SnmpConfiguration.csd.xsd" type="ConfigurationSection" description="Specifies your devices to monitor via SNMP">
+      <defaultContent>
+        <snmpConfiguration xmlns="urn:Snmp" queryInterval="00:00:05">
+          <devices>
+            <device host="myDevice.domain.com" />
+            <device host="192.168.0.1" />
+            <device host="192.168.0.10" community="demo" />
+          </devices>
+        </snmpConfiguration>
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
