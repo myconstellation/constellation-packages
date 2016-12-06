@@ -147,9 +147,9 @@ namespace RelayBoard
         /// <summary>
         /// Activate/De-activate a specific relay
         /// </summary>
-        /// <param name="relay">The relay.</param>
+        /// <param name="relayCode">The relay's code.</param>
         /// <param name="state">If set to <c>true</c> switch on, otherwise, switch off.</param>
-        public void RelaySwitch(Relay relay, bool state)
+        public void RelaySwitch(byte relayCode, bool state)
         {
             uint numBytes = 1;
             byte[] Out = { 0x00 };
@@ -160,8 +160,8 @@ namespace RelayBoard
 
             // Permut
             Out[0] = state ?
-                (byte)(pins | (int)relay) :
-                (byte)(pins & ~((int)relay));
+                (byte)(pins | relayCode) :
+                (byte)(pins & ~relayCode);
 
             // Set state
             ftdiDevice.Write(Out, 1, ref numBytes);

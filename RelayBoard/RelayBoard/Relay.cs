@@ -22,58 +22,99 @@
 namespace RelayBoard
 {
     using System;
-    using System.ComponentModel;
 
     /// <summary>
     /// The SainSmart relays
     /// </summary>
-    [Flags]
-    public enum Relay : byte
+    public enum Relay
     {
         /// <summary>
         /// The relay #1
         /// </summary>
-        [Description("1")]
-        Relay1 = 0x01,
+        [Relay(1, 0x01)]
+        Relay1,
         /// <summary>
         /// The relay #2
         /// </summary>
-        [Description("2")]
-        Relay2 = 0x02,
+        [Relay(2, 0x02)]
+        Relay2,
         /// <summary>
         /// The relay #3
         /// </summary>
-        [Description("3")]
-        Relay3 = 0x04,
+        [Relay(3, 0x04)]
+        Relay3,
         /// <summary>
         /// The relay #4
         /// </summary>
-        [Description("4")]
-        Relay4 = 0x08,
+        [Relay(4, 0x08)]
+        Relay4,
         /// <summary>
         /// The relay #5
         /// </summary>
-        [Description("5")]
-        Relay5 = 0x10,
+        [Relay(5, 0x10)]
+        Relay5,
         /// <summary>
         /// The relay #6
         /// </summary>
-        [Description("6")]
-        Relay6 = 0x20,
+        [Relay(6, 0x20)]
+        Relay6,
         /// <summary>
         /// The relay #7
         /// </summary>
-        [Description("7")]
-        Relay7 = 0x40,
+        [Relay(7, 0x40)]
+        Relay7,
         /// <summary>
         /// The relay #8
         /// </summary>
-        [Description("8")]
-        Relay8 = 0x80,
+        [Relay(8, 0x80)]
+        Relay8,
         /// <summary>
         /// All relays
         /// </summary>
-        [Description("All")]
-        All = 0xFF
+        [Relay(0xFF)]
+        All
+    }
+
+    /// <summary>
+    /// Specify the relay identifier
+    /// </summary>
+    /// <seealso cref="System.Attribute" />
+    public class RelayAttribute : Attribute
+    {
+        /// <summary>
+        /// Gets or sets the relay's code.
+        /// </summary>
+        /// <value>
+        /// The relay's code.
+        /// </value>
+        public byte Code { get; set; }
+
+        /// <summary>
+        /// Gets or sets the relay's number.
+        /// </summary>
+        /// <value>
+        /// The relay's number.
+        /// </value>
+        public int Number { get; set; }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RelayAttribute" /> class.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        public RelayAttribute(byte code)
+        {
+            this.Code = code;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RelayAttribute" /> class.
+        /// </summary>
+        /// <param name="number">The relay's number.</param>
+        /// <param name="code">The relay's code.</param>
+        public RelayAttribute(int number, byte code)
+        {
+            this.Number = number;
+            this.Code = code;
+        }
     }
 }

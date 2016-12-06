@@ -23,7 +23,6 @@ namespace RelayBoard
 {
     using Constellation.Package;
     using System;
-    using System.ComponentModel;
     using System.Reflection;
 
     public class Program : PackageBase
@@ -75,7 +74,8 @@ namespace RelayBoard
         public void SetSwitch(Relay relay, bool state)
         {
             // Switch the relay
-            this.board.RelaySwitch(relay, state);
+            var relayAttribute = typeof(Relay).GetMember(relay.ToString())[0].GetCustomAttribute<RelayAttribute>();
+            this.board.RelaySwitch(relayAttribute.Code, state);
             // Update the StateObject
             this.UpdateStateObjects(relay, state);
             // Write log
@@ -84,22 +84,36 @@ namespace RelayBoard
 
         private void UpdateStateObjects(Relay relay, bool state)
         {
-            int i = 0;
-            foreach (var item in Enum.GetValues(typeof(Relay)))
+            if (relay == Relay.All)
             {
-                if (++i > PackageHost.GetSettingValue<int>("RelayCount") || item == (object)Relay.All)
+                int i = 0;
+                foreach (var item in Enum.GetValues(typeof(Relay)))
                 {
-                    break;
+                    if (++i > PackageHost.GetSettingValue<int>("RelayCount") || item == (object)Relay.All)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        var relayAttribute = typeof(Relay).GetMember(item.ToString())[0].GetCustomAttribute<RelayAttribute>();
+                        PackageHost.PushStateObject(item.ToString(), state,
+                                metadatas: new System.Collections.Generic.Dictionary<string, object>()
+                                {
+                                    ["Id"] = relayAttribute.Number,
+                                    ["Flag"] = relayAttribute.Code.ToString()
+                                });
+                    }
                 }
-                else if (((Relay)item & relay) != 0)
-                {
-                    PackageHost.PushStateObject(item.ToString(), state,
-                        metadatas: new System.Collections.Generic.Dictionary<string, object>()
-                        {
-                            ["Id"] = Convert.ToInt16(typeof(Relay).GetMember(item.ToString())[0].GetCustomAttribute<DescriptionAttribute>().Description),
-                            ["Flag"] = ((byte)item).ToString()
-                        });
-                }
+            }
+            else
+            {
+                var relayAttribute = typeof(Relay).GetMember(relay.ToString())[0].GetCustomAttribute<RelayAttribute>();
+                PackageHost.PushStateObject(relay.ToString(), state,
+                            metadatas: new System.Collections.Generic.Dictionary<string, object>()
+                            {
+                                ["Id"] = relayAttribute.Number,
+                                ["Flag"] = relayAttribute.Code.ToString()
+                            });
             }
         }
     }
