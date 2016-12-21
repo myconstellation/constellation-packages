@@ -9,6 +9,8 @@
     <externalType name="Double" namespace="System" />
     <externalType name="DateTime" namespace="System" />
     <externalType name="TimeSpan" namespace="System" />
+    <externalType name="Language?" namespace="ForecastIO" />
+    <externalType name="Unit" namespace="ForecastIO" />
   </typeDefinitions>
   <configurationElements>
     <configurationSection name="ForecastIOConfigurationSection" codeGenOptions="Singleton, XmlnsProperty" xmlSectionName="forecastIOConfigurationSection">
@@ -21,6 +23,16 @@
         <attributeProperty name="ApiKey" isRequired="true" isKey="false" isDefaultCollection="false" xmlName="apiKey" isReadOnly="false">
           <type>
             <externalTypeMoniker name="/602c8513-00eb-4bd9-b70b-b408a9e6c61e/String" />
+          </type>
+        </attributeProperty>
+        <attributeProperty name="Language" isRequired="false" isKey="false" isDefaultCollection="false" xmlName="language" isReadOnly="false">
+          <type>
+            <externalTypeMoniker name="/602c8513-00eb-4bd9-b70b-b408a9e6c61e/Language?" />
+          </type>
+        </attributeProperty>
+        <attributeProperty name="Unit" isRequired="false" isKey="false" isDefaultCollection="false" xmlName="unit" isReadOnly="false" defaultValue="Unit.auto">
+          <type>
+            <externalTypeMoniker name="/602c8513-00eb-4bd9-b70b-b408a9e6c61e/Unit" />
           </type>
         </attributeProperty>
       </attributeProperties>

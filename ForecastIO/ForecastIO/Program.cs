@@ -59,7 +59,7 @@ namespace ForecastIO
                             PackageHost.WriteInfo("Getting forecast for {0}", station.Name);
                             try
                             {
-                                ForecastIOResponse response = new ForecastIORequest(this.configuration.ApiKey, (float)station.Latitude, (float)station.Longitude, Unit.si).Get();
+                                ForecastIOResponse response = new ForecastIORequest(this.configuration.ApiKey, (float)station.Latitude, (float)station.Longitude, this.configuration.Unit, this.configuration.Language).Get();
                                 PackageHost.PushStateObject<ForecastIOResponse>(station.Name, response, lifetime: (int)this.configuration.RefreshInterval.TotalSeconds * 2);
                                 PackageHost.WriteInfo("Weather for {0} done. Report date @ {1}", station.Name, response.currently.time.ToDateTime().ToLocalTime().ToLongTimeString());
                             }

@@ -27,6 +27,16 @@
 				<xs:documentation>The ApiKey.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="language" use="optional">
+			<xs:annotation>
+				<xs:documentation>The Language.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="unit" use="optional">
+			<xs:annotation>
+				<xs:documentation>The Unit.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="ForecastIO.StationElementCT">
 		<xs:attribute name="name" use="required" type="xs:string">
