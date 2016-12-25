@@ -1,122 +1,114 @@
-﻿using Constellation;
-using Constellation.Package;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using System.Diagnostics;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿/*
+ *	 RATP Package for Constellation
+ *	 Web site: http://www.myConstellation.io
+ *	 Copyright (C) 2016 - Hydro
+ *	 Copyright (C) 2016 - Pierre Grimaud <https://github.com/pgrimaud>
+ *	 Copyright (C) 2016 - Sebastien Warin <http://sebastien.warin.fr>	   	  
+ *	
+ *	 Licensed to Constellation under one or more contributor
+ *	 license agreements. Constellation licenses this file to you under
+ *	 the Apache License, Version 2.0 (the "License"); you may
+ *	 not use this file except in compliance with the License.
+ *	 You may obtain a copy of the License at
+ *	
+ *	 http://www.apache.org/licenses/LICENSE-2.0
+ *	
+ *	 Unless required by applicable law or agreed to in writing,
+ *	 software distributed under the License is distributed on an
+ *	 "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *	 KIND, either express or implied. See the License for the
+ *	 specific language governing permissions and limitations
+ *	 under the License.
+ */
 
 namespace Ratp
 {
+    using Constellation.Package;
+    using Newtonsoft.Json;
+    using Ratp.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Text;
+
+    /// <summary>
+    /// RATP Package for Constellation
+    /// </summary>
+    /// <seealso cref="Constellation.Package.PackageBase" />
     public class Program : PackageBase
     {
-
-        public class Traffic
-        {
-            public Response_traffic response { get; set; }
-            public Meta _meta { get; set; }
-        }
-
-        public class Response_traffic
-        {
-            public string line { get; set; }
-            public string slug { get; set; }
-            public string title { get; set; }
-            public string message { get; set; }
-        }
-
-        public class Meta
-        {
-            public string version { get; set; }
-            public string date { get; set; }
-            public string call { get; set; }
-        }
-
-        public class Horaires
-        {
-            public Response_horaires response { get; set; }
-            public Meta _meta { get; set; }
-        }
-
-        public class Response_horaires
-        {
-            public Informations informations { get; set; }
-            public List<Schedule> schedules { get; set; }
-        }
-
-        public class Informations
-        {
-            public Destination destination { get; set; }
-            public string line { get; set; }
-            public string type { get; set; }
-            public Station station { get; set; }
-        }
-
-        public class Schedule
-        {
-            public string id { get; set; }
-            public string destination { get; set; }
-            public string message { get; set; }
-        }
-
-        public class Destination
-        {
-            public string id { get; set; }
-            public string name { get; set; }
-            public string slug { get; set; }
-        }
-
-        public class Station
-        {
-            public string id { get; set; }
-            public string name { get; set; }
-            public string slug { get; set; }
-        }
+        private const string ROOT_URI = "https://api-ratp.pierre-grimaud.fr/v2/";
 
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
         }
 
-        public override void OnStart()
+        /// <summary>
+        /// Récupére le trafic du réseau ferré RATP.
+        /// </summary>
+        /// <param name="type">Le type de transport dont vous souhaitez avoir les informations.</param>
+        /// <param name="ligneId">Le nom de la ligne du type de transport spécifié.</param>
+        /// <returns></returns>
+        [MessageCallback]
+        Response<TrafficResult> GetTraffic(LineType type, int ligneId)
         {
-            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
+            return this.GetResponse<TrafficResult>($"traffic/{type}/{ligneId}");
         }
 
+        /// <summary>
+        /// Récupére les stations d'une ligne de Rer, Métro, Tramway, Bus ou Noctilien.
+        /// </summary>
+        /// <param name="type">Le type de transport dont vous souhaitez avoir les informations..</param>
+        /// <param name="ligneId">Le nom de la ligne du type de transport spécifié.</param>
+        /// <returns></returns>
         [MessageCallback]
-        Response_traffic GetTraffic(string type, string line)
+        Response<StationList> GetStations(LineType type, int ligneId)
         {
-
-            string AddressURL = "http://api-ratp.pierre-grimaud.fr/v2/traffic/" + type + "s/" + line;
-            WebClient webClient = new WebClient();
-            webClient.Headers.Add("user-agent", "Only a test!");
-            var result = webClient.DownloadString(AddressURL);
-            var root = JsonConvert.DeserializeObject<Traffic>(result);
-            string traffic = root.response.message;
-            PackageHost.WriteInfo(traffic);
-            return root.response;
-
+            return this.GetResponse<StationList>($"{type}/{ligneId}/stations");
         }
 
+        /// <summary>
+        /// Récupére les temps d'attente des prochains trains d'une ligne de Rer, Métro, Tramway, Bus ou Noctilien en fonction de la destination et de la station.
+        /// </summary>
+        /// <param name="type">Le type de transport dont vous souhaitez avoir les informations..</param>
+        /// <param name="ligneId">Le nom de la ligne du type de transport spécifié.</param>
+        /// <param name="stationId">L'id ou l'indicatif de la station désirée.</param>
+        /// <param name="destinationId">L'id ou l'indicatif de la destination désirée.</param>
+        /// <returns></returns>
         [MessageCallback]
-        List<Schedule> GetSchedule(string type, string line, string station, string direction)
+        Response<ScheduleResult> GetSchedule(LineType type, int ligneId, string stationId, string destinationId)
         {
+            return this.GetResponse<ScheduleResult>($"{type}/{ligneId}/stations/{stationId}?destination={destinationId}");
+        }
 
-            string AddressURL = "http://api-ratp.pierre-grimaud.fr/v2/" + type + "s/" + line + "/stations/" + station + "?destination=" + direction;
-            WebClient webClient = new WebClient();
-            webClient.Headers.Add("user-agent", "Only a test!");
-            var result = webClient.DownloadString(AddressURL);
-            var root = JsonConvert.DeserializeObject<Horaires>(result);
-            foreach (var train in root.response.schedules)
+        private Response<TResult> GetResponse<TResult>(string path)
+        {
+            try
             {
-                PackageHost.WriteInfo("{0} {1} en direction de {2} : {3}", type, line, train.destination, train.message);
+                string AddressURL = ROOT_URI + path;
+                using (WebClient webClient = new WebClient() { Encoding = Encoding.UTF8 })
+                {
+                    var result = webClient.DownloadString(AddressURL);
+                    return JsonConvert.DeserializeObject<Response<TResult>>(result, new JsonSerializerSettings()
+                    {
+                        Converters = new List<JsonConverter>()
+                    {
+                        new PropertyNamesMatchingConverter()
+                    }
+                    });
+                }
             }
-            return root.response.schedules;
-
+            catch (Exception ex)
+            {
+                PackageHost.WriteError($"Error on getting {path} : {ex.ToString()}");
+                return new Response<TResult>()
+                {
+                    Error = ex.Message,
+                    HasError = true,
+                    Metadatas = new Metadata() { ResponseDate = DateTime.Now.ToString(), RequestURI = path }
+                };
+            }
         }
-
     }
 }

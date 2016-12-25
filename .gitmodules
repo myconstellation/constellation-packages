@@ -4,3 +4,6 @@
 [submodule "Vera/VeraNet"]
 	path = Vera/VeraNet
 	url = https://github.com/sebastienwarin/VeraNet
+[submodule "xbmc/xbmcnet"]
+	path = xbmc/xbmcnet
+	url = https://github.com/sebastienwarin/xbmc.git

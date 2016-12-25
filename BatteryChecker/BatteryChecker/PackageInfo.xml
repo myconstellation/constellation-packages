@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="BatteryChecker"
+         Version="1.2.2"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Push your Windows batteries on Constellation"
+         Icon="Battery-Low.png">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Unix" isCompliant="false" />
+      <Platform id="MacOS" isCompliant="false" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="RefreshInterval" type="Int32" isRequired="false" description="Refresh interval in milliseconds" defaultValue="5000" />
+  </Settings>
+</Package>
