@@ -142,6 +142,44 @@ namespace Vera
         }
 
         /// <summary>
+        /// Control window covering device type.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [MessageCallback]
+        private bool SetWindowCoveringAction(DeviceActionRequest request)
+        {
+            VeraNet.Objects.Devices.WindowCovering device = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.WindowCovering;
+            if (device != null)
+            {
+                PackageHost.WriteInfo("Window Covering '{0}' {1} ({2})", request.Action.ToString(), device.Name, device.Id);
+
+                switch (request.Action)
+                {
+                    case WindowCoveringAction.UP:
+                        device.Up();
+                        break;
+                    case WindowCoveringAction.DOWN:
+                        device.Down();
+                        break;
+                    case WindowCoveringAction.STOP:
+                        device.Stop();
+                        break;
+                    default:
+                        break;
+                }
+
+                return true;
+            }
+            else
+            {
+                PackageHost.WriteError("The device #'{0}' not found !", request.DeviceID);
+                return false;
+            }
+        }
+
+
+        /// <summary>
         /// Sets the state and dimmable level.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -302,6 +340,22 @@ namespace Vera
             /// The level (0 to 100%) for dimmable device 
             /// </summary>
             public int Level { get; set; }
+        }
+
+        /// <summary>
+        /// Z-Wave Device request
+        /// </summary>
+        public class DeviceActionRequest
+        {
+            /// <summary>
+            /// The device identifier.
+            /// </summary>
+            public int DeviceID { get; set; }
+
+            /// <summary>
+            /// The command to action : Up (0), Down(1), Stop(2)
+            /// </summary>
+            public WindowCoveringAction Action { get; set; }
         }
     }
 }
