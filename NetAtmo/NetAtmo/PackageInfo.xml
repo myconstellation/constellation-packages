@@ -2,12 +2,16 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="NetAtmo"
          Icon="netatmo-logo.png"
-         Version="1.2.4"
+         Version="1.2.5"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Connect NetAtmo sensors to Constellation"
          PackageUrl="https://github.com/myconstellation/Netatmo">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platform id="Win32NT" isCompliant="true" />
+    <Platform id="Unix" isCompliant="true" />
+    <Platform id="MacOS" isCompliant="false" />
+  </Compatibility>
   <Settings>
     <Setting name="RefreshInterval" type="Int32" isRequired="false" defaultValue="300" description="Refresh interval in second" />
     <Setting name="Netatmo.ClientId" type="String" isRequired="true" description="The ClientId of your application" />
