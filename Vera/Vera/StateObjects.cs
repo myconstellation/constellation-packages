@@ -307,24 +307,4 @@ namespace VeraNet
         /// </value>
         public VeraNet.Objects.VeraState State { get; set; }
     }
-
-    /// <summary>
-    /// Window Covering Action
-    /// </summary>
-    public enum WindowCoveringAction {
-        /// <summary>
-        /// UP Command
-        /// </summary>
-        UP = 0,
-
-        /// <summary>
-        /// Down Command
-        /// </summary>
-        DOWN = 1,
-
-        /// <summary>
-        /// Stop Command
-        /// </summary>
-        STOP = 2
-    }
 }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Vera"
-         Version="1.5.5"
+         Version="1.5.6"
          Author="Sebastien Warin"
          Icon="vera.png"
          URL="http://sebastien.warin.fr"
