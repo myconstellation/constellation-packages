@@ -130,7 +130,7 @@ namespace WindowsControl
         /// </summary> 
         public bool IsLocked()
         {
-            IntPtr hDesktop = IntPtr.Zero; ;
+            IntPtr hDesktop = IntPtr.Zero;
             try
             {
                 // Opens the desktop that receives user input. 

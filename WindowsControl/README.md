@@ -12,6 +12,12 @@ Control your Windows from Constellation
   - Reboot() : Reboots the work station.
   - Sleep() : Sleeps the work station.
   - Hibernate() : Hibernates the work station.
+  - Mute() : Mute/Unmute volume.
+  - VolumeUp() : Increase volume.
+  - VolumeDown() : Decrease volume.
+  - SetBrightness(targetBrightness) : Sets the brightness.
+  - BrightnessUp() : Increase Brightness.
+  - BrightnessDown() : Decrease Brightness.
 
 ### Installation
 

@@ -1,7 +1,7 @@
 ﻿/*
  *	 WindowsControl Package for Constellation
  *	 Web site: http://www.myConstellation.io
- *	 Copyright (C) 2014-2016 - Sebastien Warin <http://sebastien.warin.fr>	   	  
+ *	 Copyright (C) 2014-2017 - Sebastien Warin <http://sebastien.warin.fr>	   	  
  *	
  *	 Licensed to Constellation under one or more contributor
  *	 license agreements. Constellation licenses this file to you under
@@ -56,11 +56,12 @@ namespace WindowsControl
 
             this.session.StateChanged += (s, e) =>
             {
-                if (e.Reason == SessionSwitchReason.SessionLock)
+                PackageHost.WriteInfo("Session State changed to {0}", e.Reason.ToString());
+                if (e.Reason == SessionSwitchReason.SessionLock || e.Reason == SessionSwitchReason.RemoteDisconnect)
                 {
                     PackageHost.PushStateObject("SessionLocked", true);
                 }
-                else if (e.Reason == SessionSwitchReason.SessionUnlock)
+                else if (e.Reason == SessionSwitchReason.SessionUnlock || e.Reason == SessionSwitchReason.RemoteConnect)
                 {
                     PackageHost.PushStateObject("SessionLocked", false);
                 }
@@ -72,7 +73,7 @@ namespace WindowsControl
         /// </summary>
         public override void OnPreShutdown()
         {
-            PackageHost.PushStateObject("SessionLocked", true);
+            PackageHost.PushStateObject("SessionLocked", true, lifetime: 1); // Set the StateObject expire the next second
         }
 
         /// <summary>
@@ -135,6 +136,87 @@ namespace WindowsControl
         public void Hibernate()
         {
             SetSuspendState(true, true, true);
+        }
+
+        /// <summary>
+        /// Mute/Unmute volume.
+        /// </summary>
+        [MessageCallback]
+        public void Mute()
+        {
+            WindowsKeyboard.SendKey(WindowsKeyboard.Keys.VolumeMute);
+        }
+
+
+        /// <summary>
+        /// Increase volume.
+        /// </summary>
+        [MessageCallback]
+        public void VolumeUp()
+        {
+            WindowsKeyboard.SendKey(WindowsKeyboard.Keys.VolumeUp);
+        }
+
+        /// <summary>
+        /// Decrease volume.
+        /// </summary>
+        [MessageCallback]
+        public void VolumeDown()
+        {
+            WindowsKeyboard.SendKey(WindowsKeyboard.Keys.VolumeDown);
+        }
+
+        /// <summary>
+        /// Sets the brightness.
+        /// </summary>
+        /// <param name="targetBrightness">The target brightness.</param>
+        [MessageCallback]
+        public void SetBrightness(int targetBrightness)
+        {
+            if (targetBrightness < 0 || targetBrightness > 100)
+            {
+                PackageHost.WriteError("Invalid value !");
+            }
+            else
+            {
+                WindowsBrightness.SetBrightness((byte)targetBrightness);
+            }
+        }
+
+        /// <summary>
+        /// Increase Brightness.
+        /// </summary>
+        [MessageCallback]
+        public void BrightnessUp()
+        {
+            int currentValue = WindowsBrightness.GetBrightness();
+            byte[] levels = WindowsBrightness.GetBrightnessLevels();
+            for (int i = 0; i < levels.Length; i++)
+            {
+                if (levels[i] > currentValue)
+                {
+                    WindowsBrightness.SetBrightness(levels[i]);
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Decrease Brightness.
+        /// </summary>
+        [MessageCallback]
+        public void BrightnessDown()
+        {
+            int currentValue = WindowsBrightness.GetBrightness();
+            byte[] levels = WindowsBrightness.GetBrightnessLevels();
+            for (int i = levels.Length - 1; i > 0; i--)
+            {
+                if (currentValue > levels[i])
+                {
+                    WindowsBrightness.SetBrightness(levels[i]);
+                    break;
+                }
+            }
         }
     }
 }
