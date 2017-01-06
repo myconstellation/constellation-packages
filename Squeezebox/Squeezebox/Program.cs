@@ -53,13 +53,6 @@ namespace Squeezebox
 
         }
 
-        /// [MessageCallback(Description = "Send a command to the Logitech Media Server. See Enum description for more informations.")]
-        /// public void SendCommand(SqueezeboxCommand command)
-        /// {
-        //// TODO :  Manage Exceptions with SAGAs
-        ///this.RemoteController.SendKey(command);
-        ///}
-
         /// <summary>
         /// Send a command to a Squeezebox.
         /// </summary>
