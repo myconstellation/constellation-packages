@@ -18,11 +18,6 @@
     {
         public string RemoteKey { get; set; }
         public WebClient HttpClient { get; set; }
-
-        /// <summary>
-        /// Configuration
-        /// URL about Free HTTP API template
-        /// </summary>
         const string HttpApiUrlTemplateServer = "{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[{0}]]}}";
         const string HttpApiUrlTemplateSqueezebox = "{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[{1}]]}}";
 
@@ -30,26 +25,17 @@
         {
             if (string.IsNullOrEmpty(remoteKey))
                 throw new InvalidOperationException("Remote Key must be provided");
-
             this.RemoteKey = remoteKey;
             this.HttpClient = new WebClient();
         }
 
-
-        /// <summary>
-        ///  Send a command to the freebox api
-        /// </summary>
-        /// <param name="command"> Command enum </param>
-        /// <param name="value"> Command enum </param>
         public void SendKey(ServerCommand command, string value)
         {
-            PackageHost.WriteInfo("test");
             string url = "http://" + this.RemoteKey + "/jsonrpc.js";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
-            string test = command.ToString();
-            PackageHost.WriteInfo("{0}", test);
-            if (test != "Scan_Fast")
+            string command_name = command.ToString();
+            if (command_name != "Scan_Fast")
             {
                 PackageHost.StateObjectUpdated += (s, e) =>
                 {
@@ -70,13 +56,12 @@
                             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                             {
                                 length = response.ContentLength;
-
                             }
 
                         }
                         catch (WebException ex)
                         {
-
+                            PackageHost.WriteError(ex);
                         }
                     }
                 };
@@ -86,10 +71,8 @@
             {
                 System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
                 Byte[] byteArray = encoding.GetBytes(this.GenerateCommandFromUrlToServer(command));
-
                 request.ContentLength = byteArray.Length;
                 request.ContentType = @"application/json";
-
                 using (Stream dataStream = request.GetRequestStream())
                 {
                     dataStream.Write(byteArray, 0, byteArray.Length);
@@ -100,42 +83,24 @@
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     {
                         length = response.ContentLength;
-
                     }
-
                 }
                 catch (WebException ex)
                 {
-
+                    PackageHost.WriteError(ex);
                 }
             }
-
-
-            //// TODO : Parse result
         }
 
-
-        /// <summary>
-        ///  Generate a valid api http url with associated parameters
-        /// </summary>
-        /// <param name="command"> Command enum </param>
-        /// <returns></returns>
         private string GenerateCommandFromUrlToServer(ServerCommand command)
         {
             return string.Format(HttpApiUrlTemplateServer, command.To<CommandAttribute>());
         }
 
-        /// <summary>
-        ///  Generate a valid api http url with associated parameters
-        /// </summary>
-        /// <param name="command"> Command enum </param>
-        /// <param name="squeezebox"> string </param>
-        /// <returns></returns>
         private string GenerateCommandFromUrlToSqueezebox(ServerCommand command, dynamic squeezebox)
         {
             return string.Format(HttpApiUrlTemplateSqueezebox, squeezebox, command.To<CommandAttribute>());
         }
-
 
         public void Dispose()
         {

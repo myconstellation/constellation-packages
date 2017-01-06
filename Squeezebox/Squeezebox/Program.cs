@@ -9,7 +9,7 @@ using Squeezebox.Remote.Enumerations;
 using Squeezebox.Remote.Interfaces;
 using Squeezebox.Remote;
 
-namespace FreeboxTV
+namespace Squeezebox
 {
     public class Program : PackageBase
     {

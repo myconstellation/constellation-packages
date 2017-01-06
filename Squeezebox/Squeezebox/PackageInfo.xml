@@ -1,12 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Squeezebox"
-         Version="0.4"
+         Version="0.5"
          Author="Hydro"
+         Icon="Squeezebox.png"
          URL="http://www.myconstellation.io"
          Description="Squeezebox Copyright ©  2016"
          EnableControlHub="false">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Compatibility constellationVersion="1.8">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
   <Settings>
     <Setting name="ServerUrl" isRequired="true" type="string" description="Your Logitech Media Server URL"/>
   </Settings>
