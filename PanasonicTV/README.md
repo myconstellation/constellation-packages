@@ -1,46 +1,79 @@
-# PushBullet Package for Constellation
+# Panasonic TV Package for Constellation
 
-PushBullet connector for Constellation to send notifications, links and files to your devices or friends and more.
-
-API official Documentation : [http://docs.pushbullet.com/http/](http://docs.pushbullet.com/http/)
+Package to control Panasonic TV (Viera). Your TV must be compatible with Panasonic TV Remote 2 app.
 
 ### MessageCallbacks
- - GetDevices : Get a list of devices belonging to the current user.
- - GetChats : Get a list of chats belonging to the current user.
- - GetPushes : Request push history.
- - GetCurrentUser :  Gets the currently logged in user.
- - SendSMS : Sends the SMS from your phone (for Android devices only).
- - CopyToClipboard : Copy a String to the Device's Clipboard (PushBullet premium feature).
- - PushNote : Push a note to a device or another person.
- - PushLink : Push a Link to a device or another person.
- - PushFile : Uploads and Push a file to a device or another person.
-
-### StateObjects
- - CurrentUser : user currently logged in
- - Chats : list of chats belonging to the current user
- - Devices : list of devices belonging to the current user
- - RateLimit : service usage limit
+ - Red : RED button
+ - Green : GREEN button
+ - Blue : BLUE button
+ - Yellow : YELLOW button
+ - Power : Toggle power
+ - PowerOn : Power ON the TV
+ - Button0 : 0 button
+ - Button1 : 1 button
+ - Button2 : 2 button
+ - Button3 : 3 button
+ - Button4 : 4 button
+ - Button5 : 5 button
+ - Button6 : 6 button
+ - Button7 : 7 button
+ - Button8 : 8 button
+ - Button9 : 9 button
+ - Back : Return button
+ - VolumeUp : Increase volume
+ - VolumeDown : Decrease volume
+ - OK : Enter button
+ - Up : Up button
+ - Right : Right button
+ - Down : Down button
+ - Left : Left button
+ - ProgramUp : Channel up
+ - ProgramDown : Channel down
+ - Mute : Toggle mute
+ - TV : TV button
+ - Input : AUX button
+ - VieraTools : VieraTools button
+ - Cancel : Cancel button
+ - Option : Options button
+ - ThreeDimensional : 3D button
+ - SDCard : SD card button
+ - DisplayMode : Change display mode
+ - Menu : Menu button
+ - VieraConnect : Display VIERA Connect
+ - VieraLink : Display VIERA Link
+ - EPG : Toggle EPG
+ - Text : Toggle Text
+ - Subtitle : Toggle subtitle
+ - Info : Info button
+ - Index : Index button
+ - Hold : Hold button
+ - LastView : Display last view
+ - Rewind : Rewind button
+ - Play : Play button
+ - FastForward : Forward button
+ - SkipPrevious : Skip Previous
+ - Pause : Pause button
+ - SkipNext : Skip Next
+ - Stop : Stop button
+ - Record : Record button
+ - HDMI_1 : Toggle HDMI1
+ - HDMI_2 : Toggle HDMI2
+ - HDMI_3 : Toggle HDMI3
+ - HDMI_4 : Toggle HDMI4
 
 ### Installation
 
 Declare the package in a Sentinel with the following configuration :
 ```xml
-<package name="PushBullet">
-  <settings>
-	<setting key="token" value="<< access token >>" />
-  </settings>
-</package>
+	<package name="FreeboxTV" enable="true">
+		<settings>
+			<setting key="Your_TV_name" value="IP Adress" />
+		</settings>
+	</package>
 ```
 
-To get an access token go to [Account Settings](https://www.pushbullet.com/#settings/account) page.
-
 ### Settings
- - token (string - required) : PushBullet access token
- - PushDevicesAsStateObjects (Boolean - optional) : Push PushBullet's devices as StateObjects (default: true)
- - PushChatsAsStateObjects (Boolean - optional) : Push PushBullet's chats as StateObjects (default: true)
- - PushCurrentUserAsStateObject (Boolean - optional) : Push PushBullet's current user as StateObject (default: true)
- - SendPushesReceivedToGroup (string - optional) : Send pushes received to Constellation group. Leave blank to disable! (default: 'PushBullet')
- - SendEphemeralsReceivedToGroup (string - optional) : Send ephemerals received to Constellation group. Leave blank to disable! (default: 'PushBullet')
+ - Your_TV_name (string - optional - can be change) : IP adress of the Panasonic TV
 
 License
 ----
