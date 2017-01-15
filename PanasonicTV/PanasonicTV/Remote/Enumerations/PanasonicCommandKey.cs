@@ -111,7 +111,7 @@
         [Command("NRC_CH_UP-ONOFF")]
         ProgramUp,
 
-        //// Channem down
+        //// Channel down
         [Command("NRC_CH_DOWN-ONOFF")]
         ProgramDown,
 
@@ -123,7 +123,7 @@
         [Command("NRC_TV-ONOFF")]
         TV,
 
-        //// Aux button
+        //// AUX button
         [Command("NRC_CHG_INPUT-ONOFF")]
         Input,
 
@@ -159,7 +159,7 @@
         [Command("NRC_INTERNET-ONOFF")]
         VieraConnect,
 
-        //// Display VIERA Connect
+        //// Display VIERA Link
         [Command("NRC_VIERA_LINK-ONOFF")]
         VieraLink,
 
