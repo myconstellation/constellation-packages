@@ -30,9 +30,13 @@ Package to control Squeezebox (Logitech Media Server).
  - Pause : Pause music
  - Play : Play music
  - Play_Album : Launch an album (require album name)
+ - Play_Album_Id : Launch an album by id (require album id)
  - Play_Artist : Launch an artist (require artist name)
+ - Play_Artist_Id : Launch an artist by id (require artist id)
  - Play_Playlist : Launch a playlist (require playlist name)
+ - Play_Playlist_Id : Launch a playist by id (require playlist id)
  - Play_Title : Launch a title (require title)
+ - Play_Title_Id : Launch a title by id (require title id)
  - Play_Toggle : Toggle pause state
  - Playlist_Clear : Erase current playlist
  - Power_Off : Power Off
