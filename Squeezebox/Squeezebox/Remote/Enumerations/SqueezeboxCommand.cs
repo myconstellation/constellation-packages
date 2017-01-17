@@ -39,17 +39,33 @@
         [Command("\"playlist\",\"loadtracks\",\"album.titlesearch={0}\"")]
         Play_Album,
 
+        //// Launch an album by id (require album id)
+        [Command("\"playlistcontrol\",\"cmd:load\",\"album_id:{0}\"")]
+        Play_Album_Id,
+
         //// Launch an artist (require artist name)
         [Command("\"playlist\",\"loadtracks\",\"contributor.namesearch={0}\"")]
         Play_Artist,
+
+        //// Launch an artist by id (require artist id)
+        [Command("\"playlistcontrol\",\"cmd:load\",\"artist_id:{0}\"")]
+        Play_Artist_Id,
 
         //// Launch a playlist (require playlist name)
         [Command("\"playlist\",\"play\",\"{0}\"")]
         Play_Playlist,
 
+        //// Launch a playist by id (require playlist id)
+        [Command("\"playlistcontrol\",\"cmd:load\",\"playlist_id:{0}\"")]
+        Play_Playlist_Id,
+
         //// Launch a title (require title)
         [Command("\"playlist\",\"loadtracks\",\"track.titlesearch={0}\"")]
         Play_Title,
+
+        //// Launch a title by id (require title id)
+        [Command("\"playlistcontrol\",\"cmd:load\",\"track_id:{0}\"")]
+        Play_Title_Id,
 
         //// Toggle pause state
         [Command("\"pause\"")]
