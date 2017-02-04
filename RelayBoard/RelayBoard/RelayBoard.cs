@@ -134,7 +134,7 @@ namespace RelayBoard
                 // Set Baud rate to 9600
                 this.ftStatus = this.ftdiDevice.SetBaudRate(BAUD_RATE);
                 // Set FT245RL to synchronous bit-bang mode, used on sainsmart relay board
-                this.ftdiDevice.SetBitMode((byte)Relay.All, FTDI.FT_BIT_MODES.FT_BIT_MODE_SYNC_BITBANG);
+                this.ftdiDevice.SetBitMode(0xFF, FTDI.FT_BIT_MODES.FT_BIT_MODE_SYNC_BITBANG);
 
                 // Switch off all the relays
                 this.ftdiDevice.Write(startup, 1, ref bytesToSend);
@@ -152,19 +152,19 @@ namespace RelayBoard
         public void RelaySwitch(byte relayCode, bool state)
         {
             uint numBytes = 1;
-            byte[] Out = { 0x00 };
+            byte[] datas = startup;
             byte pins = 0x00;
 
             // Find which relays are ON/OFF
             ftdiDevice.GetPinStates(ref pins);
 
             // Permut
-            Out[0] = state ?
+            datas[0] = state ?
                 (byte)(pins | relayCode) :
                 (byte)(pins & ~relayCode);
 
             // Set state
-            ftdiDevice.Write(Out, 1, ref numBytes);
+            ftdiDevice.Write(datas, 1, ref numBytes);
         }
     }
 }
