@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C41C9DEE-158B-4A8E-89B6-AF308DDFA74F}</ProjectGuid>
+    <ProjectGuid>{BFEAD809-5D63-4337-90B6-5FA8FB0A069A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Squeezebox</RootNamespace>
-    <AssemblyName>Squeezebox</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Jeedom</RootNamespace>
+    <AssemblyName>Jeedom</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Squeezebox.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Jeedom.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,19 +30,19 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Squeezebox.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Jeedom.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Constellation.Common, Version=1.8.0.0, Culture=neutral, PublicKeyToken=324a4f45ff674ee1, processorArchitecture=MSIL">
-      <HintPath>..\packages\Constellation.1.8.1.16272\lib\net40\Constellation.Common.dll</HintPath>
+      <HintPath>..\packages\Constellation.1.8.1.16272\lib\net45\Constellation.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net40\Microsoft.AspNet.SignalR.Client.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -58,32 +58,30 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Remote\Attributes\CommandAttribute.cs" />
-    <Compile Include="Remote\Enumerations\ServerCommand.cs" />
-    <Compile Include="Remote\Enumerations\SqueezeboxCommand.cs" />
+    <Compile Include="Remote\Enumerations\Command.cs" />
+    <Compile Include="Remote\Enumerations\SceneCommand.cs" />
     <Compile Include="Remote\Extensions\EnumerationExtensions.cs" />
-    <Compile Include="Remote\HttpServerController.cs" />
-    <Compile Include="Remote\HttpSqueezeboxController.cs" />
-    <Compile Include="Remote\Interfaces\IRemoteController.cs" />
-    <Compile Include="Remote\Interfaces\IServerController.cs" />
+    <Compile Include="Remote\HttpSceneController.cs" />
+    <Compile Include="Remote\HttpController.cs" />
+    <Compile Include="Remote\Interfaces\IController.cs" />
+    <Compile Include="Remote\Interfaces\ISceneController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PackageInfo.xml">
+    <Content Include="Jeedom.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
     </Content>
-    <Content Include="Squeezebox.png">
+    <Content Include="PackageInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishMethod="ConstellationServer" PublishServer="http://192.168.1.50:8088" />
+      <UserProperties PublishServer="http://192.168.1.50:8088" PublishMethod="ConstellationServer" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
