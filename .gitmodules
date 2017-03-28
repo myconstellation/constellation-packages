@@ -7,3 +7,6 @@
 [submodule "xbmc/xbmcnet"]
 	path = xbmc/xbmcnet
 	url = https://github.com/sebastienwarin/xbmc.git
+[submodule "Mikrotik/tik4net"]
+	path = Mikrotik/tik4net
+	url = https://github.com/sebastienwarin/tik4net

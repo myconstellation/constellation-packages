@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Mikrotik"
+         Version="1.0"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Push your Mikrotik device on Constellation"
+         Icon="mikrotik.png">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Host" type="String" isRequired="true" description="Mikrotik device address" />
+    <Setting name="Username" type="String" isRequired="true" description="The username" />
+    <Setting name="Password" type="String" isRequired="true" description="The password" />
+    <Setting name="QueryInterval" type="Int32" isRequired="false" description="The query interval" defaultValue="5000" />
+  </Settings>
+</Package>
