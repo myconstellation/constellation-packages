@@ -24,6 +24,7 @@ namespace Mikrotik
     using Constellation.Package;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading;
     using tik4net;
     using tik4net.Objects;
@@ -48,6 +49,7 @@ namespace Mikrotik
     public class Program : PackageBase
     {
         private ITikConnection connection = null;
+        private List<string> unsupportedCommands = new List<string>();
 
         static void Main(string[] args)
         {
@@ -72,12 +74,22 @@ namespace Mikrotik
                         }
                         if (this.connection != null && this.connection.IsOpened)
                         {
-                            this.QueryAndPush("SystemResource", () => connection.LoadSingle<SystemResource>());
-                            this.QueryAndPush("DhcpServerLeases", () => connection.LoadList<DhcpServerLease>());
-                            this.QueryAndPush("WirelessClients", () => connection.LoadList<CapsManRegistrationTable>());
-                            this.QueryAndPush("Queues", () => connection.LoadList<QueueSimple>());
-                            this.QueryAndPush("IpAddresses", () => connection.LoadList<IpAddress>());
-                            this.QueryAndPush("Interfaces", () => connection.LoadList<Interface>());
+                            try
+                            {
+                                // Test connection with simple command
+                                connection.CreateCommand("/system/identity/print").ExecuteScalar();
+                                // Query & push
+                                this.QueryAndPush("SystemResource", () => connection.LoadSingle<SystemResource>());
+                                this.QueryAndPush("DhcpServerLeases", () => connection.LoadList<DhcpServerLease>());
+                                this.QueryAndPush("WirelessClients", () => connection.LoadList<CapsManRegistrationTable>());
+                                this.QueryAndPush("Queues", () => connection.LoadList<QueueSimple>());
+                                this.QueryAndPush("IpAddresses", () => connection.LoadList<IpAddress>());
+                                this.QueryAndPush("Interfaces", () => connection.LoadList<Interface>());
+                            }
+                            catch (IOException)
+                            {
+                                this.connection = null;
+                            }
                         }
                         lastQuery = DateTime.Now;
                     }
@@ -107,18 +119,26 @@ namespace Mikrotik
         /// <param name="type">The StateObject type.</param>
         private void QueryAndPush(string name, Func<object> query, string type = "")
         {
-            try
+            if (!this.unsupportedCommands.Contains(name))
             {
-                PackageHost.PushStateObject(name, query(), type,
-                    metadatas: new Dictionary<string, object>()
-                    {
-                        ["Host"] = PackageHost.GetSettingValue("Host")
-                    },
-                    lifetime: PackageHost.GetSettingValue<int>("QueryInterval") * 2);
-            }
-            catch (Exception ex)
-            {
-                PackageHost.WriteError("Unable to query and push the StateObject '{0}' : {1}", name, ex.ToString());
+                try
+                {
+                    PackageHost.PushStateObject(name, query(), type,
+                        metadatas: new Dictionary<string, object>()
+                        {
+                            ["Host"] = PackageHost.GetSettingValue("Host")
+                        },
+                        lifetime: PackageHost.GetSettingValue<int>("QueryInterval") * 2);
+                }
+                catch (TikCommandException ex) when (ex.Code == "0")
+                {
+                    this.unsupportedCommands.Add(name);
+                    PackageHost.WriteWarn("{0} is unsupported : {1}", name, ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    PackageHost.WriteError("Unable to query and push the StateObject '{0}' : {1}", name, ex.ToString());
+                }
             }
         }
 
