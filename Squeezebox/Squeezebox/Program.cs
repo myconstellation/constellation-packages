@@ -21,7 +21,7 @@ namespace Squeezebox
         /// <summary>
         ///  Main server controller
         /// </summary>
-        public IServerController<ServerCommand, string> ServerController { get; set; }
+        public IServerController<ServerCommand> ServerController { get; set; }
 
         /// <summary>
         /// Remote key config value key
@@ -58,22 +58,21 @@ namespace Squeezebox
         /// </summary>
         /// <param name="command">The command.</param>
         /// <param name="value">The command value if necessary.</param>
-        /// <param name="squeezebox">The Squeezebox name.</param>
+        /// <param name="squeezebox">Squeezebox(s) name(s) comma separed or empty to target all.</param>
         [MessageCallback]
-        public void SendToSqueezebox(SqueezeboxCommand command, string value, string squeezebox)
+        public void SendToSqueezebox(SqueezeboxCommand command, string squeezebox = "", string value = "")
         {
-            this.RemoteController.SendKey(command, value, squeezebox);
+            this.RemoteController.SendKey(command, squeezebox, value);
         }
 
         /// <summary>
         /// Send a command to the Logitech Media Server.
         /// </summary>
         /// <param name="command">The command.</param>
-        /// <param name="value">The command value if necessary.</param>
         [MessageCallback]
-        public void SendToServer(ServerCommand command, string value)
+        public void SendToServer(ServerCommand command)
         {
-            this.ServerController.SendKey(command, value);
+            this.ServerController.SendKey(command);
         }
 
     }

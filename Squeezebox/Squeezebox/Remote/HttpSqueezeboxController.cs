@@ -13,6 +13,7 @@
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using System.IO;
+    using System.Web.Script.Serialization;
 
     public class HttpSqueezeboxController : IRemoteController<SqueezeboxCommand, string, string>, IDisposable
     {
@@ -28,31 +29,67 @@
             this.HttpClient = new WebClient();
         }
 
-        public void SendKey(SqueezeboxCommand command, string value, string squeezebox)
+        public void SendKey(SqueezeboxCommand command, string squeezebox = "", string value = "none")
+        {
+            if (string.IsNullOrEmpty(squeezebox))
+            {
+                string players = "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"players\",\"0\",\"100\"]]}";
+                var players_result = this.Requete(players);
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                RootObject root = (RootObject)js.Deserialize(players_result, typeof(RootObject));
+                foreach (var player in root.result.players_loop)
+                {
+                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player.name, value);
+                    PackageHost.WriteInfo("Send {0} to {1}", command, player.name);
+                    string request_result = this.Requete(command_player);
+                }
+            }
+            else
+            {
+                var players = squeezebox.Split(new[]{ ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+                foreach (string player in players)
+                {
+                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player, value);
+                    PackageHost.WriteInfo("Send {0} to {1}", command, player);
+                    string request_result = this.Requete(command_player);
+                }
+            }
+
+        }
+
+        public string Requete(string command, string value = "")
         {
             string url = "http://" + this.RemoteKey + "/jsonrpc.js";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
-            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            Byte[] byteArray = encoding.GetBytes(this.GenerateCommandFromUrlToSqueezebox(command, squeezebox, value));
-            request.ContentLength = byteArray.Length;
             request.ContentType = @"application/json";
-            PackageHost.WriteInfo("{0}", this.GenerateCommandFromUrlToSqueezebox(command, squeezebox, value));
+            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+            Byte[] byteArray = encoding.GetBytes(command);
+            request.ContentLength = byteArray.Length;
             using (Stream dataStream = request.GetRequestStream())
             {
                 dataStream.Write(byteArray, 0, byteArray.Length);
             }
-            long length = 0;
             try
             {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
-                    length = response.ContentLength;
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        return reader.ReadToEnd();
+                    }
                 }
             }
             catch (WebException ex)
             {
-                PackageHost.WriteError(ex);
+          
+                using (var errorResponse = (HttpWebResponse)ex.Response)
+                {
+                    using (var reader = new StreamReader(errorResponse.GetResponseStream()))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
             }
         }
 
@@ -78,9 +115,47 @@
             }
         }
 
+        public string GenerateCommandFromUrlToSqueezeboxString(string command, string squeezebox)
+        {
+                return string.Format(HttpApiUrlTemplateSqueezebox, squeezebox, command);
+        }
+
         public void Dispose()
         {
             this.HttpClient.Dispose();
+        }
+
+        public class PlayersLoop
+        {
+            public int seq_no { get; set; }
+            public string playerid { get; set; }
+            public string displaytype { get; set; }
+            public int connected { get; set; }
+            public string ip { get; set; }
+            public string model { get; set; }
+            public string name { get; set; }
+            public object firmware { get; set; }
+            public object uuid { get; set; }
+            public int isplayer { get; set; }
+            public int canpoweroff { get; set; }
+            public int isplaying { get; set; }
+            public object playerindex { get; set; }
+            public int power { get; set; }
+            public string modelname { get; set; }
+        }
+
+        public class Result
+        {
+            public int count { get; set; }
+            public List<PlayersLoop> players_loop { get; set; }
+        }
+
+        public class RootObject
+        {
+            public List<object> @params { get; set; }
+            public string method { get; set; }
+            public int id { get; set; }
+            public Result result { get; set; }
         }
     }
 }

@@ -13,13 +13,14 @@
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using System.IO;
+    using System.Net.Cache;
+    using System.Web.Script.Serialization;
 
-    public class HttpServerController : IServerController<ServerCommand, string>, IDisposable
+    public class HttpServerController : IServerController<ServerCommand>, IDisposable
     {
         public string RemoteKey { get; set; }
         public WebClient HttpClient { get; set; }
         const string HttpApiUrlTemplateServer = "{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[{0}]]}}";
-        const string HttpApiUrlTemplateSqueezebox = "{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[{1}]]}}";
 
         public HttpServerController(string remoteKey)
         {
@@ -29,66 +30,48 @@
             this.HttpClient = new WebClient();
         }
 
-        public void SendKey(ServerCommand command, string value)
+        public void SendKey(ServerCommand command)
+        {
+            
+            string testcommand = this.GenerateCommandFromUrlToServer(command);
+            PackageHost.WriteInfo("Send {0} to Logitech Media Server", command);
+            string raiponce = this.Requete(testcommand);
+
+        }
+
+        public string Requete(string command)
         {
             string url = "http://" + this.RemoteKey + "/jsonrpc.js";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
-            string command_name = command.ToString();
-            if (command_name != "Scan_Fast")
+            request.ContentType = @"application/json";
+            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+            Byte[] byteArray = encoding.GetBytes(command);
+            request.ContentLength = byteArray.Length;
+            using (Stream dataStream = request.GetRequestStream())
             {
-                PackageHost.StateObjectUpdated += (s, e) =>
-                {
-                    foreach (dynamic hw in e.StateObject.DynamicValue)
-                    {
-                        System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                        Byte[] byteArray = encoding.GetBytes(this.GenerateCommandFromUrlToSqueezebox(command, hw.name));
-                        request.ContentLength = byteArray.Length;
-                        request.ContentType = @"application/json";
-                        PackageHost.WriteInfo("{0}", this.GenerateCommandFromUrlToSqueezebox(command, hw.name));
-                        using (Stream dataStream = request.GetRequestStream())
-                        {
-                            dataStream.Write(byteArray, 0, byteArray.Length);
-                        }
-                        long length = 0;
-                        try
-                        {
-                            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                            {
-                                length = response.ContentLength;
-                            }
-
-                        }
-                        catch (WebException ex)
-                        {
-                            PackageHost.WriteError(ex);
-                        }
-                    }
-                };
-                PackageHost.RequestStateObjects(sentinel: "Squeezebox", package: "Info", name: "Players");
+                dataStream.Write(byteArray, 0, byteArray.Length);
             }
-            else
+            try
             {
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                Byte[] byteArray = encoding.GetBytes(this.GenerateCommandFromUrlToServer(command));
-                request.ContentLength = byteArray.Length;
-                request.ContentType = @"application/json";
-                using (Stream dataStream = request.GetRequestStream())
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
-                    dataStream.Write(byteArray, 0, byteArray.Length);
+                        using( var reader = new StreamReader(response.GetResponseStream()))
+                        {
+                            return reader.ReadToEnd();
+                        }
                 }
-                long length = 0;
-                try
-                {
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            }
+            catch (WebException ex)
+            {
+
+                    using (var errorResponse = (HttpWebResponse)ex.Response)
                     {
-                        length = response.ContentLength;
+                        using (var reader = new StreamReader(errorResponse.GetResponseStream()))
+                        {
+                            return reader.ReadToEnd();
+                        }
                     }
-                }
-                catch (WebException ex)
-                {
-                    PackageHost.WriteError(ex);
-                }
             }
         }
 
@@ -97,14 +80,43 @@
             return string.Format(HttpApiUrlTemplateServer, command.To<CommandAttribute>());
         }
 
-        private string GenerateCommandFromUrlToSqueezebox(ServerCommand command, dynamic squeezebox)
-        {
-            return string.Format(HttpApiUrlTemplateSqueezebox, squeezebox, command.To<CommandAttribute>());
-        }
-
         public void Dispose()
         {
             this.HttpClient.Dispose();
         }
+
+        public class PlayersLoop
+        {
+            public int seq_no { get; set; }
+            public string playerid { get; set; }
+            public string displaytype { get; set; }
+            public int connected { get; set; }
+            public string ip { get; set; }
+            public string model { get; set; }
+            public string name { get; set; }
+            public object firmware { get; set; }
+            public object uuid { get; set; }
+            public int isplayer { get; set; }
+            public int canpoweroff { get; set; }
+            public int isplaying { get; set; }
+            public object playerindex { get; set; }
+            public int power { get; set; }
+            public string modelname { get; set; }
+        }
+
+        public class Result
+        {
+            public int count { get; set; }
+            public List<PlayersLoop> players_loop { get; set; }
+        }
+
+        public class RootObject
+        {
+            public List<object> @params { get; set; }
+            public string method { get; set; }
+            public int id { get; set; }
+            public Result result { get; set; }
+        }
+
     }
 }
