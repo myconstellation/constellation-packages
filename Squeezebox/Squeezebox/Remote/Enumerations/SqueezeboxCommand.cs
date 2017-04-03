@@ -34,7 +34,7 @@
         //// Play music
         [Command("\"pause\",\"0\"")]
         Play,
-
+        
         //// Launch an album (require album name)
         [Command("\"playlist\",\"loadtracks\",\"album.titlesearch={0}\"")]
         Play_Album,
@@ -50,6 +50,10 @@
         //// Launch an artist by id (require artist id)
         [Command("\"playlistcontrol\",\"cmd:load\",\"artist_id:{0}\"")]
         Play_Artist_Id,
+
+        //// Play music on next position by id (require title id)
+        [Command("\"playlistcontrol\",\"cmd:insert\",\"track_id:{0}\"")]
+        Play_Next_Id,
 
         //// Launch a playlist (require playlist name)
         [Command("\"playlist\",\"play\",\"{0}\"")]

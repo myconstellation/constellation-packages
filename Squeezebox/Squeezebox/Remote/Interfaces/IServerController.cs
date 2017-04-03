@@ -10,14 +10,13 @@
     /// Interface 
     /// Show a basic remote controller struct
     /// </summary>
-    public interface IServerController<T, String>
+    public interface IServerController<T>
     {
         /// <summary>
         /// Send a key to the api
         /// </summary>
         /// <param name="command"> Command explanation </param>
-        /// <param name="value"> Command explanation </param>
-        void SendKey(T command, string value);
+        void SendKey(T command);
 
     }
 }
