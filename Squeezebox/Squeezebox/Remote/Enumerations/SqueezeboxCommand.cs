@@ -30,11 +30,11 @@
         [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:delete\",\"track_id:{1}\"]]}}")]
         Delete_Title_Id,
 
-        //// Connect player on another LMS to this LMS (require target IP or URL)
+        //// Connect player on "LMS bis" to this LMS (require "LMS bis" Squeebox's name and IP adress)
         [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"disconnect\",\"{0}\",\"{1}\"]]}}")]
         Connect,
 
-        //// Connect player to another LMS (require target IP or URL)
+        //// Connect player to "LMS bis" (require "LMS bis" IP adress)
         [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"connect\",\"{1}\"]]}}")]
         Connect_To,
 
