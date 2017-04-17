@@ -8,6 +8,14 @@ Package to control Squeezebox (Logitech Media Server).
  - Scan_Full : Launch full scan
 
 ### MessageCallbacks SendToSqueezebox (comma separed for multiple players (i.e. : Salon,SdB) or empty to target all players)
+ - Add_Album_Id : Add an album by id at the end of current playlist (require album id)
+ - Add_Artist_Id : Add an artist by id at the end of current playlist (require artist id)
+ - Add_Title_Id : Add a title by id at the end of current playlist (require title id)
+ - Delete_Album_Id : Delete an album by id from the playlist (require album id)
+ - Delete_Artist_Id : Delete an artist by id from the playlist (require artist id)
+ - Delete_Title_Id : Delete a title by id from the playlist (require title id)
+ - Connect : Connect player on "LMS bis" to this LMS (require "LMS bis" Squeebox's name and IP adress)
+ - Connect_To : Connect player to "LMS bis" (require "LMS bis" IP adress)
  - Mute_Off : Disable muting
  - Mute_On : Enable muting
  - Mute_Toggle : Toggle muting
@@ -18,11 +26,12 @@ Package to control Squeezebox (Logitech Media Server).
  - Play_Album_Id : Launch an album by id (require album id)
  - Play_Artist : Launch an artist (require artist name)
  - Play_Artist_Id : Launch an artist by id (require artist id)
- - Play_Next_Id : Insert song by id on next position (require title id)
+ - Play_Index : Launch a title in the current playlist by his index (require title index)
  - Play_Playlist : Launch a playlist (require playlist name)
  - Play_Playlist_Id : Launch a playist by id (require playlist id)
  - Play_Title : Launch a title (require title)
  - Play_Title_Id : Launch a title by id (require title id)
+ - Play_Title_Id_Next : Add music by id on next position (require title id)
  - Play_Toggle : Toggle pause state
  - Playlist_Clear : Erase current playlist
  - Power_Off : Power Off

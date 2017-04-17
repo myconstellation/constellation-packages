@@ -3,15 +3,10 @@
     using Squeezebox.Remote.Attributes;
     using Squeezebox.Remote.Enumerations;
     using Squeezebox.Remote.Interfaces;
-    using Constellation;
     using Constellation.Package;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
     using System.IO;
     using System.Web.Script.Serialization;
 
@@ -19,7 +14,6 @@
     {
         public string RemoteKey { get; set; }
         public WebClient HttpClient { get; set; }
-        const string HttpApiUrlTemplateSqueezebox = "{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[{1}]]}}";
 
         public HttpSqueezeboxController(string remoteKey)
         {
@@ -39,7 +33,7 @@
                 RootObject root = (RootObject)js.Deserialize(players_result, typeof(RootObject));
                 foreach (var player in root.result.players_loop)
                 {
-                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player.name, value);
+                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player.playerid, value);
                     PackageHost.WriteInfo("Send {0} to {1}", command, player.name);
                     string request_result = this.Requete(command_player);
                 }
@@ -95,29 +89,7 @@
 
         public string GenerateCommandFromUrlToSqueezebox(SqueezeboxCommand command, string squeezebox, string value)
         {
-            string command_name = string.Format("{0}", command);
-            string provider = squeezebox;
-            string data = value;
-            if (command_name == "Sync_To")
-            {
-                provider = value;
-                data = squeezebox;
-            }
-            if (string.IsNullOrEmpty(value))
-            {
-                return string.Format(HttpApiUrlTemplateSqueezebox, provider, command.To<CommandAttribute>());
-
-            }
-            else
-            {
-                string result = string.Format(command.To<CommandAttribute>(), data);
-                return string.Format(HttpApiUrlTemplateSqueezebox, provider, result);
-            }
-        }
-
-        public string GenerateCommandFromUrlToSqueezeboxString(string command, string squeezebox)
-        {
-                return string.Format(HttpApiUrlTemplateSqueezebox, squeezebox, command);
+            return string.Format(command.To<CommandAttribute>(), squeezebox, value);                   
         }
 
         public void Dispose()
