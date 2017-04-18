@@ -2,173 +2,204 @@
 {
 
     using Squeezebox.Remote.Attributes;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public enum SqueezeboxCommand
     {
+
+        //// Add an album by id at the end of current playlist (require album id)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:add\",\"album_id:{1}\"]]}}")]
+        Add_Album_Id,
+
+        //// Add an artist by id at the end of current playlist (require artist id)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:add\",\"artist_id:{1}\"]]}}")]
+        Add_Artist_Id,
+
+        //// Add a title by id at the end of current playlist (require title id)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:add\",\"track_id:{1}\"]]}}")]
+        Add_Title_Id,
+
+        //// Delete an album by id from the playlist (require album id)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:delete\",\"album_id:{1}\"]]}}")]
+        Delete_Album_Id,
+
+        //// Delete an artist by id from the playlist (require artist id)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:delete\",\"artist_id:{1}\"]]}}")]
+        Delete_Artist_Id,
+
+        //// Delete a title by id from the playlist (require title id)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:delete\",\"track_id:{1}\"]]}}")]
+        Delete_Title_Id,
+
+        //// Connect player on "LMS bis" to this LMS (require "LMS bis" Squeebox's name and IP adress)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"disconnect\",\"{0}\",\"{1}\"]]}}")]
+        Connect,
+
+        //// Connect player to "LMS bis" (require "LMS bis" IP adress)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"connect\",\"{1}\"]]}}")]
+        Connect_To,
+
         //// Disable muting
-        [Command("\"mixer\",\"muting\",\"0\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"mixer\",\"muting\",\"0\"]]}}")]
         Mute_Off,
 
         //// Enable muting
-        [Command("\"mixer\",\"muting\",\"1\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"mixer\",\"muting\",\"1\"]]}}")]
         Mute_On,
 
         //// Toggle muting
-        [Command("\"mixer\",\"muting\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"mixer\",\"muting\"]]}}")]
         Mute_Toggle,
 
         //// Launch the next song
-        [Command("\"button\",\"jump_fwd\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"button\",\"jump_fwd\"]]}}")]
         Next,
 
         //// Pause music
-        [Command("\"pause\",\"1\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"pause\",\"1\"]]}}")]
         Pause,
 
         //// Play music
-        [Command("\"pause\",\"0\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"pause\",\"0\"]]}}")]
         Play,
         
         //// Launch an album (require album name)
-        [Command("\"playlist\",\"loadtracks\",\"album.titlesearch={0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"loadtracks\",\"album.titlesearch={1}\"]]}}")]
         Play_Album,
 
         //// Launch an album by id (require album id)
-        [Command("\"playlistcontrol\",\"cmd:load\",\"album_id:{0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:load\",\"album_id:{1}\"]]}}")]
         Play_Album_Id,
 
         //// Launch an artist (require artist name)
-        [Command("\"playlist\",\"loadtracks\",\"contributor.namesearch={0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"loadtracks\",\"contributor.namesearch={1}\"]]}}")]
         Play_Artist,
 
         //// Launch an artist by id (require artist id)
-        [Command("\"playlistcontrol\",\"cmd:load\",\"artist_id:{0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:load\",\"artist_id:{1}\"]]}}")]
         Play_Artist_Id,
 
-        //// Play music on next position by id (require title id)
-        [Command("\"playlistcontrol\",\"cmd:insert\",\"track_id:{0}\"")]
-        Play_Next_Id,
+        //// Launch a title in the current playlist by his index (require title index)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"index\",\"{1}\"]]}}")]
+        Play_Index,
 
         //// Launch a playlist (require playlist name)
-        [Command("\"playlist\",\"play\",\"{0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"play\",\"{1}\"]]}}")]
         Play_Playlist,
 
         //// Launch a playist by id (require playlist id)
-        [Command("\"playlistcontrol\",\"cmd:load\",\"playlist_id:{0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:load\",\"playlist_id:{1}\"]]}}")]
         Play_Playlist_Id,
 
         //// Launch a title (require title)
-        [Command("\"playlist\",\"loadtracks\",\"track.titlesearch={0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"loadtracks\",\"track.titlesearch={1}\"]]}}")]
         Play_Title,
 
         //// Launch a title by id (require title id)
-        [Command("\"playlistcontrol\",\"cmd:load\",\"track_id:{0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:load\",\"track_id:{1}\"]]}}")]
         Play_Title_Id,
 
+        //// Add music by id on next position (require title id)
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlistcontrol\",\"cmd:insert\",\"track_id:{1}\"]]}}")]
+        Play_Title_Id_Next,
+
         //// Toggle pause state
-        [Command("\"pause\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"pause\"]]}}")]
         Play_Toggle,
 
         //// Erase current playlist
-        [Command("\"playlist\",\"clear\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"clear\"]]}}")]
         Playlist_Clear,
 
         //// Power Off
-        [Command("\"power\",\"0\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"power\",\"0\"]]}}")]
         Power_Off,
 
         //// Power On
-        [Command("\"power\",\"1\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"power\",\"1\"]]}}")]
         Power_On,
 
         //// Toggle power state
-        [Command("\"power\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"power\"]]}}")]
         Power_Toggle,
 
         //// Launch the previous song
-        [Command("\"button\",\"jump_rew\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"button\",\"jump_rew\"]]}}")]
         Previous,
 
         //// Launch a random play by album
-        [Command("\"randomplay\",\"album\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"randomplay\",\"album\"]]}}")]
         Random_Album,
 
         //// Launch a random play by artist
-        [Command("\"randomplay\",\"contributor\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"randomplay\",\"contributor\"]]}}")]
         Random_Artist,
 
         //// Launch a random play by title
-        [Command("\"randomplay\",\"track\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"randomplay\",\"track\"]]}}")]
         Random_Title,
 
         //// Launch a random play by year
-        [Command("\"randomplay\",\"year\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"randomplay\",\"year\"]]}}")]
         Random_Year,
 
         //// Disable repeat
-        [Command("\"playlist\",\"repeat\",\"0\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"repeat\",\"0\"]]}}")]
         Repeat_Off,
 
         //// Repeat playlist
-        [Command("\"playlist\",\"repeat\",\"2\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"repeat\",\"2\"]]}}")]
         Repeat_Playlist,
 
         //// Repeat title
-        [Command("\"playlist\",\"repeat\",\"1\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"repeat\",\"1\"]]}}")]
         Repeat_Title,
 
         //// Toggle repeat state
-        [Command("\"playlist\",\"repeat\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"repeat\"]]}}")]
         Repeat_Toggle,
 
         //// Shuffle by album
-        [Command("\"playlist\",\"repeat\",\"2\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"shuffle\",\"2\"]]}}")]
         Shuffle_Album,
 
         //// Shuffle Off
-        [Command("\"playlist\",\"repeat\",\"0\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"shuffle\",\"0\"]]}}")]
         Shuffle_Off,
 
         //// Shuffle by title
-        [Command("\"playlist\",\"repeat\",\"1\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"shuffle\",\"1\"]]}}")]
         Shuffle_Title,
 
         //// Toggle shuffle state
-        [Command("\"playlist\",\"shuffle\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"shuffle\"]]}}")]
         Shuffle_Toggle,
 
         //// Stop music
-        [Command("\"stop\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"stop\"]]}}")]
         Stop,
 
         //// Sync another player to this player (require target player)
-        [Command("\"sync\",\"{0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"sync\",\"{1}\"]]}}")]
         Sync,
 
         //// Disable syncing
-        [Command("\"sync\",\"-\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"sync\",\"-\"]]}}")]
         Sync_Off,
 
         //// Sync this player to another player (require target player)
-        [Command("\"sync\",\"{0}\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{1}\",[\"sync\",\"{0}\"]]}}")]
         Sync_To,
 
         //// Set volume (require volume level)
-        [Command("\"mixer\",\"volume\",{0}")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"mixer\",\"volume\",{1}]]}}")]
         Volume,
 
         //// Decrease volume
-        [Command("\"mixer\",\"volume\",\"-2\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"mixer\",\"volume\",\"-2\"]]}}")]
         Volume_Down,
 
         //// Increase volume
-        [Command("\"mixer\",\"volume\",\"+2\"")]
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"mixer\",\"volume\",\"+2\"]]}}")]
         Volume_Up,
 
 
