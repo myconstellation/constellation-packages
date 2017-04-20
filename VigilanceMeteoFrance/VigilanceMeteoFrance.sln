@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VigilanceMeteoFrance", "VigilanceMeteoFrance\VigilanceMeteoFrance.csproj", "{FB71B195-4A71-40A6-BC24-915E0EFFB4FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{88E634A0-64A2-46C0-A055-72EF39D58B67}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Vigilance\LICENSE.txt = ..\..\Vigilance\LICENSE.txt
+		..\..\Vigilance\README.md = ..\..\Vigilance\README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB71B195-4A71-40A6-BC24-915E0EFFB4FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB71B195-4A71-40A6-BC24-915E0EFFB4FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB71B195-4A71-40A6-BC24-915E0EFFB4FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB71B195-4A71-40A6-BC24-915E0EFFB4FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
