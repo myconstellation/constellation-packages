@@ -41,11 +41,11 @@ namespace Mikrotik
     /// <seealso cref="Constellation.Package.PackageBase" />
     [StateObjectKnownTypes(
         typeof(SystemResource),
-        typeof(DhcpServerLease),
-        typeof(CapsManRegistrationTable),
-        typeof(QueueSimple),
-        typeof(Interface),
-        typeof(IpAddress))]
+        typeof(List<DhcpServerLease>),
+        typeof(List<CapsManRegistrationTable>),
+        typeof(List<QueueSimple>),
+        typeof(List<Interface>),
+        typeof(List<IpAddress>))]
     public class Program : PackageBase
     {
         private ITikConnection connection = null;
