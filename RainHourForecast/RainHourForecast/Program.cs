@@ -2,13 +2,9 @@
 using Constellation.Package;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
-using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RainHourForecast.Models;
 
 namespace RainHourForecast
@@ -45,7 +41,7 @@ namespace RainHourForecast
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
             this.RefreshInterval = PackageHost.GetSettingValue<int>("RefreshInterval");
-            this.Ville = PackageHost.GetSettingValue<string>("Ville");
+            this.Ville = PackageHost.GetSettingValue<string>("Towns");
             Ville = Ville.Replace(" ", String.Empty);
             this.IdUrl = PackageHost.GetSettingValue<string>("IdUrl");
             this.ForecastUrl = PackageHost.GetSettingValue<string>("ForecastUrl");

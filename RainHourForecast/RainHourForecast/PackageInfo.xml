@@ -13,7 +13,7 @@
     </Platforms>
   </Compatibility>
   <Settings>
-    <Setting name="Ville" isRequired="false" type="String" description="Towns' id comma separated"/>
+    <Setting name="Towns" isRequired="false" type="String" description="Towns' id comma separated"/>
     <Setting name="RefreshInterval" isRequired="false" defaultValue="60" type="Int32" description="Refresh rate of the forecast in minutes"/>
     <Setting name="IdUrl" isRequired="false" defaultValue="http://www.meteofrance.com/mf3-rpc-portlet/rest/lieu/facet/pluie/search/{0}" type="String" description="Url from meteo france to get town's id"/>
     <Setting name="ForecastUrl" isRequired="false" defaultValue="http://www.meteofrance.com/mf3-rpc-portlet/rest/pluie/{0}" type="String" description="Url from meteo france to get rain forecast"/>    
