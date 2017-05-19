@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="NetworkTools"
-         Version="1.2"
+         Version="1.2.2"
          Icon="internet.png"
          Author="Sebastien Warin, Hydro"
          URL="http://www.myconstellation.io"

@@ -66,7 +66,7 @@ namespace NetworkTools
                                 if (monitoringChecks.ContainsKey(name) == false ||
                                     DateTime.Now.Subtract(monitoringChecks[name]).TotalSeconds >= (ressource["Interval"] != null ? ressource.Interval.Value : DEFAULT_CHECK_INTERVAL))
                                 {
-                                    this.CheckRessource(name, ressource.Type.Value, ressource);
+                                    this.CheckResource(name, ressource.Type.Value, ressource);
                                     monitoringChecks[name] = DateTime.Now;
                                 }
                             }
@@ -91,15 +91,15 @@ namespace NetworkTools
         public long Ping(string host, int timeout = 5000)
         {
             Ping pingSender = new Ping();
-            PingReply reply = pingSender.Send(host, timeout);
-            if (reply.Status == IPStatus.Success)
+            PingReply reply = this.PingSafe(host, timeout);
+            if (reply != null && reply.Status == IPStatus.Success)
             {
                 PackageHost.WriteInfo($"Reply from {host}: bytes={reply.Buffer.Length} time={reply.RoundtripTime}ms TTL={reply.Options?.Ttl ?? 0}");
                 return reply.RoundtripTime;
             }
             else
             {
-                PackageHost.WriteInfo("Request to {0} failed : {1}", host, reply.Status.ToString());
+                PackageHost.WriteInfo("Request to {0} failed : {1}", host, reply?.Status.ToString() ?? "Unknown");
                 return -1;
             }
         }
@@ -230,7 +230,7 @@ namespace NetworkTools
             }
         }
 
-        private void CheckRessource(string name, string type, dynamic jObject)
+        private void CheckResource(string name, string type, dynamic jObject)
         {
             try
             {
@@ -244,8 +244,8 @@ namespace NetworkTools
                 {
                     case "ping":
                         metadatas.Add("Hostname", jObject.Hostname.Value);
-                        PingReply reply = new Ping().Send(jObject.Hostname.Value);
-                        if (reply.Status == IPStatus.Success)
+                        PingReply reply = this.PingSafe(jObject.Hostname.Value);
+                        if (reply != null && reply.Status == IPStatus.Success)
                         {
                             result = reply.RoundtripTime;
                         }
@@ -291,6 +291,26 @@ namespace NetworkTools
             catch (Exception ex)
             {
                 PackageHost.WriteError("Unable to monitor '{0}' ({1}) : {2}", name, type, ex.Message);
+            }
+        }
+
+        private PingReply PingSafe(string hostNameOrAddress, int timeout = -1)
+        {
+            Ping pingSender = new Ping();
+            try
+            {
+                if (timeout > 0)
+                {
+                    return pingSender.Send(hostNameOrAddress, timeout);
+                }
+                else
+                {
+                    return pingSender.Send(hostNameOrAddress);
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
     }

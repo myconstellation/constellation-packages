@@ -22,7 +22,7 @@ Declare the package in a Sentinel with the following configuration :
 
 ### Monitoring
 
-Add setting named "Monitoring" with JSON array. For each JSON object in the array, you must provide a name for the ressource to monitor and a type of monitoring : Ping, Tcp or Http.
+Add setting named "Monitoring" with JSON array. For each JSON object in the array, you must provide a name for the resource to monitor and a type of monitoring : Ping, Tcp or Http.
 
 For example :
 
@@ -47,7 +47,7 @@ To monitor a network equipement with ICMP echo :
 { Name: "Ping My Machine", Type: "Ping", Hostname: "myhostname.mydomain.com" }
 ```
 
-By default the ressource is check every minute but you can override this interval (in second):
+By default the resource is check every minute but you can override this interval (in second):
 ```json
 { Name: "Ping My Machine", Type: "Ping", Hostname: "myhostname.mydomain.com", Interval:10 }
 ```
@@ -67,7 +67,7 @@ You can also add a regex to check the HTTP response content w/ or wo/ custom int
 { Name: "Check Sebastien.warin.fr", Type: "Http", Address: "http://sebastien.warin.fr", Regex: "Le blog personnel et technique de Sebastien Warin", Interval: 30 }
 ```
 
-Every ressource is pushed as StateObject and contain the result (boolean) and the response time (long).
+Every resource is pushed as StateObject and contain the result (boolean) and the response time (long).
 
 License
 ----
