@@ -7,7 +7,7 @@ You can also monitor your devices, web sites and services.
 ### MessageCallbacks
  - Ping(string host, int timeout = 5000) : Pings the specified host and return the response time.
  - CheckPort(string host, int port, int timeout = 5000) : Check a port's status by entering an address and port number above and return the response time.
- - CheckHttp(string address) : Checks the HTTP address and return the response time.
+ - CheckHttp(string address, int timeout = 100000) : Checks the HTTP address and return the response time.
  - ScanPort(string host, int startPort, int endPort, int timeout = 100) : Scans TCP port range to discover which TCP ports are open on your target host.
  - WakeUp(string host, string macAddress) : Wakes up the specified host.
  - DnsLookup(string host) : Resolves a host name or IP address.
@@ -32,9 +32,9 @@ For example :
     <setting key="Monitoring">
       <content>
         [
-        { Name: "Ping local", Type: "Ping", Hostname: "localhost", Interval: 10 },
-        { Name: "Test Local Constellation", Type: "Tcp",  Hostname: "localhost", Port: 8088 },
-        { Name: "Check Sebastien.warin.fr", Type: "Http", Address: "http://sebastien.warin.fr", Regex: "Le blog personnel et technique de Sebastien Warin", Interval: 30 }
+            { Name: "Google Public DNS", Type: "Ping", Hostname: "8.8.8.8", Interval: 10 },
+            { Name: "Local Constellation Service", Type: "Tcp",  Hostname: "localhost", Port: 8088 },
+            { Name: "Github.com", Type: "Http", Address: "https://github.com/myconstellation", Regex: "Constellation", Interval: 30 }
         ]
       </content>
     </setting>

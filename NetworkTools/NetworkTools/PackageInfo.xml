@@ -1,19 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="NetworkTools"
-         Version="1.1"
+         Version="1.2"
          Icon="internet.png"
          Author="Sebastien Warin, Hydro"
          URL="http://www.myconstellation.io"
          Description="Network tools for Constellation (ping, TCP port scanner, Wake on LAN, HTTP monitoring and more)">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
   <Settings>
-    <Setting name="Monitoring" type="JsonObject" isRequired="false" ignoreDefaultValue="true" ignoreLocalValue="true" description="">
+    <Setting name="Monitoring" type="JsonObject" isRequired="false" ignoreDefaultValue="true" ignoreLocalValue="true" description="The monitored resources">
       <defaultContent>
         [
-          { Name: "Ping local", Type: "Ping", Hostname: "localhost", Interval: 10 },
-          { Name: "Test Local Constellation", Type: "Tcp",  Hostname: "localhost", Port: 8088 },
-          { Name: "Check Sebastien.warin.fr", Type: "Http", Address: "http://sebastien.warin.fr", Regex: "Le blog personnel et technique de Sebastien Warin", Interval: 30 }
+        { Name: "Google Public DNS", Type: "Ping", Hostname: "8.8.8.8", Interval: 10 },
+        { Name: "Local Constellation Service", Type: "Tcp",  Hostname: "localhost", Port: 8088 },
+        { Name: "Github.com", Type: "Http", Address: "https://github.com/myconstellation", Regex: "Constellation", Interval: 30 }
         ]
       </defaultContent>
     </Setting>

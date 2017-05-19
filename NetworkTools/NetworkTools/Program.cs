@@ -30,12 +30,15 @@ namespace NetworkTools
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
+    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
 
     public class Program : PackageBase
     {
+        private const int DEFAULT_CHECK_INTERVAL = 60; // seconds
+
         private Dictionary<string, DateTime> monitoringChecks = new Dictionary<string, DateTime>();
 
         static void Main(string[] args)
@@ -61,7 +64,7 @@ namespace NetworkTools
                             {
                                 string name = ressource.Name.Value;
                                 if (monitoringChecks.ContainsKey(name) == false ||
-                                    DateTime.Now.Subtract(monitoringChecks[name]).TotalSeconds >= (ressource["Interval"] != null ? ressource.Interval.Value : 60))
+                                    DateTime.Now.Subtract(monitoringChecks[name]).TotalSeconds >= (ressource["Interval"] != null ? ressource.Interval.Value : DEFAULT_CHECK_INTERVAL))
                                 {
                                     this.CheckRessource(name, ressource.Type.Value, ressource);
                                     monitoringChecks[name] = DateTime.Now;
@@ -121,7 +124,6 @@ namespace NetworkTools
                     Thread.Sleep(1);
                     if (tcpClient.Connected)
                     {
-                        PackageHost.WriteInfo($"{host}:{port} is open");
                         return reply;
                     }
                 }
@@ -141,11 +143,12 @@ namespace NetworkTools
         /// Checks the HTTP address and return the response time.
         /// </summary>
         /// <param name="address">The address.</param>
+        /// <param name="timeout">The HTTP request timeout in millisecond.</param>
         /// <returns></returns>
         [MessageCallback]
-        public long CheckHttp(string address)
+        public long CheckHttp(string address, int timeout = ExtendedWebClient.DEFAULT_TIMEOUT)
         {
-            var client = new ExtendedWebClient();
+            var client = new ExtendedWebClient() { Encoding = Encoding.UTF8, Timeout = timeout };
             try
             {
                 var sw = Stopwatch.StartNew();
@@ -254,7 +257,11 @@ namespace NetworkTools
                         break;
                     case "http":
                         metadatas.Add("Address", jObject.Address.Value);
-                        var client = new ExtendedWebClient();
+                        var client = new ExtendedWebClient()
+                        {
+                            Encoding = Encoding.UTF8,
+                            Timeout = (jObject["Timeout"] != null ? jObject.Timeout.Value : ExtendedWebClient.DEFAULT_TIMEOUT)
+                        };
                         try
                         {
                             var sw = Stopwatch.StartNew();
@@ -274,7 +281,12 @@ namespace NetworkTools
                         PackageHost.WriteWarn("Unknow type : " + type);
                         return;
                 }
-                PackageHost.PushStateObject<MonitoringResult>(name, new MonitoringResult { ResponseTime = result, State = state.HasValue ? state.Value : result >= 0 }, metadatas: metadatas);
+                PackageHost.PushStateObject<MonitoringResult>(name,
+                    new MonitoringResult
+                    {
+                        ResponseTime = result,
+                        State = state.HasValue ? state.Value : result >= 0
+                    }, metadatas: metadatas);
             }
             catch (Exception ex)
             {
