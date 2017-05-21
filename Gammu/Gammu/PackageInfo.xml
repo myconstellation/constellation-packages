@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Gammu"
+         Version="1.1"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="GSM gateway with Python-Gammu to send and received SMS and Call"
+         Icon="icon.png"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="false" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="GammuConfigurationFilename" defaultValue="~/.gammurc" description="Gammu configuration file" type="String" />
+    <Setting name="IncomingEventGroupName" defaultValue="Gammu" description="Name of the group where send incomming events"  type="String" />
+  </Settings>
+</Package>
