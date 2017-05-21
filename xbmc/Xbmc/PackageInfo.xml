@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Xbmc"
-         Version="1.4"
+         Version="1.4.1"
          Icon="kodi.png"
          Author="Sebastien Warin, Fabien Lavocat"
          URL="http://sebastien.warin.fr"

@@ -68,42 +68,35 @@ namespace Xbmc
                                 }
                                 currentState.IsConnected = true;
 
-                                try
+                                var currentPlayer = (await xbmcConnection.Player.GetActivePlayersAsync()).FirstOrDefault();
+                                if (currentPlayer != null)
                                 {
-                                    var currentPlayer = (await xbmcConnection.Player.GetActivePlayersAsync()).FirstOrDefault();
-                                    if (currentPlayer != null)
-                                    {
-                                        var playerProperty = await xbmcConnection.Player.GetPropertiesAsync(currentPlayer.PlayerId);
-                                        var playerItem = await xbmcConnection.Player.GetItemAsync(currentPlayer.PlayerId);
+                                    var playerProperty = await xbmcConnection.Player.GetPropertiesAsync(currentPlayer.PlayerId);
+                                    var playerItem = await xbmcConnection.Player.GetItemAsync(currentPlayer.PlayerId);
 
-                                        if (currentState.PlayerItem == null || currentState.PlayerItem.Id != playerItem.Id)
-                                        {
-                                            PackageHost.WriteInfo("{0} is currently playing {1}", host.Name, playerItem.Title);
-                                        }
-                                        if (currentState.PlayerState != null && currentState.PlayerState.Speed != playerProperty.Speed)
-                                        {
-                                            PackageHost.WriteInfo("{0} is {1} {2}", host.Name, playerProperty.Speed == 0 ? "pausing" : "playing", playerItem.Title);
-                                        }
-
-                                        currentState.PlayerState = playerProperty;
-                                        currentState.PlayerItem = playerItem;
-                                    }
-                                    else if (currentState.PlayerState != null && currentState.PlayerItem != null)
+                                    if (currentState.PlayerItem == null || currentState.PlayerItem.Id != playerItem.Id)
                                     {
-                                        currentState.PlayerState = null;
-                                        currentState.PlayerItem = null;
-                                        PackageHost.WriteInfo("{0} player stopped !", host.Name);
+                                        PackageHost.WriteInfo("{0} is currently playing {1}", host.Name, playerItem.Title);
                                     }
+                                    if (currentState.PlayerState != null && currentState.PlayerState.Speed != playerProperty.Speed)
+                                    {
+                                        PackageHost.WriteInfo("{0} is {1} {2}", host.Name, playerProperty.Speed == 0 ? "pausing" : "playing", playerItem.Title);
+                                    }
+
+                                    currentState.PlayerState = playerProperty;
+                                    currentState.PlayerItem = playerItem;
                                 }
-                                catch (System.Net.WebException ex) when (ex.InnerException is ObjectDisposedException)
+                                else if (currentState.PlayerState != null && currentState.PlayerItem != null)
                                 {
-                                    // Do nothing (mono bug)
-                                }
-                                catch (Exception ex)
-                                {
-                                    PackageHost.WriteError("Error while getting player info for '{0}' : {1}", host.Name, ex.Message);
+                                    currentState.PlayerState = null;
+                                    currentState.PlayerItem = null;
+                                    PackageHost.WriteInfo("{0} player stopped !", host.Name);
                                 }
                             }
+                        }
+                        catch (System.Net.WebException ex) when (ex.InnerException is ObjectDisposedException)
+                        {
+                            // Do nothing (mono bug)
                         }
                         catch (System.Net.WebException)
                         {
@@ -121,7 +114,9 @@ namespace Xbmc
                             PackageHost.WriteError("Error while pulling '{0}' : {1}", host.Name, ex.Message);
                         }
 
-                        PackageHost.PushStateObject<XbmcState>(host.Name, currentState);
+                        int interval = host.Interval / 1000;
+                        PackageHost.PushStateObject<XbmcState>(host.Name, currentState,
+                            lifetime: interval > 10 ? interval : 10);
                         await Task.Delay(host.Interval);
                     }
                 }, TaskCreationOptions.LongRunning);
