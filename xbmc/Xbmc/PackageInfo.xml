@@ -1,15 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Xbmc"
-         Version="1.2"
+         Version="1.4"
          Icon="kodi.png"
          Author="Sebastien Warin, Fabien Lavocat"
          URL="http://sebastien.warin.fr"
          Description="This XBMC/Kodi Package allow you to connect your XBMC/Kodi hosts to Constellation"
          EnableControlHub="false">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
   <Settings>
-    <Setting name="xbmcConfigurationSection" type="ConfigurationSection" isRequired="true" schemaXSD="XbmcConfigurationSection.csd.xsd">
+    <Setting name="xbmcConfigurationSection" type="ConfigurationSection" isRequired="true" schemaXSD="XbmcConfigurationSection.csd.xsd" description="XBMC/Kodi Hosts">
       <defaultContent>
         <xbmcConfigurationSection xmlns="urn:Xbmc">
           <hosts>

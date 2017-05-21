@@ -25,7 +25,6 @@ namespace Xbmc
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using Xbmc.Core;
 
@@ -34,6 +33,7 @@ namespace Xbmc
     /// </summary>
     public class Program : PackageBase
     {
+        private const int COMMAND_TIMEOUT = 5000; //ms
         private Dictionary<string, Connection> xbmcConnections = new Dictionary<string, Connection>();
 
         static void Main(string[] args)
@@ -53,45 +53,56 @@ namespace Xbmc
                 var xbmcConnection = new Connection(host.Host, host.Port.ToString(), host.Login, host.Password);
                 xbmcConnections.Add(host.Name, xbmcConnection);
 
-                Task.Factory.StartNew(() =>
+                Task.Factory.StartNew(async () =>
                 {
                     while (PackageHost.IsRunning)
                     {
                         try
                         {
-                            if (xbmcConnection.JsonRpc.PingAsync().GetAwaiter().GetResult())
+                            bool isAlive = await xbmcConnection.JsonRpc.PingAsync();
+                            if (isAlive)
                             {
                                 if (!currentState.IsConnected)
                                 {
                                     PackageHost.WriteInfo("{0} is connected", host.Name);
                                 }
-
-                                var currentPlayer = xbmcConnection.Player.GetActivePlayersAsync().GetAwaiter().GetResult().FirstOrDefault();
-                                if (currentPlayer != null)
-                                {
-                                    var playerProperty = xbmcConnection.Player.GetPropertiesAsync(currentPlayer.PlayerId).GetAwaiter().GetResult();
-                                    var playerItem = xbmcConnection.Player.GetItemAsync(currentPlayer.PlayerId).GetAwaiter().GetResult();
-
-                                    if (currentState.PlayerItem == null || currentState.PlayerItem.Id != playerItem.Id)
-                                    {
-                                        PackageHost.WriteInfo("{0} is playing {1}", host.Name, playerItem.Title);
-                                    }
-                                    if (currentState.PlayerState != null && currentState.PlayerState.Speed != playerProperty.Speed)
-                                    {
-                                        PackageHost.WriteInfo("{0} : {1}", host.Name, playerProperty.Speed == 0 ? "PAUSE" : "PLAY");
-                                    }
-
-                                    currentState.PlayerState = playerProperty;
-                                    currentState.PlayerItem = playerItem;
-                                }
-                                else if (currentState.PlayerState != null && currentState.PlayerItem != null)
-                                {
-                                    currentState.PlayerState = null;
-                                    currentState.PlayerItem = null;
-                                    PackageHost.WriteInfo("{0} Player stop", host.Name);
-                                }
-
                                 currentState.IsConnected = true;
+
+                                try
+                                {
+                                    var currentPlayer = (await xbmcConnection.Player.GetActivePlayersAsync()).FirstOrDefault();
+                                    if (currentPlayer != null)
+                                    {
+                                        var playerProperty = await xbmcConnection.Player.GetPropertiesAsync(currentPlayer.PlayerId);
+                                        var playerItem = await xbmcConnection.Player.GetItemAsync(currentPlayer.PlayerId);
+
+                                        if (currentState.PlayerItem == null || currentState.PlayerItem.Id != playerItem.Id)
+                                        {
+                                            PackageHost.WriteInfo("{0} is currently playing {1}", host.Name, playerItem.Title);
+                                        }
+                                        if (currentState.PlayerState != null && currentState.PlayerState.Speed != playerProperty.Speed)
+                                        {
+                                            PackageHost.WriteInfo("{0} is {1} {2}", host.Name, playerProperty.Speed == 0 ? "pausing" : "playing", playerItem.Title);
+                                        }
+
+                                        currentState.PlayerState = playerProperty;
+                                        currentState.PlayerItem = playerItem;
+                                    }
+                                    else if (currentState.PlayerState != null && currentState.PlayerItem != null)
+                                    {
+                                        currentState.PlayerState = null;
+                                        currentState.PlayerItem = null;
+                                        PackageHost.WriteInfo("{0} player stopped !", host.Name);
+                                    }
+                                }
+                                catch (System.Net.WebException ex) when (ex.InnerException is ObjectDisposedException)
+                                {
+                                    // Do nothing (mono bug)
+                                }
+                                catch (Exception ex)
+                                {
+                                    PackageHost.WriteError("Error while getting player info for '{0}' : {1}", host.Name, ex.Message);
+                                }
                             }
                         }
                         catch (System.Net.WebException)
@@ -111,9 +122,9 @@ namespace Xbmc
                         }
 
                         PackageHost.PushStateObject<XbmcState>(host.Name, currentState);
-                        Thread.Sleep(host.Interval);
+                        await Task.Delay(host.Interval);
                     }
-                });
+                }, TaskCreationOptions.LongRunning);
             }
         }
 
@@ -123,9 +134,9 @@ namespace Xbmc
         /// <param name="xbmcName">Name of the XBMC.</param>
         /// <param name="itemId">The item identifier.</param>
         [MessageCallback]
-        public void OpenMovie(string xbmcName, int itemId)
+        public bool OpenMovie(string xbmcName, int itemId)
         {
-            this.Execute(xbmcName, connection => connection.Player.OpenAsync(movieId: itemId));
+            return this.Execute(xbmcName, connection => connection.Player.OpenAsync(movieId: itemId));
         }
 
         /// <summary>
@@ -134,9 +145,9 @@ namespace Xbmc
         /// <param name="xbmcName">Name of the XBMC.</param>
         /// <param name="itemId">The item identifier.</param>
         [MessageCallback]
-        public void OpenEpisode(string xbmcName, int itemId)
+        public bool OpenEpisode(string xbmcName, int itemId)
         {
-            this.Execute(xbmcName, connection => connection.Player.OpenAsync(episodeId: itemId));
+            return this.Execute(xbmcName, connection => connection.Player.OpenAsync(episodeId: itemId));
         }
 
         /// <summary>
@@ -144,9 +155,16 @@ namespace Xbmc
         /// </summary>
         /// <param name="xbmcName">Name of the XBMC.</param>
         [MessageCallback]
-        public void PlayPause(string xbmcName)
+        public bool PlayPause(string xbmcName)
         {
-            this.Execute(xbmcName, connection => connection.Player.PlayPauseAsync(1));
+            return this.Execute(xbmcName, async connection =>
+            {
+                var currentPlayer = (await connection.Player.GetActivePlayersAsync()).FirstOrDefault();
+                if (currentPlayer != null)
+                {
+                    await connection.Player.PlayPauseAsync(currentPlayer.PlayerId);
+                }
+            });
         }
 
         /// <summary>
@@ -154,9 +172,16 @@ namespace Xbmc
         /// </summary>
         /// <param name="xbmcName">Name of the XBMC.</param>
         [MessageCallback]
-        public void Stop(string xbmcName)
+        public bool Stop(string xbmcName)
         {
-            this.Execute(xbmcName, connection => connection.Player.StopAsync(1));
+            return this.Execute(xbmcName, async connection =>
+            {
+                var currentPlayer = (await connection.Player.GetActivePlayersAsync()).FirstOrDefault();
+                if (currentPlayer != null)
+                {
+                    await connection.Player.StopAsync(currentPlayer.PlayerId);
+                }
+            });
         }
 
         /// <summary>
@@ -165,37 +190,30 @@ namespace Xbmc
         /// <param name="xbmcName">Name of the XBMC.</param>
         /// <param name="inputKey">The input key.</param>
         [MessageCallback]
-        public void SendInputKey(string xbmcName, InputKey inputKey)
+        public bool SendInputKey(string xbmcName, InputKey inputKey)
         {
             switch (inputKey)
             {
                 case InputKey.Back:
-                    this.Execute(xbmcName, connection => connection.Input.BackAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.BackAsync());
                 case InputKey.ContextMenu:
-                    this.Execute(xbmcName, connection => connection.Input.ContextMenuAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.ContextMenuAsync());
                 case InputKey.Down:
-                    this.Execute(xbmcName, connection => connection.Input.DownAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.DownAsync());
                 case InputKey.Home:
-                    this.Execute(xbmcName, connection => connection.Input.HomeAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.HomeAsync());
                 case InputKey.Info:
-                    this.Execute(xbmcName, connection => connection.Input.InfoAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.InfoAsync());
                 case InputKey.Left:
-                    this.Execute(xbmcName, connection => connection.Input.LeftAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.LeftAsync());
                 case InputKey.Right:
-                    this.Execute(xbmcName, connection => connection.Input.RightAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.RightAsync());
                 case InputKey.Select:
-                    this.Execute(xbmcName, connection => connection.Input.SelectAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.SelectAsync());
                 case InputKey.Up:
-                    this.Execute(xbmcName, connection => connection.Input.UpAsync());
-                    break;
+                    return this.Execute(xbmcName, connection => connection.Input.UpAsync());
+                default:
+                    return false;
             }
         }
 
@@ -204,9 +222,9 @@ namespace Xbmc
         /// </summary>
         /// <param name="xbmcName">Name of the XBMC.</param>
         [MessageCallback]
-        public void ScanVideoLibrary(string xbmcName)
+        public bool ScanVideoLibrary(string xbmcName)
         {
-            this.Execute(xbmcName, connection => connection.VideoLibrary.ScanAsync());
+            return this.Execute(xbmcName, connection => connection.VideoLibrary.ScanAsync());
         }
 
         /// <summary>
@@ -214,9 +232,9 @@ namespace Xbmc
         /// </summary>
         /// <param name="xbmcName">Name of the XBMC.</param>
         [MessageCallback]
-        public void ScanAudioLibrary(string xbmcName)
+        public bool ScanAudioLibrary(string xbmcName)
         {
-            this.Execute(xbmcName, connection => connection.AudioLibrary.ScanAsync());
+            return this.Execute(xbmcName, connection => connection.AudioLibrary.ScanAsync());
         }
 
         /// <summary>
@@ -225,9 +243,9 @@ namespace Xbmc
         /// <param name="xbmcName">Name of the XBMC.</param>
         /// <param name="volume">The volume.</param>
         [MessageCallback]
-        public void SetVolume(string xbmcName, int volume)
+        public bool SetVolume(string xbmcName, int volume)
         {
-            this.Execute(xbmcName, connection => connection.Application.SetVolumeAsync(volume));
+            return this.Execute(xbmcName, connection => connection.Application.SetVolumeAsync(volume));
         }
 
         /// <summary>
@@ -236,9 +254,9 @@ namespace Xbmc
         /// <param name="xbmcName">Name of the XBMC.</param>
         /// <param name="mute">if set to <c>true</c> to mute.</param>
         [MessageCallback]
-        public void SetMute(string xbmcName, bool mute)
+        public bool SetMute(string xbmcName, bool mute)
         {
-            this.Execute(xbmcName, connection => connection.Application.SetMuteAsync(mute));
+            return this.Execute(xbmcName, connection => connection.Application.SetMuteAsync(mute));
         }
 
         /// <summary>
@@ -247,20 +265,30 @@ namespace Xbmc
         /// <param name="xbmcName">Name of the XBMC.</param>
         /// <param name="request">The notification request.</param>
         [MessageCallback]
-        public void ShowNotification(string xbmcName, NotificationRequest request)
+        public bool ShowNotification(string xbmcName, NotificationRequest request)
         {
-            this.Execute(xbmcName, connection => connection.Gui.ShowNotification(request.Title, request.Message, request.Image, request.DisplayTime == 0 ? 5000 : request.DisplayTime));
+            return this.Execute(xbmcName, connection => connection.Gui.ShowNotification(request.Title, request.Message, request.Image, request.DisplayTime == 0 ? 5000 : request.DisplayTime));
         }
 
-        private void Execute(string xbmcName, Func<Connection, Task> action)
+        private bool Execute(string xbmcName, Func<Connection, Task> action)
         {
             if (xbmcConnections.ContainsKey(xbmcName))
             {
-                action(xbmcConnections[xbmcName]).Start();
+                Task task = action(xbmcConnections[xbmcName]);
+                try
+                {
+                    return task.Wait(COMMAND_TIMEOUT) && !task.IsFaulted;
+                }
+                catch (Exception ex)
+                {
+                    PackageHost.WriteError("Unable to execute the command on {0} : {1}", xbmcName, ex.ToString());
+                    return false;
+                }
             }
             else
             {
                 PackageHost.WriteWarn("{0} not exist !", xbmcName);
+                return false;
             }
         }
     }
