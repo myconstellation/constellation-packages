@@ -9,7 +9,7 @@ You can also monitor your devices, web sites and services.
  - CheckPort(string host, int port, int timeout = 5000) : Check a port's status by entering an address and port number above and return the response time.
  - CheckHttp(string address, int timeout = 100000) : Checks the HTTP address and return the response time.
  - ScanPort(string host, int startPort, int endPort, int timeout = 100) : Scans TCP port range to discover which TCP ports are open on your target host.
- - WakeUp(string host, string macAddress) : Wakes up the specified host.
+ - WakeUp(string macAddress) : Wakes up the specified host by MAC address.
  - DnsLookup(string host) : Resolves a host name or IP address.
 
  ### Installation

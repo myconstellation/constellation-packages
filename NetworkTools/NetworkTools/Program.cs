@@ -51,7 +51,7 @@ namespace NetworkTools
         /// </summary>
         public override void OnStart()
         {
-            Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(async () =>
             {
                 while (PackageHost.IsRunning)
                 {
@@ -76,7 +76,7 @@ namespace NetworkTools
                     {
                         PackageHost.WriteError("Monitor task error : " + ex.Message);
                     }
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000);
                 }
             }, TaskCreationOptions.LongRunning);
         }
@@ -183,33 +183,27 @@ namespace NetworkTools
         }
 
         /// <summary>
-        /// Wakes up the specified host.
+        /// Wakes up the specified host by MAC address.
         /// </summary>
-        /// <param name="host">The host.</param>
-        /// <param name="macAddress">The mac address.</param>
+        /// <param name="macAddress">The MAC address.</param>
         /// <returns></returns>
         [MessageCallback]
-        public bool WakeUp(string host, string macAddress)
+        public bool WakeUp(string macAddress)
         {
             try
             {
-                var ip = Dns.GetHostAddresses(host).Where(i => i.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
-                if (ip != null && !string.IsNullOrEmpty(macAddress))
+                if (macAddress.Contains(":"))
                 {
-                    WOLClient.SendWakeUpPacket(ip, macAddress);
-                    PackageHost.WriteInfo("WOL sent to '{0}' ('{1}').", host, macAddress);
-                    return true;
+                    macAddress = macAddress.Replace(":", "-");
                 }
-                else
-                {
-                    PackageHost.WriteError("Unable to wake the host '{0}' with MAC '{1}'. Invalid parameters", host, macAddress);
-                }
+                PhysicalAddress.Parse(macAddress).SendWol();
+                return true;
             }
             catch (Exception ex)
             {
-                PackageHost.WriteError("Error while wake up the host '{0}' with MAC '{1}' : {2}", host, macAddress, ex.Message);
+                PackageHost.WriteError("Error while wake up the host with MAC '{0}' : {1}", macAddress, ex.Message);
+                return false;
             }
-            return false;
         }
 
         /// <summary>
