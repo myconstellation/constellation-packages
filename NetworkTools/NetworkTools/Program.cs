@@ -196,7 +196,7 @@ namespace NetworkTools
                 {
                     macAddress = macAddress.Replace(":", "-");
                 }
-                PhysicalAddress.Parse(macAddress).SendWol();
+                PhysicalAddress.Parse(macAddress.ToUpper()).SendWol();
                 return true;
             }
             catch (Exception ex)
