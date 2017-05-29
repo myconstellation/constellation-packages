@@ -101,7 +101,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishPath="C:\_Projets\Constellation\Kraken" PublishMethod="LocalFile" />
+      <UserProperties PublishMethod="LocalFile" PublishPath="C:\_Projets\Constellation\_DistPackages" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

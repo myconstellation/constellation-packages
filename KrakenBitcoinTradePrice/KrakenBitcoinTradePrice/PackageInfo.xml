@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="KrakenBitcoinTradePrice"
          Icon="bitcoin.png"
-         Version="1.0.1"
+         Version="1.0.2"
          Author="Cllio"
          URL="http://www.coderen.net"
          Description="Get Bitcoin trade price in EUR of https://www.kraken.com/"
