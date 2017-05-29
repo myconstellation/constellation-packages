@@ -34,7 +34,7 @@ namespace KrakenBitcoinTradePrice
                         if(decimal.TryParse(currentTrade?.result?.XXBTZEUR?.c?.First(), NumberStyles.Currency, CultureInfo.InvariantCulture,out currentTradePrice))
                         {
                             PackageHost.WriteDebug("BitcoinCurrentTradePrice {0}", currentTradePrice);
-                            PackageHost.PushStateObject("BitcoinCurrentTradePrice", decimal.Parse(currentTrade?.result?.XXBTZEUR?.c?.First(), NumberStyles.Currency, CultureInfo.InvariantCulture), lifetime: interval);
+                            PackageHost.PushStateObject("BitcoinCurrentTradePrice", currentTradePrice, lifetime: interval);
                         }
                         else
                         {
