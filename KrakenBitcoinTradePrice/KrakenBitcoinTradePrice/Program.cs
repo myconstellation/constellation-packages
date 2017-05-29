@@ -21,7 +21,7 @@ namespace KrakenBitcoinTradePrice
         public override void OnStart()
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
-            int interval = PackageHost.GetSettingValue<int>("Interval") * 60000;
+            int interval = PackageHost.GetSettingValue<int>("Interval") * 60;
             while (PackageHost.IsRunning)
             {
                 try
@@ -46,7 +46,7 @@ namespace KrakenBitcoinTradePrice
                 {
                     PackageHost.WriteError(ex);
                 }
-                Thread.Sleep(interval);
+                Thread.Sleep(interval * 1000);
 
             }
         }
