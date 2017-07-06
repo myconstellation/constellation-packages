@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="RainHourForecast"
+         Version="1.0"
+         Author="Alpha"
+         URL="http://www.mywebsite.com"
+         Description="RainHourForecast Copyright ©  2017"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <!-- Add your package's settings here -->
+  </Settings>
+</Package>
