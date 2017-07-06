@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="VigilanceMeteoFrance"
+         Version="1.0"
+         Author="Hydro"
+         Icon="VigilanceMeteoFrance.png"
+         URL="http://www.myconstellation.io"
+         Description="Get vigilance informations from meteo france"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Departements" isRequired="false" type="String" description="Departements' number comma separated"/>
+    <Setting name="RefreshInterval" isRequired="false" defaultValue="60" type="Int32" description="Refresh interval to get vigilance in minutes"/>
+    <Setting name="Url" isRequired="false" defaultValue="http://vigilance.meteofrance.com/data/NXFR33_LFPW_.xml" type="String" description="Url from meteo france to get vigilance"/>
+  </Settings>
+</Package>
