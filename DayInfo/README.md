@@ -5,8 +5,10 @@ Get the name day (in French) and sunset/sunrise informations.
 ### StateObjects
   - NameDay : the name day for the current day
   - SunInfo : sunset/sunrise informations for the current day
+  - Date : the date of the current day (jour numéro mois)
+  - Time : current time (HH:mm)
 
-### StateObjects
+### MessageCallbacks
   - GetNameDay : Gets the name day for the given day
   - GetSunInfo : Calculate the Universal Coordinated Time (UTC) of sunset and sunrise for the given day at the given location on earth
 
