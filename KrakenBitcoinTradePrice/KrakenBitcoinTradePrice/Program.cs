@@ -1,13 +1,11 @@
-﻿using Constellation;
-using Constellation.Package;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using Constellation.Package;
 using Newtonsoft.Json;
-using System.Net;
+using System;
 using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace KrakenBitcoinTradePrice
 {
@@ -20,35 +18,46 @@ namespace KrakenBitcoinTradePrice
 
         public override void OnStart()
         {
-            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
-            int interval = PackageHost.GetSettingValue<int>("Interval") * 60;
-            while (PackageHost.IsRunning)
+            int nbSeconde = 0;
+            Task.Factory.StartNew(() =>
             {
-                try
+                while (PackageHost.IsRunning)
                 {
-                    using (var wc = new WebClient())
+                    if (nbSeconde == 0)
                     {
-                        var json = wc.DownloadString("https://api.kraken.com/0/public/Ticker?pair=XXBTZEUR");
-                        var currentTrade = JsonConvert.DeserializeObject<KrakenRootObject>(json);
-                        decimal currentTradePrice;
-                        if(decimal.TryParse(currentTrade?.result?.XXBTZEUR?.c?.First(), NumberStyles.Currency, CultureInfo.InvariantCulture,out currentTradePrice))
+                        try
                         {
-                            PackageHost.WriteDebug("BitcoinCurrentTradePrice {0}", currentTradePrice);
-                            PackageHost.PushStateObject("BitcoinCurrentTradePrice", currentTradePrice, lifetime: interval);
+                            using (var wc = new WebClient())
+                            {
+                                var json = wc.DownloadString("https://api.kraken.com/0/public/Ticker?pair=XXBTZEUR");
+                                var currentTrade = JsonConvert.DeserializeObject<KrakenRootObject>(json);
+                                decimal currentTradePrice;
+                                if (decimal.TryParse(currentTrade?.result?.XXBTZEUR?.c?.First(), NumberStyles.Currency, CultureInfo.InvariantCulture, out currentTradePrice))
+                                {
+                                    PackageHost.WriteDebug("BitcoinCurrentTradePrice {0}", currentTradePrice);
+                                    PackageHost.PushStateObject("BitcoinCurrentTradePrice", currentTradePrice, lifetime: PackageHost.GetSettingValue<int>("Interval") * 60);
+                                }
+                                else
+                                {
+                                    PackageHost.WriteWarn("Unable to retrieve value in {0}", json);
+                                }
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            PackageHost.WriteWarn("Unable to retrieve value in {0}", json);
+                            PackageHost.WriteError(ex);
                         }
+
+                    }
+                    Thread.Sleep(1000);
+                    nbSeconde++;
+
+                    if (nbSeconde == (int)PackageHost.GetSettingValue<int>("Interval") * 60)
+                    {
+                        nbSeconde = 0;
                     }
                 }
-                catch (Exception ex)
-                {
-                    PackageHost.WriteError(ex);
-                }
-                Thread.Sleep(interval * 1000);
-
-            }
+            });
         }
     }
 }

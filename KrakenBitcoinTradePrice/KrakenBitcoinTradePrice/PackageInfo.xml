@@ -2,18 +2,18 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="KrakenBitcoinTradePrice"
          Icon="bitcoin.png"
-         Version="1.0.4"
+         Version="1.0.5"
          Author="Cllio"
          URL="http://www.coderen.net"
          Description="Get Bitcoin trade price in EUR of https://www.kraken.com/"
          EnableControlHub="false">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
     <Platforms>
-      <Platform id="Unix" isCompliant="false" />
-      <Platform id="MacOSX" isCompliant="false" />
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
     </Platforms>
   </Compatibility>
   <Settings>
-    <Setting name="Interval" type="Int32" description="The refresh interval in minutes" defaultValue="5" />
+    <Setting name="Interval" type="Int32" description="The refresh interval in minutes" defaultValue="5" isRequired="false" />
   </Settings>
 </Package>
