@@ -2,17 +2,20 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="RainHourForecast"
          Version="1.0"
-         Author="Alpha"
-         URL="http://www.mywebsite.com"
-         Description="RainHourForecast Copyright ©  2017"
+         Author="Hydro"
+         Icon="RainHourForecast.png"
+         URL="http://www.myconstellation.io"
+         Description="Package to get rain forecast for the next hour from meteo france"
          EnableControlHub="false">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+  <Compatibility constellationVersion="1.8">
     <Platforms>
       <Platform id="Win32NT" isCompliant="true" />
-      <Platform id="Unix" isCompliant="true" />
     </Platforms>
   </Compatibility>
   <Settings>
-    <!-- Add your package's settings here -->
+    <Setting name="TownsId" isRequired="false" type="String" description="Towns' id comma separated"/>
+    <Setting name="RefreshInterval" isRequired="false" defaultValue="60" type="Int32" description="Refresh rate of the forecast in minutes"/>
+    <Setting name="IdUrl" isRequired="false" defaultValue="http://www.meteofrance.com/mf3-rpc-portlet/rest/lieu/facet/pluie/search/{0}" type="String" description="Url from meteo france to get town's id"/>
+    <Setting name="ForecastUrl" isRequired="false" defaultValue="http://www.meteofrance.com/mf3-rpc-portlet/rest/pluie/{0}" type="String" description="Url from meteo france to get rain forecast"/>    
   </Settings>
 </Package>
