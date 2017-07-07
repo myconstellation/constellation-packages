@@ -6,7 +6,6 @@ namespace RainHourForecast.Models
     /// <summary>
     /// Represent the response from the service when searching for a town
     /// </summary>
-    [StateObject]
     public class Town
     {
         /// <summary>
