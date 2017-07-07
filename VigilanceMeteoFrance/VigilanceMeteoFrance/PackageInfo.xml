@@ -15,6 +15,6 @@
   <Settings>
     <Setting name="Departements" isRequired="false" type="String" description="Departements' number comma separated"/>
     <Setting name="RefreshInterval" isRequired="false" defaultValue="60" type="Int32" description="Refresh interval to get vigilance in minutes"/>
-    <Setting name="Url" isRequired="true" defaultValue="http://vigilance.meteofrance.com/data/NXFR33_LFPW_.xml" type="String" description="Url from meteo france to get vigilance"/>
+    <Setting name="Url" isRequired="false" defaultValue="http://vigilance.meteofrance.com/data/NXFR33_LFPW_.xml" type="String" description="Url from meteo france to get vigilance"/>
   </Settings>
 </Package>
