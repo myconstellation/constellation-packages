@@ -1,12 +1,10 @@
-﻿using Constellation;
-using Constellation.Package;
+﻿using Constellation.Package;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using VigilanceMeteoFrance.Models;
 
 namespace VigilanceMeteoFrance
@@ -21,8 +19,6 @@ namespace VigilanceMeteoFrance
 
         public override void OnStart()
         {
-            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
-            
             int nbSeconde = 0;
             string Departements = null;
             int wait = 60;
@@ -73,6 +69,8 @@ namespace VigilanceMeteoFrance
                     }
                 }
             });
+
+            PackageHost.WriteInfo("VigilanceMeteoFrance is started !");
         }
 
         /// <summary>
