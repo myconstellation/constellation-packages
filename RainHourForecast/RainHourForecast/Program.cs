@@ -12,7 +12,6 @@ namespace RainHourForecast
 {
     public class Program : PackageBase
     {
-
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
@@ -20,8 +19,6 @@ namespace RainHourForecast
 
         public override void OnStart()
         {
-            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
-
             int nbSeconde = 0;
             string Towns = null;
             int wait = 60;
@@ -72,15 +69,17 @@ namespace RainHourForecast
                     }
                 }
             });
+            
+            PackageHost.WriteInfo("RainHourForecast is started !");
         }
 
         /// <summary>
         /// Get rain forecast for the next hour.
         /// </summary>
-        /// <param name="TownId">Town's id.</param>
+        /// <param name="townId">Town's id.</param>
         /// <returns>Rain forecast for the next hour</returns>
         [MessageCallback]
-        public Forecast RainForecast(int TownId)
+        public Forecast RainForecast(int townId)
         {
             string ForecastUrl = null;
             if (!PackageHost.TryGetSettingValue<string>("ForecastUrl", out ForecastUrl))
@@ -89,7 +88,7 @@ namespace RainHourForecast
             }
             try
             {
-                string FinalUrl = String.Format(ForecastUrl, TownId);
+                string FinalUrl = String.Format(ForecastUrl, townId);
                 var syncClient = new WebClient();
                 var content = syncClient.DownloadString(FinalUrl);
                 Forecast forecast = JsonConvert.DeserializeObject<Forecast>(content);
@@ -105,10 +104,10 @@ namespace RainHourForecast
         /// <summary>
         /// Find ID for a specific town name / cp.
         /// </summary>
-        /// <param name="PostalCode">Town's postal code.</param>
+        /// <param name="postalCode">Town's postal code.</param>
         /// <returns>Town id, name and postal code</returns>
         [MessageCallback]
-        public List<Town> FindId(int PostalCode)
+        public List<Town> FindId(int postalCode)
         {
             string IdUrl = null;
             if (!PackageHost.TryGetSettingValue<string>("IdUrl", out IdUrl))
@@ -117,7 +116,7 @@ namespace RainHourForecast
             }
             try
             {
-                string FinalUrl = String.Format(IdUrl, PostalCode);
+                string FinalUrl = String.Format(IdUrl, postalCode);
                 var syncClient = new WebClient();
                 var content = syncClient.DownloadString(FinalUrl);
                 List<Town> Towns = JsonConvert.DeserializeObject<List<Town>>(content);

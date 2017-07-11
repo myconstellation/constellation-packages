@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="RainHourForecast"
-         Version="1.0"
+         Version="1.1"
          Author="Hydro"
          Icon="RainHourForecast.png"
          URL="http://www.myconstellation.io"
@@ -10,10 +10,11 @@
   <Compatibility constellationVersion="1.8">
     <Platforms>
       <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
     </Platforms>
   </Compatibility>
   <Settings>
-    <Setting name="TownsId" isRequired="false" type="String" description="Towns' id comma separated"/>
+    <Setting name="TownsId" isRequired="false" type="String" description="Towns' id comma separated (use the 'FindId' MessageCallback to get the towns' id from the postal code)"/>
     <Setting name="RefreshInterval" isRequired="false" defaultValue="60" type="Int32" description="Refresh rate of the forecast in minutes"/>
     <Setting name="IdUrl" isRequired="false" defaultValue="http://www.meteofrance.com/mf3-rpc-portlet/rest/lieu/facet/pluie/search/{0}" type="String" description="Url from meteo france to get town's id"/>
     <Setting name="ForecastUrl" isRequired="false" defaultValue="http://www.meteofrance.com/mf3-rpc-portlet/rest/pluie/{0}" type="String" description="Url from meteo france to get rain forecast"/>    
