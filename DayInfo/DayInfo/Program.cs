@@ -30,6 +30,7 @@ namespace DayInfo
     public class Program : PackageBase
     {
         private DateTime dateProcessed = DateTime.MinValue;
+        private string timeProcessed = "";
 
         static void Main(string[] args)
         {
@@ -50,10 +51,24 @@ namespace DayInfo
                     PackageHost.PushStateObject("SunInfo", this.GetSunInfo(DateTime.Now, PackageHost.GetSettingValue<int>("TimeZone"), PackageHost.GetSettingValue<double>("Latitude"), PackageHost.GetSettingValue<double>("Longitude")));
                     // Push NameDay
                     PackageHost.PushStateObject("NameDay", NameDayUtils.GetNameDay(), metadatas: new Dictionary<string, object>() { ["Date"] = DateTime.Now });
+                    //Push Date
+                    PackageHost.PushStateObject("Date", DateTime.Now.ToString("dddd d MMMM").Replace(" 1 ", " 1er "), lifetime: 86400);
                     // Updated for today !
                     dateProcessed = DateTime.Now;
                     PackageHost.WriteInfo($"StateObjects updated for today ({dateProcessed.ToShortDateString()})");
                 }
+
+                // Each Minute
+                if (DateTime.Now.ToString("HH:mm") != timeProcessed)
+                {
+                    string time = DateTime.Now.ToString("HH:mm");
+                    // Push Time
+                    PackageHost.PushStateObject("Time", time, lifetime: 60);
+                    // Updated for the moment !
+                    timeProcessed = time;
+                    Console.WriteLine("ok");
+                }
+
                 Thread.Sleep(1000);
             }
         }
