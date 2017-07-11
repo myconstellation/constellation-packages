@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="XiaomiSmartHome"
+         Version="1.00"
+         Author="Hydro"
+         URL="http://www.myconstellation.io"
+         Description="Package to control Xiaomi Smart Home devices"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="GatewayIP" isRequired="true" type="String" description="Your gateway ip adress"/>
+    <Setting name="HeartbeatLog" isRequired="false" type="Boolean" defaultValue="false" description="Show heartbeat logs in console"/>
+    <Setting name="ReportLog" isRequired="false" type="Boolean" defaultValue="false" description="Show report logs in console"/>
+  </Settings>
+</Package>
