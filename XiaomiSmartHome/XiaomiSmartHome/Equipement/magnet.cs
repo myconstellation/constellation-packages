@@ -1,54 +1,55 @@
 ﻿using Constellation;
 using Constellation.Package;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Magnet sensor
     /// </summary>
-    [StateObject]
-    public class magnet
+    [StateObject, XiaomiEquipement("magnet")]
+    public class Magnet
     {
         /// <summary>
-        /// Model type.
+        /// Model type
         /// </summary>
         public string Model { get; set; } = "magnet";
 
         /// <summary>
-        /// SID (mac adress).
+        /// SID (mac adress)
         /// </summary>
         public string Sid { get; set; }
 
         /// <summary>
-        /// Battery type.
+        /// Battery type
         /// </summary>
         public string Battery { get; set; } = "CR1632";
 
         /// <summary>
-        /// Battery level.
+        /// Battery level
         /// </summary>
         public int BatteryLevel { get; set; }
 
         /// <summary>
-        /// Last report.
+        /// Last report
         /// </summary>
-        public magnet_report Report { get; set; }
+        public MagnetReport Report { get; set; }
 
     }
 
     /// <summary>
     /// Magnet sensor last report
     /// </summary>
-    [StateObject]
-    public class magnet_report
+    [StateObject, XiaomiEquipement("magnet_report")]
+    public class MagnetReport
     {
         /// <summary>
-        /// Voltage left.
+        /// Voltage left
         /// </summary>
         public int Voltage { get; set; }
 
         /// <summary>
-        /// Magnet sensor state.
+        /// Magnet sensor state
         /// </summary>
         public string Status { get; set; }
        

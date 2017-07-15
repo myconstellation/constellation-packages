@@ -1,13 +1,14 @@
 ﻿using Constellation;
 using Constellation.Package;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Motuon sensor
     /// </summary>
-    [StateObject]
-    public class motion
+    [StateObject, XiaomiEquipement("motion")]
+    public class Motion
     {
         /// <summary>
         /// Model type.
@@ -32,15 +33,15 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report.
         /// </summary>
-        public motion_report Report { get; set; }
+        public MotionReport Report { get; set; }
 
     }
 
     /// <summary>
     /// Motion sensor last report
     /// </summary>
-    [StateObject]
-    public class motion_report
+    [StateObject, XiaomiEquipement("motion_report")]
+    public class MotionReport
     {
         /// <summary>
         /// Voltage left.

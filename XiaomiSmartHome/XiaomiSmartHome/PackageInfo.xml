@@ -3,6 +3,7 @@
          Name="XiaomiSmartHome"
          Version="1.00"
          Author="Hydro"
+         Icon="XiaomiSmartHome.png"
          URL="http://www.myconstellation.io"
          Description="Package to control Xiaomi Smart Home devices"
          EnableControlHub="false">

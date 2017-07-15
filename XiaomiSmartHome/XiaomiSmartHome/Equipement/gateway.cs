@@ -7,7 +7,7 @@ namespace XiaomiSmartHome.Equipement
     /// Mon StateObject complexe
     /// </summary>
     [StateObject]
-    public class gateway
+    public class Gateway
     {
         /// <summary>
         /// Model type.
@@ -15,45 +15,45 @@ namespace XiaomiSmartHome.Equipement
         public string Model { get; set; } = "gateway";
 
         /// <summary>
-        /// Model type.
+        /// SID (mac adress).
         /// </summary>
         public string Sid { get; set; }
 
         /// <summary>
-        /// Model type.
+        /// Battery type.
         /// </summary>
         public string Battery { get; set; } = "Sector";
 
         /// <summary>
-        /// Model type.
+        /// Last token.
         /// </summary>
         public string Token { get; set; }
 
         /// <summary>
         /// Last report.
         /// </summary>
-        public gateway_report Report { get; set; }
+        public GatewayReport Report { get; set; }
     }
 
     /// <summary>
-    /// Mon StateObject complexe2
+    /// Gateway last report
     /// </summary>
     [StateObject]
-    public class gateway_report
+    public class GatewayReport
     {
         /// <summary>
-        /// Gets or sets the number.
+        /// Led color in rgb.
         /// </summary>
         public int Rgb { get; set; }
 
         /// <summary>
-        /// Gets or sets the number.
+        /// Illumination in lux.
         /// </summary>
         public int Illumination { get; set; }
 
     }
 
-    public class gateway_heartbeat
+    public class GatewayHeartbeat
     {
         /// <summary>
         /// Gets or sets the number.

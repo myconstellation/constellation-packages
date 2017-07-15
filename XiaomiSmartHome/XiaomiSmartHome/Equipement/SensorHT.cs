@@ -1,13 +1,14 @@
 ﻿using Constellation;
 using Constellation.Package;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Humidity / Temperature sensor
     /// </summary>
-    [StateObject]
-    public class sensor_ht
+    [StateObject, XiaomiEquipement("sensor_ht")]
+    public class SensorHT
     {
         /// <summary>
         /// Model type.
@@ -32,14 +33,14 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report.
         /// </summary>
-        public sensor_ht_report Report { get; set; }
+        public SensorHTReport Report { get; set; }
     }
 
     /// <summary>
     /// Humidity / Temperature sensor last report
     /// </summary>
-    [StateObject]
-    public class sensor_ht_report
+    [StateObject, XiaomiEquipement("sensor_ht_report")]
+    public class SensorHTReport
     {
         /// <summary>
         /// Voltage left.

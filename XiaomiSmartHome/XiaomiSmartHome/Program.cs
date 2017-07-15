@@ -1,46 +1,47 @@
 ﻿using Constellation;
 using Constellation.Package;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using Newtonsoft.Json.Linq;
 using System.Threading;
-using Newtonsoft;
 using Newtonsoft.Json;
-using XiaomiSmartHome.Method;
+using XiaomiSmartHome.Model;
 using XiaomiSmartHome.Equipement;
+using System.Reflection;
+using System.Text;
+using System.Web.Script.Serialization;
 
 namespace XiaomiSmartHome
 {
     public class Program : PackageBase
     {
 
-        string GatewayIP = null;
-        gateway Gateway;
+        //// New Gateway class
+        private Gateway gateway;
+     
+        //// Equipement name
+        private string name = null;
 
-        public Boolean HeartBeatLog = false;
-        public Boolean ReportLog = false;
+        //// Equipements array
+        private string[] equipements;
 
-        string name = null;
-        string[] equipements;
-
+        //// Call at start
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
         }
 
+        //// Main function
         public override void OnStart()
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
 
             //// Creating a new gateway report
-            Gateway = new gateway();
+            gateway = new Gateway();
 
             //// Pushing gateway SO
-            PackageHost.PushStateObject<gateway>("Gateway", Gateway);
+            PackageHost.PushStateObject<Gateway>("Gateway", gateway);
 
             //// Starting connexion in a thread
             Thread connexion = new Thread(new ThreadStart(Connexion));
@@ -50,6 +51,7 @@ namespace XiaomiSmartHome
             GetEquipements();
         }
 
+        //// Listening multicast to get reports
         public void Connexion()
         {
             //// Launching multicast listener on 224.0.0.50:9898
@@ -61,175 +63,259 @@ namespace XiaomiSmartHome
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             client.ExclusiveAddressUse = false;
             client.Client.Bind(localEp);
-            client.JoinMulticastGroup(multicastaddress);
-            PackageHost.WriteInfo("Listening start...");
-
-            //// While receive response
-            while (true)
+            try
             {
+                //// Join multicast
+                client.JoinMulticastGroup(multicastaddress);
+                PackageHost.WriteInfo("Listening start...");
 
-                //// We convert byte to string
-                byte[] b = client.Receive(ref localEp);
-                string response = System.Text.Encoding.ASCII.GetString(b, 0, b.Length);
-
-                //// We deserialize to Response class
-                Response data = JsonConvert.DeserializeObject<Response>(response);
-
-                //// If command equal heartbeat
-                if (data.cmd == "heartbeat")
+                while (PackageHost.IsRunning)
                 {
+                    //// We convert byte to string
+                    byte[] bytes = client.Receive(ref localEp);
+                    string response = System.Text.Encoding.ASCII.GetString(bytes, 0, bytes.Length);
 
-                    //// We print response if heartbeat logs is true
-                    if (PackageHost.TryGetSettingValue<bool>("HeartbeatLog", out HeartBeatLog))
+                    //// We deserialize to Response class
+                    Response data = JsonConvert.DeserializeObject<Response>(response);
+
+                    //// If command equal heartbeat
+                    if (data.Cmd == "heartbeat")
                     {
-                        if (HeartBeatLog)
+                        //// We print response if heartbeat logs is true
+                        if (PackageHost.GetSettingValue<bool>("HeartbeatLog"))
                         {
-                            PackageHost.WriteInfo("{0}", response);
+                            PackageHost.WriteInfo("{0}", response);                           
                         }
-                    }
-                    else
-                    {
-                        PackageHost.WriteError("Impossible de récupérer le setting 'HeartbeatLog' en boolean");
-                    }
 
-                    //// If heartbeat model is gateway
-                    if(data.model == "gateway")
-                    {
+                        //// If heartbeat model is gateway, we save the data part to Gateway class
+                        if (data.Model == "gateway")
+                        { 
+                            //// We save the token
+                            gateway.Token = data.Token;
 
-                        //// We save the token
-                        Gateway.Token = data.token;
+                            //// We deserialize data part
+                            GatewayHeartbeat gateway_data = JsonConvert.DeserializeObject<GatewayHeartbeat>(data.Data);
 
-                        //// We deserialize data part
-                        gateway_heartbeat gateway_data = JsonConvert.DeserializeObject<gateway_heartbeat>(data.data);
-
-                        //// If we didn't set gateway's sid
-                        if (Gateway.Sid == null)
-                        {
-                            if (PackageHost.TryGetSettingValue<string>("GatewayIP", out GatewayIP))
+                            //// If we didn't set gateway's sid
+                            if (gateway.Sid == null)
                             {
+
                                 //// If data ip equal to gateway ip
-                                if (gateway_data.IP == GatewayIP)
+                                if (gateway_data.IP == PackageHost.GetSettingValue<string>("GatewayIP"))
                                 {
-                                    Gateway.Sid = data.sid;
-                                }                               
+                                    gateway.Sid = data.Sid;
+                                }
                             }
-                            else
-                            {
-                                PackageHost.WriteError("Impossible de récupérer le setting 'GatewayIP' en string");
-                            }
+
+                            //// We push the gateway SO
+                            PackageHost.PushStateObject<Gateway>("Gateway", gateway);
+
                         }
+                    }
 
-                        PackageHost.PushStateObject<gateway>("Gateway", Gateway);
-                       
-                    }  
-                }
-
-                //// If command equal report
-                else if (data.cmd == "report")
-                {
-
-                    //// We print response if report logs is true
-                    if (PackageHost.TryGetSettingValue<bool>("ReportLog", out ReportLog))
+                    //// If command equal report
+                    else if (data.Cmd == "report")
                     {
-                        if (ReportLog)
+                        //// We print response if report logs is true
+                        if (PackageHost.GetSettingValue<bool>("ReportLog"))
                         {
                             PackageHost.WriteInfo("{0}", response);
                         }
-                    }
-                    else
-                    {
-                        PackageHost.WriteError("Impossible de récupérer le setting 'ReportLog' en boolean");
-                    }
 
-                    //// If model equal gateway
-                    if ((data.model == "gateway") && (data.sid == Gateway.Sid))
-                    {
-
-                        //// We deserialize report data as gateway class
-                        gateway_report datagate = JsonConvert.DeserializeObject<gateway_report>(data.data);
-                        Gateway.Report = datagate;
-                        
-                        //// We push the gateway SO
-                        PackageHost.PushStateObject<gateway>("Gateway", Gateway);
-                    }
-                    else
-                    {
-
-                        //// If equipement sid is in the equipements list
-                        if (equipements.Contains(data.sid))
+                        //// If model equal gateway
+                        if ((data.Model == "gateway") && (data.Sid == gateway.Sid))
                         {
-                            SaveEquipement(data.sid);
-                        }
-                        
-                    }
+                            //// We deserialize report data as gateway class
+                            GatewayReport datagate = JsonConvert.DeserializeObject<GatewayReport>(data.Data);
+                            gateway.Report = datagate;
 
+                            //// We push the gateway SO
+                            PackageHost.PushStateObject<Gateway>("Gateway", gateway);
+                        }
+                        else
+                        {
+                            //// If equipement sid is in the equipements list
+                            if (equipements.Contains(data.Sid))
+                            {
+                                SaveEquipement(data.Sid);
+                            }
+                        }
+                    }
+                    Thread.Yield();
                 }
-                Thread.Yield();
+            }
+            catch(Exception ex)
+            {
+                PackageHost.WriteError("Error Connexion : {0}", ex);
+                return;
             }
         }
-        
+
+        /// <summary>
+        /// Get equipements list from the gateway
+        /// </summary>
         public void GetEquipements()
         {
-
-            if (PackageHost.TryGetSettingValue<string>("GatewayIP", out GatewayIP))
-            {
                 //// Get equipements list
-                EquipementsList list = EquipementsList.FindEquipementsList(GatewayIP);
+                EquipementsList list = FindEquipementsList();
 
                 //// Get data part
-                equipements = EquipementsList.GetListData(list.data);
+                equipements = GetListData(list.Data);
 
                 //// Foreach equipement in data
                 foreach (string equipement in equipements)
                 {
                     SaveEquipement(equipement);
                 }
-            }
-            else
-            {
-                PackageHost.WriteError("Impossible de récupérer le setting 'GatewayIP' en string");
-            }
         }
 
+        /// <summary>
+        /// Get equipement values then save it to Constellation
+        /// </summary>
         public void SaveEquipement(string mac)
         {
+
+            Response read = null;
+            Type modelType = null;
+            Type modelReportType = null;
+            dynamic model = null;
+            dynamic modelReport = null;
+
             //// Try to get setting based on equipement SID
             if (!PackageHost.TryGetSettingValue<string>(mac, out name))
             {
                 name = mac;
             }
 
-            //// Try to get gateway IP adress
-            if (PackageHost.TryGetSettingValue<string>("GatewayIP", out GatewayIP))
+            try
             {
 
                 //// Get response from read function
-                Response read = Response.ReadEquipement(GatewayIP, mac);
+                read = ReadEquipement(mac);
 
                 //// Create instance of model class
-                dynamic model  = System.Reflection.Assembly.GetExecutingAssembly().CreateInstance("XiaomiSmartHome.Equipement." + read.model);
-                var modelType = model.GetType();
+                modelType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == read.Model);
+                model = Activator.CreateInstance(modelType);
 
                 //// Create report instance of model class 
-                dynamic model_report = System.Reflection.Assembly.GetExecutingAssembly().CreateInstance("XiaomiSmartHome.Equipement." + read.model + "_report");
-                var model_reportType = model_report.GetType();
+                modelReportType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == read.Model + "_report");
+                modelReport = Activator.CreateInstance(modelReportType);
 
-                //// Deserialize data part of the report
-                var data = JsonConvert.DeserializeObject(Convert.ToString(read.data), model_reportType);
-
-                //// Add informations to Report class
-                model.BatteryLevel = System.Convert.ToInt32(System.Math.Floor((data.Voltage - 2800) * 0.33));
-                model.Sid = mac;
-                model.Report = data;
-
-                //// Pushing the SO
-                PackageHost.PushStateObject<dynamic>(name, model);
             }
-            else
+            catch (Exception ex)
             {
-                PackageHost.WriteError("Impossible de récupérer le setting 'GatewayIP' en string");
+                PackageHost.WriteError("Error ReadEquipement : {0}", ex);
+                return;
             }
 
+            //// Deserialize data part of the report
+            dynamic data = JsonConvert.DeserializeObject(Convert.ToString(read.Data), modelReportType);
+
+            //// Add informations to Report class
+            model.BatteryLevel = System.Convert.ToInt32(System.Math.Floor((data.Voltage - 2800) * 0.33));
+            model.Sid = mac;
+            model.Report = data;
+
+            //// Pushing the SO
+            PackageHost.PushStateObject<dynamic>(name, model);
+        }
+
+        /// <summary>
+        /// Get equipement values from gateway
+        /// </summary>
+        /// <param name="sid">SID of the equipement.</param>
+        [MessageCallback]
+        Response ReadEquipement(string sid)
+        {
+
+            //// Init result
+            Response result = null;
+
+            //// Create UDP client
+            UdpClient read = new UdpClient();
+
+            //// Gateway IP adress as endpoint
+            IPEndPoint gateway = new IPEndPoint(IPAddress.Parse(PackageHost.GetSettingValue<string>("GatewayIP")), 9898);
+            
+            //// Constellation IP adress as endpoint
+            IPEndPoint constellation = (IPEndPoint)read.Client.LocalEndPoint;
+
+            //// Command to sent
+            string command = string.Format("{{\"cmd\":\"read\",\"sid\":\"{0}\"}}", sid);
+            Byte[] buffer = Encoding.ASCII.GetBytes(command);
+
+            try
+            {
+                //// Send command to gateway
+                read.Send(buffer, buffer.Length, gateway);
+
+                //// Receive data
+                var receivedData = read.Receive(ref constellation);
+                string returnData = Encoding.UTF8.GetString(receivedData).Trim();
+
+                //// Deserialize it to Response class
+                result = JsonConvert.DeserializeObject<Response>(returnData);
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError("Error ReadEquipement : {0}", ex);
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Get equipements list from gateway
+        /// </summary>
+        [MessageCallback]
+        EquipementsList FindEquipementsList()
+        {
+            //// Init result
+            EquipementsList result = null;
+
+            //// Create an UDP client
+            UdpClient findList = new UdpClient();
+
+            //// Gateway IP adress as endpoint
+            IPEndPoint gateway = new IPEndPoint(IPAddress.Parse(PackageHost.GetSettingValue<string>("GatewayIP")), 9898);
+
+            //// Constellation IP adress as endpoint
+            IPEndPoint constellation = (IPEndPoint)findList.Client.LocalEndPoint;
+
+            //// Command to sent
+            string command = @"{""cmd"":""get_id_list""}";
+            Byte[] buffer = Encoding.ASCII.GetBytes(command);
+
+            try
+            {
+                //// Send command to gateway
+                findList.Send(buffer, buffer.Length, gateway);
+
+                //// Receive data
+                var receivedData = findList.Receive(ref constellation);
+                string returnData = Encoding.UTF8.GetString(receivedData).Trim();
+
+                //// Deserialize it to EquipementsList class
+                result = JsonConvert.DeserializeObject<EquipementsList>(returnData);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError("Error FindEquipementList : {0}", ex);
+                return result;
+            }
+
+        }
+        
+        /// <summary>
+        /// Get data part as array
+        /// </summary>
+        /// <param name="data"></param>
+        public static string[] GetListData(string data)
+        {
+            JavaScriptSerializer result = new JavaScriptSerializer();
+            return result.Deserialize<string[]>(data);
         }
 
     }
