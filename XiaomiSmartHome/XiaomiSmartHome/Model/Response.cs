@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 
 namespace XiaomiSmartHome.Model
 {
-
     /// <summary>
     /// Response from the gateway
     /// </summary>
@@ -45,7 +44,7 @@ namespace XiaomiSmartHome.Model
         /// </summary>
         [JsonProperty("data")]
         public string Data { get; set; }
-
+  
         /// <summary>
         /// Get type by model name in attribute
         /// </summary>
@@ -55,7 +54,6 @@ namespace XiaomiSmartHome.Model
             /// Model name
             /// </summary>
             public string Model { get; set; }
-
             /// <summary>
             /// Attribute value
             /// </summary>

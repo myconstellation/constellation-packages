@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 namespace XiaomiSmartHome.Model
-{
-
+{ 
     /// <summary>
     /// Response from the gateway
     /// </summary>
@@ -32,7 +31,5 @@ namespace XiaomiSmartHome.Model
         /// </summary>
         [JsonProperty("data")]
         public string Data { get; set; }
-
     }
-
 }

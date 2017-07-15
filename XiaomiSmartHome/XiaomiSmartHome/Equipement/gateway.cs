@@ -50,7 +50,6 @@ namespace XiaomiSmartHome.Equipement
         /// Illumination in lux.
         /// </summary>
         public int Illumination { get; set; }
-
     }
 
     public class GatewayHeartbeat
@@ -59,7 +58,5 @@ namespace XiaomiSmartHome.Equipement
         /// Gets or sets the number.
         /// </summary>
         public string IP { get; set; }
-
-
     }
 }

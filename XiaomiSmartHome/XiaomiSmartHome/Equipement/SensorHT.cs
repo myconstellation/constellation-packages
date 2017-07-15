@@ -56,6 +56,5 @@ namespace XiaomiSmartHome.Equipement
         /// Humidity level in %.
         /// </summary>
         public int Humidity { get; set; }
-
     }
 }

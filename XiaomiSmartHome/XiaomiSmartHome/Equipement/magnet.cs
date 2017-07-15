@@ -34,7 +34,6 @@ namespace XiaomiSmartHome.Equipement
         /// Last report
         /// </summary>
         public MagnetReport Report { get; set; }
-
     }
 
     /// <summary>
@@ -52,7 +51,5 @@ namespace XiaomiSmartHome.Equipement
         /// Magnet sensor state
         /// </summary>
         public string Status { get; set; }
-       
-
     }
 }

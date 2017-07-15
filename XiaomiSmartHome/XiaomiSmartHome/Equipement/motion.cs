@@ -34,7 +34,6 @@ namespace XiaomiSmartHome.Equipement
         /// Last report.
         /// </summary>
         public MotionReport Report { get; set; }
-
     }
 
     /// <summary>
@@ -51,8 +50,6 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Motion sensor state.
         /// </summary>
-        public string Status { get; set; }
-        
-
+        public string Status { get; set; }      
     }
 }
