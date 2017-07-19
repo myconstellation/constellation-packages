@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Horoscope"
+         Version="1.0"
+         Author="Hydro"
+         Icon="Horoscope.png"
+         URL="http://www.myconstellation.io"
+         Description="Package to get horoscope from Asiaflash"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="ZodiacalSigns" isRequired="true" type="ConfigurationSection">
+      <defaultContent>
+        <signs>
+          <sign name="Scorpion" />
+          <sign name="Gémeaux" />
+        </signs>
+        </defaultContent>
+    </Setting>
+    <Setting name="RefreshTime" isRequired="false" defaultValue="01:00:00" type="String" description="Refresh time"/>
+    <Setting name="Url" isRequired="false" defaultValue="http://www.asiaflash.com/horoscope/rss_horojour_{0}.xml" type="String" description="Url to get horoscope"/>
+  </Settings>
+</Package>
