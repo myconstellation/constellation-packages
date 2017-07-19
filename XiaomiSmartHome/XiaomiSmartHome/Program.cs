@@ -329,6 +329,7 @@ namespace XiaomiSmartHome
             JavaScriptSerializer result = new JavaScriptSerializer();
             return result.Deserialize<string[]>(data);
         }
+
         /// <summary>
         /// Get equipements list from gateway
         /// </summary>
@@ -337,64 +338,78 @@ namespace XiaomiSmartHome
         {
 
             string original = "1234567890abcdef";
-
-            // Create a new instance of the Aes 
-            // class.  This generates a new key and initialization  
-            // vector (IV). 
-            using (var random = new RNGCryptoServiceProvider())
-            {
-                var key = new byte[16];
-                random.GetBytes(key);
-
-                // Encrypt the string to an array of bytes. 
-                byte[] encrypted = EncryptStringToBytes_Aes(original, key);
-
-                //Display the original data and the decrypted data.
-                PackageHost.WriteWarn("Original:   {0}", original);
-                PackageHost.WriteWarn("Convert:   {0}", Encoding.Default.GetString(encrypted));
-                PackageHost.WriteWarn("Encrypted (b64-encode): {0}", Convert.ToBase64String(encrypted));
-            }
-
+            string token = "0987654321qwerty";
+            
+            string encrypted = Cryptography.Encrypt(token, original);
+            PackageHost.WriteWarn("{0}", encrypted);
         }
 
-        static byte[] EncryptStringToBytes_Aes(string plainText, byte[] Key)
-        {
+        public static string Encrypt(string value, string password) {
+            return Encrypt<AesManaged>(value, password);
+        }
+        public static string Encrypt<T>(string value, string password) 
+                where T : SymmetricAlgorithm, new() {
+            byte[] vectorBytes = GetBytes<ASCIIEncoding>(_vector);
+            byte[] saltBytes = GetBytes<ASCIIEncoding>(_salt);
+            byte[] valueBytes = GetBytes<UTF8Encoding>(value);
+
             byte[] encrypted;
-            byte[] IV;
+            using (T cipher = new T()) {
+                PasswordDeriveBytes _passwordBytes = 
+                    new PasswordDeriveBytes(password, saltBytes, _hash, _iterations);
+                byte[] keyBytes = _passwordBytes.GetBytes(_keySize / 8);
 
-            using (Aes aesAlg = Aes.Create())
-            {
-                aesAlg.Key = Key;
+                cipher.Mode = CipherMode.CBC;
 
-                aesAlg.GenerateIV();
-                IV = aesAlg.IV;
-
-                aesAlg.Mode = CipherMode.CBC;
-
-                var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-                // Create the streams used for encryption. 
-                using (var msEncrypt = new MemoryStream())
-                {
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (var swEncrypt = new StreamWriter(csEncrypt))
-                        {
-                            //Write all data to the stream.
-                            swEncrypt.Write(plainText);
+                using (ICryptoTransform encryptor = cipher.CreateEncryptor(keyBytes, vectorBytes)) {
+                    using (MemoryStream to = new MemoryStream()) {
+                        using (CryptoStream writer = new CryptoStream(to, encryptor, CryptoStreamMode.Write)) {
+                            writer.Write(valueBytes, 0, valueBytes.Length);
+                            writer.FlushFinalBlock();
+                            encrypted = to.ToArray();
                         }
-                        encrypted = msEncrypt.ToArray();
                     }
                 }
+                cipher.Clear();
             }
-
-            var combinedIvCt = new byte[IV.Length + encrypted.Length];
-            Array.Copy(IV, 0, combinedIvCt, 0, IV.Length);
-            Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
-
-            // Return the encrypted bytes from the memory stream. 
-            return combinedIvCt;
-
+            return Convert.ToBase64String(encrypted);
         }
+
+        public static string Decrypt(string value, string password) {
+            return Decrypt<AesManaged>(value, password);
+        }
+        public static string Decrypt<T>(string value, string password) where T : SymmetricAlgorithm, new() {
+            byte[] vectorBytes = GetBytes<ASCIIEncoding>(_vector);
+            byte[] saltBytes = GetBytes<ASCIIEncoding>(_salt);
+            byte[] valueBytes = Convert.FromBase64String(value);
+
+            byte[] decrypted;
+            int decryptedByteCount = 0;
+
+            using (T cipher = new T()) {
+                PasswordDeriveBytes _passwordBytes = new PasswordDeriveBytes(password, saltBytes, _hash, _iterations);
+                byte[] keyBytes = _passwordBytes.GetBytes(_keySize / 8);
+
+                cipher.Mode = CipherMode.CBC;
+
+                try {
+                    using (ICryptoTransform decryptor = cipher.CreateDecryptor(keyBytes, vectorBytes)) {
+                        using (MemoryStream from = new MemoryStream(valueBytes)) {
+                            using (CryptoStream reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read)) {
+                                decrypted = new byte[valueBytes.Length];
+                                decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    return String.Empty;
+                }
+
+                cipher.Clear();
+            }
+            return Encoding.UTF8.GetString(decrypted, 0, decryptedByteCount);
+        }
+
     }
 }
+
