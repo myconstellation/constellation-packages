@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using Newtonsoft.Json;
 using RainHourForecast.Models;
 
@@ -20,50 +21,44 @@ namespace RainHourForecast
         public override void OnStart()
         {
             int nbSeconde = 0;
-            string Towns = null;
-            int wait = 60;
 
             Task.Factory.StartNew(() =>
-            {
+            {            
                 while (PackageHost.IsRunning)
-                {
+                {                  
                     if (nbSeconde == 0)
                     {
-                        if (!PackageHost.TryGetSettingValue<string>("TownsId", out Towns))
+                        PackageHost.WriteInfo("Getting rain forecast for town with id");
+                        if (PackageHost.TryGetSettingAsXmlDocument("TownsId", out XmlDocument XmlTowns))
                         {
-                            PackageHost.WriteError("Impossible de récupérer le setting 'TownsId' en string");
-                        }
-                        Towns = Towns.Replace(" ", String.Empty);
-                        var towns = Towns.Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string TownId in towns)
-                        {
-                            PackageHost.WriteInfo("Getting rain forecast for town with id {0}", TownId);
-                            try
+                            foreach (XmlNode town in XmlTowns.ChildNodes[0])
                             {
-                                int id = Convert.ToInt32(TownId);
-                                Forecast forecast = RainForecast(id);
-                                PackageHost.PushStateObject<Forecast>(TownId, forecast);
-                                PackageHost.WriteInfo("Rain forecast for town with id {0} done", TownId);
-                            }
-                            catch (Exception ex)
-                            {
-                                PackageHost.WriteError("Unable to get rain forecast for town with id {0} : {1}", TownId, ex.Message);
+                                PackageHost.WriteInfo("Getting rain forecast for town with id {0}", town.Attributes["id"].Value);
+                                try
+                                {
+                                    int id = Convert.ToInt32(town.Attributes["id"].Value);
+                                    Forecast forecast = RainForecast(id);
+                                    PackageHost.PushStateObject<Forecast>(town.Attributes["id"].Value, forecast);
+                                    PackageHost.WriteInfo("Rain forecast for town with id {0} done", town.Attributes["id"].Value);
+                                }
+                                catch (Exception ex)
+                                {
+                                    PackageHost.WriteError("Unable to get rain forecast for town with id {0} : {1}", town.Attributes["id"].Value, ex.Message);
+                                }
                             }
                         }
+                        else
+                        {
+                            PackageHost.WriteError("Impossible de récupérer le setting 'TownsId' en xml");
+                        }
+
                     }
                     Thread.Sleep(1000);
                     nbSeconde++;
 
-                    if (PackageHost.TryGetSettingValue<int>("RefreshInterval", out wait))
-                    {
-                        wait = wait * 60;
-                    }
-                    else
-                    {
-                        PackageHost.WriteError("Impossible de récupérer le setting 'RefreshInterval' en int");
-                    }
+                    int wait = PackageHost.GetSettingValue<int>("RefreshInterval")*60;
 
-                    if (nbSeconde == (int)wait)
+                    if (nbSeconde == wait)
                     {
                         nbSeconde = 0;
                     }
