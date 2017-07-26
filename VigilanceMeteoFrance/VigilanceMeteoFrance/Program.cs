@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml;
 using VigilanceMeteoFrance.Models;
 
 namespace VigilanceMeteoFrance
@@ -20,7 +21,6 @@ namespace VigilanceMeteoFrance
         public override void OnStart()
         {
             int nbSeconde = 0;
-            string Departements = null;
             int wait = 60;
 
             Task.Factory.StartNew(() =>
@@ -29,25 +29,27 @@ namespace VigilanceMeteoFrance
                 {
                     if (nbSeconde == 0)
                     {
-                        if (!PackageHost.TryGetSettingValue<string>("Departements", out Departements))
+                        if (!PackageHost.TryGetSettingAsXmlDocument("Departements", out XmlDocument Departements))
                         {
-                            PackageHost.WriteError("Impossible de récupérer le setting 'Departements' en string");
+                            PackageHost.WriteError("Impossible de récupérer le setting 'Departements' en xml");
                         }
-                        Departements = Departements.Replace(" ", String.Empty);
-                        var departements = Departements.Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string departement in departements)
+
+                        foreach (XmlNode departement in Departements.ChildNodes[0])
                         {
                             PackageHost.WriteInfo("Getting vigilances for departement {0}", departement);
-                            try
+                            if(departement.Name == "departement")
                             {
-                                int id = Convert.ToInt32(departement);
-                                Vigilance vigilance = GetVigilance(id);
-                                PackageHost.PushStateObject<Vigilance>(departement, vigilance);
-                                PackageHost.WriteInfo("Vigilances for departement {0} done", departement);
-                            }
-                            catch (Exception ex)
-                            {
-                                PackageHost.WriteError("Unable to get vigilances for departement {0} : {1}", departement, ex.Message);
+                                try
+                                {
+                                    int id = Convert.ToInt32(departement.Attributes["number"].Value);
+                                    Vigilance vigilance = GetVigilance(id);
+                                    PackageHost.PushStateObject<Vigilance>(departement.Attributes["number"].Value, vigilance);
+                                    PackageHost.WriteInfo("Vigilances for departement {0} done", departement.Attributes["number"].Value);
+                                }
+                                catch (Exception ex)
+                                {
+                                    PackageHost.WriteError("Unable to get vigilances for departement {0} : {1}", departement.Attributes["number"].Value, ex.Message);
+                                }
                             }
                         }
                     }

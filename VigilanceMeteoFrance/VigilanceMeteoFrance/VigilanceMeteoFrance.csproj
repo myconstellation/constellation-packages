@@ -68,7 +68,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="VigilanceMeteoFrance.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
