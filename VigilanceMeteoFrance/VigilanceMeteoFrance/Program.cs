@@ -21,7 +21,6 @@ namespace VigilanceMeteoFrance
         public override void OnStart()
         {
             int nbSeconde = 0;
-            int wait = 60;
 
             Task.Factory.StartNew(() =>
             {
@@ -29,43 +28,38 @@ namespace VigilanceMeteoFrance
                 {
                     if (nbSeconde == 0)
                     {
-                        if (!PackageHost.TryGetSettingAsXmlDocument("Departements", out XmlDocument Departements))
+                        if (PackageHost.TryGetSettingAsXmlDocument("Departements", out XmlDocument Departements))
+                        {
+                            foreach (XmlNode departement in Departements.ChildNodes[0])
+                            {                               
+                                if (departement.Name == "departement")
+                                {
+                                    PackageHost.WriteInfo("Getting vigilances for departement {0}", departement.Attributes["number"].Value);
+                                    try
+                                    {
+                                        int id = Convert.ToInt32(departement.Attributes["number"].Value);
+                                        Vigilance vigilance = GetVigilance(id);
+                                        PackageHost.PushStateObject<Vigilance>(departement.Attributes["number"].Value, vigilance);
+                                        PackageHost.WriteInfo("Vigilances for departement {0} done", departement.Attributes["number"].Value);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        PackageHost.WriteError("Unable to get vigilances for departement {0} : {1}", departement.Attributes["number"].Value, ex.Message);
+                                    }
+                                }
+                            }                          
+                        }
+                        else
                         {
                             PackageHost.WriteError("Impossible de récupérer le setting 'Departements' en xml");
-                        }
-
-                        foreach (XmlNode departement in Departements.ChildNodes[0])
-                        {
-                            PackageHost.WriteInfo("Getting vigilances for departement {0}", departement);
-                            if(departement.Name == "departement")
-                            {
-                                try
-                                {
-                                    int id = Convert.ToInt32(departement.Attributes["number"].Value);
-                                    Vigilance vigilance = GetVigilance(id);
-                                    PackageHost.PushStateObject<Vigilance>(departement.Attributes["number"].Value, vigilance);
-                                    PackageHost.WriteInfo("Vigilances for departement {0} done", departement.Attributes["number"].Value);
-                                }
-                                catch (Exception ex)
-                                {
-                                    PackageHost.WriteError("Unable to get vigilances for departement {0} : {1}", departement.Attributes["number"].Value, ex.Message);
-                                }
-                            }
                         }
                     }
                     Thread.Sleep(1000);
                     nbSeconde++;
 
-                    if (PackageHost.TryGetSettingValue<int>("RefreshInterval", out wait))
-                    {
-                        wait = wait * 60;
-                    }
-                    else
-                    { 
-                        PackageHost.WriteError("Impossible de récupérer le setting 'RefreshInterval' en int");
-                    }
+                    int wait = PackageHost.GetSettingValue<int>("RefreshInterval") * 60;
 
-                    if (nbSeconde == (int)wait)
+                    if (nbSeconde == wait)
                     {
                         nbSeconde = 0;
                     }
