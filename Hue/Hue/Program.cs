@@ -35,7 +35,7 @@ namespace Hue
     /// <summary>
     /// Hue Package
     /// </summary>
-    [StateObjectKnownTypes(typeof(Light), typeof(BridgeConfig))]
+    [StateObjectKnownTypes(typeof(Light), typeof(BridgeConfig), typeof(Dictionary<string, List<Scene>>), typeof(Dictionary<string, Group>))]
     public class Program : PackageBase
     {
         private LocalHueClient hueClient = null;
@@ -89,7 +89,52 @@ namespace Hue
                 }
             });
 
-            PackageHost.WriteInfo("Connected to {0}", hueClient.ApiBase);
+            Task.Factory.StartNew(() =>
+            {
+                while (PackageHost.IsRunning)
+                {
+                    try
+                    {
+                        var scenes = hueClient.GetScenesAsync().GetAwaiter().GetResult();
+                        Dictionary<string, List<Scene>> dicSceneByLight = new Dictionary<string, List<Scene>>();
+                        foreach (Scene scene in scenes)
+                        {
+                            foreach (var item in scene.Lights)
+                            {
+                                if (!dicSceneByLight.ContainsKey(item))
+                                {
+                                    dicSceneByLight.Add(item, new List<Scene>());
+                                }
+                                dicSceneByLight[item].Add(scene);
+                            }
+                        }
+                        PackageHost.PushStateObject("scene", dicSceneByLight);
+                    }
+                    catch (Exception ex)
+                    {
+                        PackageHost.WriteError("Error to query scene", ex.ToString());
+                    }
+                    Thread.Sleep(60000);
+                }
+            });
+
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    Dictionary<string, Group> dicGroupById = new Dictionary<string, Group>();
+                    foreach (var item in this.hueClient.GetGroupsAsync().GetAwaiter().GetResult())
+                    {
+                        dicGroupById.Add(item.Id, item);
+                    }
+                    PackageHost.PushStateObject("groups", dicGroupById);
+                }
+                catch (Exception ex)
+                {
+                    PackageHost.WriteError("Error to query scene", ex.ToString());
+                }
+                Thread.Sleep(60000);
+            });       
         }
 
         /// <summary>
@@ -193,6 +238,75 @@ namespace Hue
         public void SendCommandTo(LightCommand command, IEnumerable<string> lightList)
         {
             this.hueClient.SendCommandAsync(command, lightList);
+        }
+
+        /// <summary>
+        /// Set scene for groupId
+        /// </summary>
+        /// <param name="sceneId">Id of scene</param>
+        /// <param name="groupId">Id of group</param>
+        [MessageCallback]
+        public void setScene(string sceneId, string groupId)
+        {
+            SceneCommand sceneCommand = new SceneCommand()
+            {
+                Scene = sceneId
+            };
+            this.hueClient.SendGroupCommandAsync(sceneCommand, groupId);
+        }
+
+        /// <summary>
+        /// Add Light to Scene
+        /// </summary>
+        /// <param name="groupId">Id of groups</param>
+        /// <param name="lightId">Id of light to add</param>
+        [MessageCallback]
+        public void addLightToGroup(string groupId, string lightId)
+        {
+            Group group = this.hueClient.GetGroupAsync(groupId).GetAwaiter().GetResult();
+            List<String> listLight = new List<string>(group.Lights);
+            listLight.Add(lightId);
+            this.hueClient.UpdateGroupAsync(group.Id, listLight);
+        }
+
+        /// <summary>
+        /// Remove Light to Scene
+        /// </summary>
+        /// <param name="groupId">Id of groups</param>
+        /// <param name="lightId">Id of light to remove</param>
+        [MessageCallback]
+        public void removeLightToGroup(string groupId, string lightId)
+        {
+            Group group = this.hueClient.GetGroupAsync(groupId).GetAwaiter().GetResult();
+            List<String> listLight = new List<string>(group.Lights);
+            listLight.Remove(lightId);
+            this.hueClient.UpdateGroupAsync(group.Id, listLight);
+        }
+
+        /// <summary>
+        /// Create Group
+        /// </summary>
+        /// <param name="groupName">group Name</param>
+        /// <param name="lightId">light Id</param>
+        /// <param name="roomClass">Type of room</param>
+        [MessageCallback]
+        public string createGroup(string groupName, string lightId, RoomClass roomClass)
+        {
+            return this.hueClient.CreateGroupAsync(new List<string>()
+            {
+                lightId
+            }, groupName, roomClass).GetAwaiter().GetResult();
+        }
+
+
+        /// <summary>
+        /// Delete group
+        /// </summary>
+        /// <param name="groupId">Id of groups</param>
+        [MessageCallback]
+        public void deleteGroup(string groupId)
+        {
+            this.hueClient.DeleteGroupAsync(groupId);
         }
     }
 }
