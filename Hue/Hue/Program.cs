@@ -23,6 +23,10 @@ namespace Hue
 {
     using Constellation.Package;
     using Q42.HueApi;
+    using Q42.HueApi.ColorConverters;
+    using Q42.HueApi.ColorConverters.Original;
+    using Q42.HueApi.Models;
+    using Q42.HueApi.Models.Groups;
     using System;
     using System.Collections.Generic;
     using System.Threading;
@@ -34,7 +38,7 @@ namespace Hue
     [StateObjectKnownTypes(typeof(Light), typeof(BridgeConfig))]
     public class Program : PackageBase
     {
-        private HueClient hueClient = null;
+        private LocalHueClient hueClient = null;
 
         static void Main(string[] args)
         {
@@ -47,7 +51,7 @@ namespace Hue
         public override void OnStart()
         {
             PackageHost.WriteInfo("Connecting to " + PackageHost.GetSettingValue<string>("BridgeAddress"));
-            hueClient = new HueClient(PackageHost.GetSettingValue<string>("BridgeAddress"));
+            hueClient = new LocalHueClient(PackageHost.GetSettingValue<string>("BridgeAddress"));
             hueClient.Initialize(PackageHost.GetSettingValue<string>("BridgeUsername"));
 
             PackageHost.WriteInfo("Getting configuration");
@@ -109,7 +113,7 @@ namespace Hue
         [MessageCallback]
         public void SetColor(int lightId, int r, int g, int b)
         {
-            this.SendCommandTo(new LightCommand() { On = true }.SetColor(r, g, b), lightId == 0 ? null : new List<string>() { lightId.ToString() });
+            this.SendCommandTo(LightCommandExtensions.SetColor(new LightCommand() { On = true }, new RGBColor(r, g, b)), lightId == 0 ? null : new List<string>() { lightId.ToString() });
         }
 
         /// <summary>
@@ -151,11 +155,11 @@ namespace Hue
             // Get current state
             var light = hueClient.GetLightAsync(lightId.ToString()).GetAwaiter().GetResult();
             // Send command to show alert
-            this.SendCommandTo(new LightCommand()
+            this.SendCommandTo(LightCommandExtensions.SetColor(new LightCommand()
             {
                 On = true,
                 Alert = duration == 0 ? Alert.Once : Alert.Multiple,
-            }.SetColor(r, g, b), new List<string>() { lightId.ToString() });
+            }, new RGBColor(r, g, b)), new List<string>() { lightId.ToString() });
             // Then restore initial state
             Task.Factory.StartNew(() =>
             {
