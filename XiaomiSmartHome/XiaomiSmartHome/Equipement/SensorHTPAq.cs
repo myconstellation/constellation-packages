@@ -1,21 +1,21 @@
 ﻿using Constellation;
 using Constellation.Package;
-using static XiaomiSmartHome.Model.Response;
 using Newtonsoft.Json;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Motuon sensor
+    /// Humidity / Temperature sensor
     /// </summary>
-    [StateObject, XiaomiEquipement("motion")]
-    public class Motion
+    [StateObject, XiaomiEquipement("weather.v1")]
+    public class SensorHTPAq
     {
         /// <summary>
         /// Model type.
         /// </summary>
         [JsonProperty("model")]
-        public string Model { get; set; } = "motion";
+        public string Model { get; set; } = "weather.v1";
 
         /// <summary>
         /// SID (mac adress).
@@ -32,7 +32,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Battery type.
         /// </summary>
-        public string Battery { get; set; } = "CR2450";
+        public string Battery { get; set; } = "CR2032";
 
         /// <summary>
         /// Battery level.
@@ -43,14 +43,14 @@ namespace XiaomiSmartHome.Equipement
         /// Last report.
         /// </summary>
         [JsonProperty("data")]
-        public MotionReport Report { get; set; }
+        public SensorHTPAqReport Report { get; set; }
     }
 
     /// <summary>
-    /// Motion sensor last report
+    /// Humidity / Temperature sensor last report
     /// </summary>
-    [StateObject, XiaomiEquipement("motion_report")]
-    public class MotionReport
+    [StateObject, XiaomiEquipement("weather.v1_report")]
+    public class SensorHTPAqReport
     {
         /// <summary>
         /// Voltage left.
@@ -58,15 +58,21 @@ namespace XiaomiSmartHome.Equipement
         public int Voltage { get; set; }
 
         /// <summary>
-        /// Motion sensor state.
+        /// Temperature level in ºC.
         /// </summary>
-        [JsonProperty("status")]
-        public string Status { get; set; }
+        [JsonProperty("temperature")]
+        public int Temperature { get; set; }
 
         /// <summary>
-        /// Motion sensor state.
+        /// Humidity level in %.
         /// </summary>
-        [JsonProperty("no_motion")]
-        public string NoMotion { get; set; }
+        [JsonProperty("humidity")]
+        public int Humidity { get; set; }
+
+        /// <summary>
+        /// Humidity level in %.
+        /// </summary>
+        [JsonProperty("pressure")]
+        public int Pressure { get; set; }
     }
 }

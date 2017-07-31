@@ -1,33 +1,25 @@
 ﻿using Constellation;
 using Constellation.Package;
-using static XiaomiSmartHome.Model.Response;
 using Newtonsoft.Json;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Motuon sensor
     /// </summary>
-    [StateObject, XiaomiEquipement("motion")]
-    public class Motion
+    [StateObject, XiaomiEquipement("plug")]
+    public class Plug
     {
         /// <summary>
         /// Model type.
         /// </summary>
-        [JsonProperty("model")]
-        public string Model { get; set; } = "motion";
+        public string Model { get; set; } = "plug";
 
         /// <summary>
         /// SID (mac adress).
         /// </summary>
-        [JsonProperty("sid")]
         public string Sid { get; set; }
-
-        /// <summary>
-        /// SID (mac adress).
-        /// </summary>
-        [JsonProperty("short_id")]
-        public string ShortId { get; set; }
 
         /// <summary>
         /// Battery type.
@@ -42,15 +34,14 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report.
         /// </summary>
-        [JsonProperty("data")]
-        public MotionReport Report { get; set; }
+        public PlugReport Report { get; set; }
     }
 
     /// <summary>
     /// Motion sensor last report
     /// </summary>
-    [StateObject, XiaomiEquipement("motion_report")]
-    public class MotionReport
+    [StateObject, XiaomiEquipement("plug_report")]
+    public class PlugReport
     {
         /// <summary>
         /// Voltage left.
@@ -60,13 +51,22 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Motion sensor state.
         /// </summary>
-        [JsonProperty("status")]
         public string Status { get; set; }
 
         /// <summary>
         /// Motion sensor state.
         /// </summary>
-        [JsonProperty("no_motion")]
-        public string NoMotion { get; set; }
+        public int InUse { get; set; }
+
+        /// <summary>
+        /// Motion sensor state.
+        /// </summary>
+        [JsonProperty("power_consumed")]
+        public float Power_Consume { get; set; }
+
+        /// <summary>
+        /// Motion sensor state.
+        /// </summary>
+        public float Load_Power { get; set; }
     }
 }

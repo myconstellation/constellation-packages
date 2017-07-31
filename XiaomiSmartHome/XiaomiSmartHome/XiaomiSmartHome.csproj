@@ -55,12 +55,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Equipement\Gateway.cs" />
+    <Compile Include="Equipement\Equipement.cs" />
+    <Compile Include="Equipement\MagnetAq.cs" />
+    <Compile Include="Equipement\Plug.cs" />
+    <Compile Include="Equipement\Button.cs" />
+    <Compile Include="Equipement\SensorHTPAq.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\EquipementsList.cs" />
     <Compile Include="Equipement\Motion.cs" />
     <Compile Include="Equipement\Magnet.cs" />
     <Compile Include="Equipement\SensorHT.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="..\..\..\..\..\Desktop\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,13 +82,13 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="XiaomiSmartHome.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishServer="http://192.168.1.50:8088" PublishMethod="ConstellationServer" />
+      <UserProperties PublishMethod="ConstellationServer" PublishServer="http://192.168.1.50:8088" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

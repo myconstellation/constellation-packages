@@ -1,6 +1,5 @@
 ﻿using Constellation;
 using Constellation.Package;
-using Newtonsoft.Json;
 using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
@@ -8,13 +7,13 @@ namespace XiaomiSmartHome.Equipement
     /// <summary>
     /// Magnet sensor
     /// </summary>
-    [StateObject, XiaomiEquipement("magnet")]
-    public class Magnet
+    [StateObject, XiaomiEquipement("sensor_magnet.aq2")]
+    public class MagnetAq
     {
         /// <summary>
         /// Model type
         /// </summary>
-        public string Model { get; set; } = "magnet";
+        public string Model { get; set; } = "sensor_magnet.aq2";
 
         /// <summary>
         /// SID (mac adress)
@@ -34,25 +33,23 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report
         /// </summary>
-        public MagnetReport Report { get; set; }
+        public MagnetAqReport Report { get; set; }
     }
 
     /// <summary>
     /// Magnet sensor last report
     /// </summary>
-    [StateObject, XiaomiEquipement("magnet_report")]
-    public class MagnetReport
+    [StateObject, XiaomiEquipement("sensor_magnet.aq2_report")]
+    public class MagnetAqReport
     {
         /// <summary>
         /// Voltage left
         /// </summary>
-        [JsonProperty("voltage")]
         public int Voltage { get; set; }
 
         /// <summary>
         /// Magnet sensor state
         /// </summary>
-        [JsonProperty("status")]
         public string Status { get; set; }
     }
 }
