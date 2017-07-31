@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace XiaomiSmartHome.Model
 {
@@ -43,7 +44,7 @@ namespace XiaomiSmartHome.Model
         /// Last equipement values
         /// </summary>
         [JsonProperty("data")]
-        public string Data { get; set; }
+        public Dictionary<string, string> Data { get; set; }
   
         /// <summary>
         /// Get type by model name in attribute
