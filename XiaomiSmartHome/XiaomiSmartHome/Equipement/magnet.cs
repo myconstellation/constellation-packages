@@ -46,13 +46,16 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Voltage left
         /// </summary>
-        [JsonProperty("voltage")]
         public int Voltage { get; set; }
 
         /// <summary>
         /// Magnet sensor state
         /// </summary>
-        [JsonProperty("status")]
         public string Status { get; set; }
+
+        /// <summary>
+        /// Motion sensor state.
+        /// </summary>
+        public string NoClose { get; set; }
     }
 }

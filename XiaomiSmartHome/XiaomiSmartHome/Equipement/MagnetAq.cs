@@ -1,5 +1,6 @@
 ﻿using Constellation;
 using Constellation.Package;
+using Newtonsoft.Json;
 using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
@@ -51,5 +52,10 @@ namespace XiaomiSmartHome.Equipement
         /// Magnet sensor state
         /// </summary>
         public string Status { get; set; }
+
+        /// <summary>
+        /// Motion sensor state.
+        /// </summary>
+        public string NoClose { get; set; }
     }
 }

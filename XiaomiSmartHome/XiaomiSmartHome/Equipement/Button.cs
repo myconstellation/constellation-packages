@@ -1,5 +1,6 @@
 ﻿using Constellation;
 using Constellation.Package;
+using Newtonsoft.Json;
 using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
@@ -33,7 +34,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report.
         /// </summary>
-        public SensorHTPAqReport Report { get; set; }
+        public ButtonReport Report { get; set; }
     }
 
     /// <summary>

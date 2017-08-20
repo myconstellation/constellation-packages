@@ -44,7 +44,7 @@ namespace XiaomiSmartHome.Model
         /// Last equipement values
         /// </summary>
         [JsonProperty("data")]
-        public Dictionary<string, string> Data { get; set; }
+        public string Data { get; set; }
   
         /// <summary>
         /// Get type by model name in attribute

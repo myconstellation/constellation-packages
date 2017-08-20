@@ -1,6 +1,7 @@
 ﻿using Constellation;
 using Constellation.Package;
 using static XiaomiSmartHome.Model.Response;
+using Newtonsoft.Json;
 
 namespace XiaomiSmartHome.Equipement
 {

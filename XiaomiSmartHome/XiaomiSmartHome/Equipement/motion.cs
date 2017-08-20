@@ -14,19 +14,16 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Model type.
         /// </summary>
-        [JsonProperty("model")]
         public string Model { get; set; } = "motion";
 
         /// <summary>
         /// SID (mac adress).
         /// </summary>
-        [JsonProperty("sid")]
         public string Sid { get; set; }
 
         /// <summary>
         /// SID (mac adress).
         /// </summary>
-        [JsonProperty("short_id")]
         public string ShortId { get; set; }
 
         /// <summary>
@@ -42,7 +39,6 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report.
         /// </summary>
-        [JsonProperty("data")]
         public MotionReport Report { get; set; }
     }
 
@@ -60,13 +56,11 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Motion sensor state.
         /// </summary>
-        [JsonProperty("status")]
         public string Status { get; set; }
 
         /// <summary>
         /// Motion sensor state.
         /// </summary>
-        [JsonProperty("no_motion")]
         public string NoMotion { get; set; }
     }
 }

@@ -46,16 +46,19 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Voltage left.
         /// </summary>
+        [JsonProperty("voltage")]
         public int Voltage { get; set; }
 
         /// <summary>
         /// Motion sensor state.
         /// </summary>
+        [JsonProperty("status")]
         public string Status { get; set; }
 
         /// <summary>
         /// Motion sensor state.
         /// </summary>
+        [JsonProperty("inuse")]
         public int InUse { get; set; }
 
         /// <summary>
@@ -67,6 +70,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Motion sensor state.
         /// </summary>
+        [JsonProperty("load_power")]
         public float Load_Power { get; set; }
     }
 }
