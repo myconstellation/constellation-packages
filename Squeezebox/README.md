@@ -71,6 +71,8 @@ Declare the package in a Sentinel with the following configuration :
 
 ### Settings
  - ServerUrl (string - required) : IP adress of the Logitech Media Server with port (for exemple : 192.168.0.50:9000)
+ - ServerUser (string) : Username of the Logitech Media Server if password security is set
+ - ServerPassword (string) : Password of the Logitech Media Server if password security is set
 
 License
 ----
