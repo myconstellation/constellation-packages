@@ -18,15 +18,11 @@
 
     public class HttpServerController : IServerController<ServerCommand>, IDisposable
     {
-        public string RemoteKey { get; set; }
         public WebClient HttpClient { get; set; }
         const string HttpApiUrlTemplateServer = "{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[{0}]]}}";
 
-        public HttpServerController(string remoteKey)
+        public HttpServerController()
         {
-            if (string.IsNullOrEmpty(remoteKey))
-                throw new InvalidOperationException("Remote Key must be provided");
-            this.RemoteKey = remoteKey;
             this.HttpClient = new WebClient();
         }
 
@@ -41,8 +37,21 @@
 
         public string Requete(string command)
         {
-            string url = "http://" + this.RemoteKey + "/jsonrpc.js";
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            string url = string.Format("http://{0}/jsonrpc.js", PackageHost.GetSettingValue("ServerUrl"));
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
+            if (PackageHost.TryGetSettingValue<string>("ServerUser", out string user))
+            {
+                if (PackageHost.TryGetSettingValue<string>("ServerPassword", out string password))
+                {
+                    string credentials = string.Format("{0}:{1}", PackageHost.GetSettingValue("ServerUser"), PackageHost.GetSettingValue("ServerPassword"));
+                    request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials)));
+                    request.PreAuthenticate = true;
+                }
+                else
+                {
+                    PackageHost.WriteError("Impossible de récupérer le setting 'Password' en string");
+                }
+            }
             request.Method = "POST";
             request.ContentType = @"application/json";
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();

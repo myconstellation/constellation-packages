@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Squeezebox"
-         Version="1.1"
+         Version="1.2"
          Author="Hydro"
          Icon="Squeezebox.png"
          URL="http://www.myconstellation.io"
@@ -14,5 +14,7 @@
   </Compatibility>
   <Settings>
     <Setting name="ServerUrl" isRequired="true" type="string" description="Your Logitech Media Server URL"/>
+    <Setting name="ServerUser" isRequired="false" type="string" description="Your Logitech Media Server user if set"/>
+    <Setting name="ServerPassword" isRequired="false" type="string" description="Your Logitech Media Server password if set"/>  
   </Settings>
 </Package>
