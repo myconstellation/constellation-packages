@@ -80,7 +80,6 @@
                 {
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
-                        PackageHost.WriteInfo("{0}", reader.ReadToEnd());
                         return reader.ReadToEnd();
                     }
                 }
