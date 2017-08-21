@@ -17,16 +17,19 @@ This package create one StateObject by town's id in settings. Each StateObject h
 Declare the package in a Sentinel with the following configuration :
 
 ```xml
-<package name="RainHourForecast">
-	<settings>
-		<setting key="Towns" value="751110" />
-	</settings>
+<package name="RainHourForecast" enable="true" autoStart="true">
+    <settings>
+        <setting key="TownsId">
+            <content>
+                <towns xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest">
+                    <town id="751110" />
+                    <town id="691230" />
+                </towns>
+            </content>
+        </setting>
+    </settings>
 </package>
 ```
-
-You can specify multiple towns i.e. :
-
-```<setting key="Towns" value="751120,751110" />```
 
 By default the package queries the rain forecast every 1 hour but you can customize this interval (the value is in minutes) :
 
