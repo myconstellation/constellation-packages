@@ -15,15 +15,18 @@ Declare the package in a Sentinel with the following configuration :
 
 ```xml
 <package name="VigilanceMeteoFrance">
-	<settings>
-		<setting key="Departements" value="77,91" />
-	</settings>
+    <settings>
+        <setting key="Departements">
+            <content>
+                <departements xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest">
+                    <departement number="75" />
+                    <departement number="29" />
+                </departements>
+            </content>
+        </setting>
+    </settings>
 </package>
 ```
-
-You can specify multiple departements i.e. :
-
-```<setting key="Departements" value="75,92" />```
 
 By default the package queries the vigilances every 1 hour but you can customize this interval (the value is in minutes) :
 

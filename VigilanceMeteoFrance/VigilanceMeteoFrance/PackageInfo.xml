@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="VigilanceMeteoFrance"
-         Version="1.1"
+         Version="1.2"
          Author="Hydro"
          Icon="VigilanceMeteoFrance.png"
          URL="http://www.myconstellation.io"
@@ -14,8 +14,15 @@
     </Platforms>
   </Compatibility>
   <Settings>
-    <Setting name="Departements" isRequired="false" type="String" description="Departements' number comma separated"/>
     <Setting name="RefreshInterval" isRequired="false" defaultValue="60" type="Int32" description="Refresh interval to get vigilance in minutes"/>
     <Setting name="Url" isRequired="false" defaultValue="http://vigilance.meteofrance.com/data/NXFR33_LFPW_.xml" type="String" description="Url from meteo france to get vigilance"/>
+    <Setting name="Departements" isRequired="false" type="ConfigurationSection">
+      <defaultContent>
+        <departements>
+          <departement number="75" />
+          <departement number="29" />
+        </departements>
+      </defaultContent>
+    </Setting>
   </Settings>
 </Package>
