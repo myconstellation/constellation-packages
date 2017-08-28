@@ -78,7 +78,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Squeezebox.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup />

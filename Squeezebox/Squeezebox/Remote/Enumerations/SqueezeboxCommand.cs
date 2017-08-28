@@ -110,6 +110,10 @@
         [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"clear\"]]}}")]
         Playlist_Clear,
 
+        //// Move song from playlist by index
+        [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"playlist\",\"move\",\"{1}\",\"{2}\"]]}}")]
+        Playlist_Move,
+
         //// Power Off
         [Command("{{\"id\":1,\"method\":\"slim.request\",\"params\":[\"{0}\",[\"power\",\"0\"]]}}")]
         Power_Off,
