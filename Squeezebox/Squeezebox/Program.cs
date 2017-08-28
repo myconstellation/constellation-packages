@@ -16,7 +16,7 @@ namespace Squeezebox
         /// <summary>
         ///  Main remote controller
         /// </summary>
-        public IRemoteController<SqueezeboxCommand, string, string> RemoteController { get; set; }
+        public IRemoteController<SqueezeboxCommand, string, string, string> RemoteController { get; set; }
 
         /// <summary>
         ///  Main server controller
@@ -44,12 +44,13 @@ namespace Squeezebox
         /// Send a command to a Squeezebox.
         /// </summary>
         /// <param name="command">The command.</param>
-        /// <param name="value">The command value if necessary.</param>
+        /// <param name="value">Command value if necessary.</param>
+        /// <param name="value2">Command second value if necessary.</param>
         /// <param name="squeezebox">Squeezebox(s) name(s) comma separed or empty to target all.</param>
         [MessageCallback]
-        public void SendToSqueezebox(SqueezeboxCommand command, string squeezebox = "", string value = "")
+        public void SendToSqueezebox(SqueezeboxCommand command, string squeezebox = "", string value = "", string value2 = "")
         {
-            this.RemoteController.SendKey(command, squeezebox, value);
+            this.RemoteController.SendKey(command, squeezebox, value, value2);
         }
 
         /// <summary>

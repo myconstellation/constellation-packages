@@ -11,7 +11,7 @@
     using System.Web.Script.Serialization;
     using System.Text;
 
-    public class HttpSqueezeboxController : IRemoteController<SqueezeboxCommand, string, string>, IDisposable
+    public class HttpSqueezeboxController : IRemoteController<SqueezeboxCommand, string, string, string>, IDisposable
     {
         public WebClient HttpClient { get; set; }
 
@@ -20,7 +20,7 @@
             this.HttpClient = new WebClient();
         }
 
-        public void SendKey(SqueezeboxCommand command, string squeezebox = "", string value = "none")
+        public void SendKey(SqueezeboxCommand command, string squeezebox = "", string value = "none", string value2 = "none")
         {
             if (string.IsNullOrEmpty(squeezebox))
             {
@@ -30,7 +30,7 @@
                 RootObject root = (RootObject)js.Deserialize(players_result, typeof(RootObject));
                 foreach (var player in root.result.players_loop)
                 {
-                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player.playerid, value);
+                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player.playerid, value, value2);
                     PackageHost.WriteInfo("Send {0} to {1}", command, player.name);
                     string request_result = this.Requete(command_player);
                 }
@@ -40,7 +40,7 @@
                 var players = squeezebox.Split(new[]{ ',' }, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string player in players)
                 {
-                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player, value);
+                    string command_player = this.GenerateCommandFromUrlToSqueezebox(command, player, value, value2);
                     PackageHost.WriteInfo("Send {0} to {1}", command, player);
                     string request_result = this.Requete(command_player);
                 }
@@ -48,7 +48,7 @@
 
         }
 
-        public string Requete(string command, string value = "")
+        public string Requete(string command, string value = "", string value2 = "")
         {
             string url = string.Format("http://{0}/jsonrpc.js", PackageHost.GetSettingValue("ServerUrl"));
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
@@ -97,9 +97,9 @@
             }
         }
 
-        public string GenerateCommandFromUrlToSqueezebox(SqueezeboxCommand command, string squeezebox, string value)
+        public string GenerateCommandFromUrlToSqueezebox(SqueezeboxCommand command, string squeezebox, string value, string value2)
         {
-            return string.Format(command.To<CommandAttribute>(), squeezebox, value);                   
+            return string.Format(command.To<CommandAttribute>(), squeezebox, value, value2);                   
         }
 
         public void Dispose()
