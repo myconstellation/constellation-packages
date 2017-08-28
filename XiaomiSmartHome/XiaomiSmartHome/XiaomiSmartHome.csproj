@@ -57,17 +57,13 @@
     <Compile Include="Equipement\Gateway.cs" />
     <Compile Include="Equipement\MagnetAq.cs" />
     <Compile Include="Equipement\Plug.cs" />
-    <Compile Include="Equipement\Button.cs" />
     <Compile Include="Equipement\SensorHTPAq.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\EquipementsList.cs" />
     <Compile Include="Equipement\Motion.cs" />
     <Compile Include="Equipement\Magnet.cs" />
     <Compile Include="Equipement\SensorHT.cs" />
-    <Compile Include="..\..\..\..\..\Desktop\Program.cs">
-      <Link>Program.cs</Link>
-    </Compile>
-    <Compile Include="Model\Send.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -88,7 +84,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishPath="C:\Users\Alpha\Desktop" PublishMethod="LocalFile" />
+      <UserProperties PublishServer="http://192.168.1.50:8088" PublishMethod="ConstellationServer" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

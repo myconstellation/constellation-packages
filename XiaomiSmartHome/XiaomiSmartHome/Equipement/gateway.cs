@@ -1,13 +1,12 @@
 ﻿using Constellation.Package;
 using Constellation;
-using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Mon StateObject complexe
     /// </summary>
-    [StateObject, XiaomiEquipement("gateway")]
+    [StateObject]
     public class Gateway
     {
         /// <summary>
@@ -39,7 +38,7 @@ namespace XiaomiSmartHome.Equipement
     /// <summary>
     /// Gateway last report
     /// </summary>
-    [StateObject, XiaomiEquipement("gateway_report")]
+    [StateObject]
     public class GatewayReport
     {
         /// <summary>

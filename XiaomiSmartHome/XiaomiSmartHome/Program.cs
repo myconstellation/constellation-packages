@@ -11,9 +11,6 @@ using XiaomiSmartHome.Equipement;
 using System.Reflection;
 using System.Text;
 using System.Web.Script.Serialization;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
 
 namespace XiaomiSmartHome
 {
@@ -28,9 +25,6 @@ namespace XiaomiSmartHome
         //// Equipements array
         private string[] equipements;
 
-        dynamic Equipements = new Dictionary<string, Dictionary<string, dynamic>>();
-        Dictionary<string, dynamic> Gateway = new Dictionary<string, dynamic>();
-        
         //// Call at start
         static void Main(string[] args)
         {
@@ -44,9 +38,7 @@ namespace XiaomiSmartHome
             
             //// Creating a new gateway report
             gateway = new Gateway();
-          // test.Add(gateway.Sid, gateway);
-          // Gateway group = (Gateway)test[gateway.Sid];
-            //PackageHost.WriteWarn("test : {0}", group.Model);
+            
             //// Pushing gateway SO
             PackageHost.PushStateObject<Gateway>("Gateway", gateway);
             
@@ -61,8 +53,6 @@ namespace XiaomiSmartHome
         //// Listening multicast to get reports
         private void StartListener()
         {
-
-            
             //// Launching multicast listener on gateway multicast IP
             PackageHost.WriteInfo("Starting to listen multicast on gateway multicast IP");
             UdpClient client = new UdpClient();
@@ -94,10 +84,7 @@ namespace XiaomiSmartHome
                             //// We print response if heartbeat logs is true
                             if (PackageHost.GetSettingValue<bool>("HeartbeatLog"))
                             {
-                                if (data.Model != "gateway")
-                                {
-                                    PackageHost.WriteInfo("{0}", response);
-                                }
+                                PackageHost.WriteInfo("{0}", response);
                             }
 
                             //// If heartbeat model is gateway, we save the data part to Gateway class
@@ -118,64 +105,9 @@ namespace XiaomiSmartHome
                                         gateway.Sid = data.Sid;
                                     }
                                 }
-
-                                if (!Gateway.ContainsKey(gateway.Sid))
-                                {
-                                    Gateway.Add(gateway.Sid, gateway);
-                                    Equipements.Add("gateway", Gateway);                                                                     
-                                }
-                                Gateway test3 = Equipements["gateway"][gateway.Sid];
-
+                                
                                 //// We push the gateway SO
                                 PackageHost.PushStateObject<Gateway>("Gateway", gateway);
-                            }
-                            else
-                            {
-                                if (equipements.Contains(data.Sid))
-                                {
-                                    //// Try to get setting based on equipement SID
-                                    if (!PackageHost.TryGetSettingValue<string>(data.Sid, out name))
-                                    {
-                                        name = data.Sid;
-                                    }
-
-                                    //// Create report instance of model class 
-                                    Type modelReportType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == data.Model + "_report");
-
-                                    if (modelReportType == null)
-                                    {
-                                        PackageHost.WriteError("{0}_report type not found !", data.Model);
-                                        return;
-                                    }
-
-                                    //// Deserialize data part of the report
-                                    dynamic test = Equipements[data.Model][data.Sid].Report;
-
-                                    PackageHost.WriteWarn("Heartbeat from {0}", data.Model);
-
-                                    Type type = test.GetType();
-                                    PropertyInfo[] properties = type.GetProperties();
-
-                                    foreach (PropertyInfo property in properties)
-                                    {
-                                        PackageHost.WriteError("Name: " + property.Name + ", Value: " + property.GetValue(test, null));
-                                    }
-
-                                    //dynamic data3 = JsonConvert.PopulateObject(Convert.ToString(data.Data), test);
-                                    dynamic data3 = JsonConvert.DeserializeObject(Convert.ToString(data.Data), modelReportType);
-
-                                    Type type2 = data3.GetType();
-                                    PropertyInfo[] properties2 = type2.GetProperties();
-
-                                    foreach (PropertyInfo property in properties2)
-                                    {
-                                        Equipements[data.Model][data.Sid].Report.GetType().GetProperty(property.Name).SetValue(Equipements[data.Model][data.Sid].Report, property.GetValue(data3, null));
-                                        PackageHost.WriteWarn("Name: " + property.Name + ", Value: " + property.GetValue(data3, null));
-                                    }
-                                    //Equipements[data.Model][data.Sid].Report = data3;
-
-                                    PackageHost.PushStateObject<dynamic>(name, Equipements[data.Model][data.Sid]);
-                                }
                             }
                         }
                         //// If command equal report
@@ -202,58 +134,7 @@ namespace XiaomiSmartHome
                                 //// If equipement sid is in the equipements list
                                 if (equipements.Contains(data.Sid))
                                 {
-                                    //this.SaveEquipement(data.Sid);
-
-                                    /// Try to get setting based on equipement SID
-                                    if (!PackageHost.TryGetSettingValue<string>(data.Sid, out name))
-                                    {
-                                        name = data.Sid;
-                                    }
-
-                                    //// Create report instance of model class 
-                                    Type modelReportType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == data.Model + "_report");
-
-                                    if (modelReportType == null)
-                                    {
-                                        PackageHost.WriteError("{0}_report type not found !", data.Model);
-                                        return;
-                                    }
-
-
-
-                                    //// Deserialize data part of the report
-                                    dynamic test = Equipements[data.Model][data.Sid];
-                                    JsonConvert.PopulateObject(response, test);
-
-                                    //PackageHost.WriteWarn("Report from {0}", data.Model);
-
-                                    Type type = test.GetType();
-                                    PropertyInfo[] properties = type.GetProperties();
-
-                                    //foreach (PropertyInfo property in properties)
-                                   // {
-                                    //    PackageHost.WriteError("Name: " + property.Name + ", Value: " + property.GetValue(test, null));
-                                    //}
-
-                                    ////dynamic data3 = JsonConvert.PopulateObject(Convert.ToString(data.Data), test);
-                                    //dynamic data3 = JsonConvert.DeserializeObject(Convert.ToString(data.Data), modelReportType);
-
-                                    //Type type2 = data3.GetType();
-                                    //PropertyInfo[] properties2 = type2.GetProperties();
-
-                                    //foreach (PropertyInfo property in properties2)
-                                    //{
-                                    //    //if (property.GetValue(data3, null) != null)
-                                    //    //{
-                                    //    //    Equipements[data.Model][data.Sid].Report.GetType().GetProperty(property.Name).SetValue(Equipements[data.Model][data.Sid].Report, property.GetValue(data3, null));
-                                    //    //    PackageHost.WriteWarn("Name: " + property.Name + ", Value: " + property.GetValue(data3, null));
-                                    //    //}
-                                    //    bool x = data3.Properties.Contains(property);
-                                    //    PackageHost.WriteWarn(x);
-                                    //}
-                                    //Equipements[data.Model][data.Sid].Report = data3;
-
-                                    PackageHost.PushStateObject<dynamic>(name, Equipements[data.Model][data.Sid]);
+                                    this.SaveEquipement(data.Sid);
                                 }
                             }
                         }
@@ -300,7 +181,7 @@ namespace XiaomiSmartHome
             Type modelReportType = null;
             dynamic model = null;
             dynamic modelReport = null;
-
+            
             //// Try to get setting based on equipement SID
             if (!PackageHost.TryGetSettingValue<string>(mac, out name))
             {
@@ -311,7 +192,7 @@ namespace XiaomiSmartHome
             {
                 //// Get response from read function
                 read = this.ReadEquipement(mac);
-
+                
                 //// Create instance of model class
                 modelType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == read.Model);
 
@@ -322,7 +203,7 @@ namespace XiaomiSmartHome
                 }
 
                 model = Activator.CreateInstance(modelType);
-
+                
                 //// Create report instance of model class 
                 modelReportType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == read.Model + "_report");
 
@@ -333,10 +214,6 @@ namespace XiaomiSmartHome
                 }
 
                 modelReport = Activator.CreateInstance(modelReportType);
-
-
-               // Gateway test3 = Equipements["gateway"][gateway.Sid];
-//                PackageHost.WriteWarn("{0}", test3.Token);
             }
             catch (Exception ex)
             {
@@ -346,41 +223,14 @@ namespace XiaomiSmartHome
 
             //// Deserialize data part of the report
             dynamic data = JsonConvert.DeserializeObject(Convert.ToString(read.Data), modelReportType);
-
+           
             //// Add informations to Report class
             model.BatteryLevel = System.Convert.ToInt32(System.Math.Floor((data.Voltage - 2800) * 0.33));
             model.Sid = mac;
             model.Report = data;
-          
+            
             //// Pushing the SO
             PackageHost.PushStateObject<dynamic>(name, model);
-
-            if (!Equipements.ContainsKey(read.Model))
-            {
-                PackageHost.WriteInfo("ne contient pas {0}", read.Model);
-                dynamic test = new Dictionary<string, dynamic>();
-                test.Add(mac, model);
-                Equipements.Add(read.Model, test);
-            }
-            else
-            {
-               
-                if (Equipements[read.Model].ContainsKey(mac))
-                {
-                    PackageHost.WriteInfo("{0} contient {1}", read.Model,mac);
-
-                    Equipements[read.Model][mac] = model;
-                }
-                else
-                {
-                    PackageHost.WriteInfo("{0} ne contient pas {1}",read.Model, mac);
-
-                    dynamic test = new Dictionary<string, dynamic>();
-                    test.Add(mac, model);
-                    Equipements[read.Model] = test;
-                }
-            }
-
         }
 
         /// <summary>
@@ -477,6 +327,6 @@ namespace XiaomiSmartHome
             JavaScriptSerializer result = new JavaScriptSerializer();
             return result.Deserialize<string[]>(data);
         }
+
     }
 }
-

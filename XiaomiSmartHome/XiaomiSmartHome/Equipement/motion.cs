@@ -1,7 +1,6 @@
 ﻿using Constellation;
 using Constellation.Package;
 using static XiaomiSmartHome.Model.Response;
-using Newtonsoft.Json;
 
 namespace XiaomiSmartHome.Equipement
 {
@@ -20,11 +19,6 @@ namespace XiaomiSmartHome.Equipement
         /// SID (mac adress).
         /// </summary>
         public string Sid { get; set; }
-
-        /// <summary>
-        /// SID (mac adress).
-        /// </summary>
-        public string ShortId { get; set; }
 
         /// <summary>
         /// Battery type.
@@ -56,11 +50,6 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Motion sensor state.
         /// </summary>
-        public string Status { get; set; }
-
-        /// <summary>
-        /// Motion sensor state.
-        /// </summary>
-        public string NoMotion { get; set; }
+        public string Status { get; set; }      
     }
 }
