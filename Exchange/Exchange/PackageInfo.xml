@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Exchange"
-         Version="1.2.2"
+         Version="1.2.4"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Icon="exchange.png"
@@ -10,11 +10,11 @@
   <Settings>
     <Setting name="ExchangeVersion" description="Defines the available Exchange release version" isRequired="false" type="String" defaultValue="Exchange2013_SP1" />
     <Setting name="RefreshInterval" description="Interval in minute to refresh calendars" isRequired="false" type="Int32" defaultValue="15" />
-    <Setting name="EWSServiceUrl" description="Echange WebService URI" isRequired="true" type="String" />
+    <Setting name="EWSServiceUrl" description="Exchange WebService URI" isRequired="true" type="String" />
     <Setting name="AccountName" description="Account used to connect to EWS" isRequired="true" type="String" />
     <Setting name="AccountPassword" description="Password used to connect to EWS" isRequired="true" type="String" />
     <Setting name="AccountDomain" description="Domain used to connect to EWS" isRequired="true" type="String" />
-    <Setting name="CalendarAccounts" description="List of accounts (with ';' as separator)" isRequired="true" type="String" />
+    <Setting name="CalendarAccounts" description="List of calendar's accounts (semicolon separated list) to push to Constellation. Each account is defined by the primary SMTP address" isRequired="true" type="String" defaultValue="user1@mydomain.net;user2@mydomain2.net" ignoreDefaultValue="true" />
     <Setting name="NumberOfDaysToInclude" description="Number of days to include to the CalendarView" isRequired="false" type="Int32" defaultValue="5" />
   </Settings>
 </Package>

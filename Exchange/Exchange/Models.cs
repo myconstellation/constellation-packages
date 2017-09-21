@@ -66,7 +66,7 @@ namespace Exchange
         /// </summary>
         public string Subject { get; set; }
         /// <summary>
-        /// The list of To recipients for the e-mail message (separated by semicolon ;)
+        /// The list of To recipients for the e-mail message (semicolon separated list)
         /// </summary>
         public string To { get; set; }
         /// <summary>

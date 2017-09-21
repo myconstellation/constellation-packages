@@ -56,31 +56,39 @@ namespace Exchange
                 {
                     try
                     {
-                        var mailboxName = accountName.Substring(0, accountName.IndexOf('@'));
-                        // Find appointements
-                        var calendarFolderId = new FolderId(WellKnownFolderName.Calendar, new Mailbox(accountName));
-                        var calendarView = new CalendarView(DateTime.Now, DateTime.Now.AddDays(numberOfDaysToInclude));
-                        var appointments = this.CreateExchangeService().FindAppointments(calendarFolderId, calendarView).Items.Select(item => new Appointment()
+                        int atIndex = accountName.IndexOf('@');
+                        if (atIndex <= 0)
                         {
-                            Id = item.Id.UniqueId,
-                            Subject = item.Subject,
-                            //Body = item.Body.Text,
-                            Start = item.Start,
-                            End = item.End,
-                            Location = item.Location,
-                            Duration = item.Duration
-                        }).ToList();
-                        // Push appointements list
-                        PackageHost.PushStateObject("Appointments4" + mailboxName, appointments,
-                            lifetime: (int)TimeSpan.FromMinutes(PackageHost.GetSettingValue<int>("RefreshInterval")).TotalSeconds * 2,
-                            metadatas: new Dictionary<string, object>()
+                            PackageHost.WriteError("Invalid account: " + accountName);
+                        }
+                        else
+                        {
+                            var mailboxName = accountName.Substring(0, atIndex);
+                            // Find appointements
+                            var calendarFolderId = new FolderId(WellKnownFolderName.Calendar, new Mailbox(accountName));
+                            var calendarView = new CalendarView(DateTime.Now, DateTime.Now.AddDays(numberOfDaysToInclude));
+                            var appointments = this.CreateExchangeService().FindAppointments(calendarFolderId, calendarView).Items.Select(item => new Appointment()
                             {
+                                Id = item.Id.UniqueId,
+                                Subject = item.Subject,
+                                //Body = item.Body.Text,
+                                Start = item.Start,
+                                End = item.End,
+                                Location = item.Location,
+                                Duration = item.Duration
+                            }).ToList();
+                            // Push appointements list
+                            PackageHost.PushStateObject("Appointments4" + mailboxName, appointments,
+                                lifetime: (int)TimeSpan.FromMinutes(PackageHost.GetSettingValue<int>("RefreshInterval")).TotalSeconds * 2,
+                                metadatas: new Dictionary<string, object>()
+                                {
                                 { "StartDate", calendarView.StartDate },
                                 { "EndDate", calendarView.EndDate },
                                 { "Mailbox", accountName }
-                            });
-                        // And log ...
-                        PackageHost.WriteInfo("Calendar of '{0}' pushed into the Constellation for the next {1} day(s) ({2} appointement(s)).", accountName, numberOfDaysToInclude, appointments.Count);
+                                });
+                            // And log ...
+                            PackageHost.WriteInfo("Calendar of '{0}' pushed into the Constellation for the next {1} day(s) ({2} appointement(s)).", accountName, numberOfDaysToInclude, appointments.Count);
+                        }
                     }
                     catch (Exception ex)
                     {
