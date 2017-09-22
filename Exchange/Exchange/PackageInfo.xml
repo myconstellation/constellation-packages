@@ -1,12 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Exchange"
-         Version="1.2.4"
+         Version="1.2.5"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Icon="exchange.png"
          Description="Microsoft Exchange connector for Constellation">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
   <Settings>
     <Setting name="ExchangeVersion" description="Defines the available Exchange release version" isRequired="false" type="String" defaultValue="Exchange2013_SP1" />
     <Setting name="RefreshInterval" description="Interval in minute to refresh calendars" isRequired="false" type="Int32" defaultValue="15" />
