@@ -146,6 +146,28 @@ namespace Xbmc
         }
 
         /// <summary>
+        /// Start playback of a song with the given ID
+        /// </summary>
+        /// <param name="xbmcName">Name of the XBMC.</param>
+        /// <param name="itemId">The item identifier.</param>
+        [MessageCallback]
+        public bool OpenSong(string xbmcName, int itemId)
+        {
+            return this.Execute(xbmcName, connection => connection.Player.OpenAsync(songId: itemId));
+        }
+
+        /// <summary>
+        /// Start playback of an item
+        /// </summary>
+        /// <param name="xbmcName">Name of the XBMC.</param>
+        /// <param name="item>The item.</param>
+        [MessageCallback]
+        public bool OpenItem(string xbmcName, Core.Model.PlaylistItem item)
+        {
+            return this.Execute(xbmcName, connection => connection.Player.OpenAsync(item));
+        }
+
+        /// <summary>
         /// Pauses or unpause playback
         /// </summary>
         /// <param name="xbmcName">Name of the XBMC.</param>

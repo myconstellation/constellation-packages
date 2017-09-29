@@ -8,6 +8,8 @@ This XBMC/Kodi Package allow you to connect your XBMC/Kodi hosts to Constellatio
 ### MessageCallbacks
   - OpenMovie(xbmcName, itemId) : Start playback of a movie with the given ID
   - OpenEpisode(xbmcName, itemId) : Start playback of an episode with the given ID
+  - OpenSong(xbmcName, itemId) : Start playback of a song with the given ID
+  - OpenItem(xbmcName, item) : Start playback of a playlist's item
   - PlayPause(xbmcName) : Pauses or unpause playback
   - Stop(xbmcName) : Stops playback
   - SendInputKey(xbmcName, inputKey) : Sends the input key to the XBMC host
