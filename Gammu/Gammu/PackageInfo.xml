@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Gammu"
-         Version="1.1"
+         Version="1.2"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="GSM gateway with Python-Gammu to send and received SMS and Call"
          Icon="icon.png"
          EnableControlHub="false">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net40">
     <Platforms>
       <Platform id="Win32NT" isCompliant="false" />
       <Platform id="Unix" isCompliant="true" />

@@ -1,6 +1,6 @@
 ﻿'''
  Constellation Python proxy
- Version: 1.8.0.16091 (31 Mar 2016)
+ Version: 1.8.3.17264 (21 Sep 2017)
  Web site: http://www.myConstellation.io
  Copyright (C) 2014-2017 - Sebastien Warin <http://sebastien.warin.fr>	   	  
  
@@ -20,7 +20,7 @@
  under the License.
 '''
 
-import inspect, json, sys, time, uuid, zmq
+import inspect, json, sys, datetime, time, uuid, zmq
 from collections import namedtuple
 from enum import Enum
 from threading import Thread
@@ -68,12 +68,14 @@ PackageAssemblyVersion = None
 ConstellationClientVersion = None
 LastStateObjects = None
 
+_exitCode = None
 _messageCallbacks = []
 _stateObjectCallbacks = []
 _messageCallbacksList = {}
 _stateObjectCallbacksList = {}
 _ctx = zmq.Context()
 _socket = _ctx.socket(zmq.PAIR)
+_socket.linger = 1000 #ms
 _socket.connect("tcp://127.0.0.1:" + str(int(sys.argv[1])))
 time.sleep(1.0)
 _poller = zmq.Poller()
@@ -217,25 +219,30 @@ def _onReceiveMessage(key, context, data):
             mc(key, context, data)
     except Exception, e:
         WriteError("Error while dispatching message '%s': %s" % (key, str(e)))
-        pass
 
 def _onStateObjectUpdated(stateObject):
     try:
         for callback in _stateObjectCallbacks:
             callback(stateObject)
     except Exception, e:
-        WriteError("Error while dispatching stateObject : %s" % str(e))
-        pass
+        WriteError("Error while dispatching StateObject : %s" % str(e))
 
-def _exit():
+def _exit(exitCode = 0):
     global IsRunning
-    IsRunning = False
+    global _exitCode
+    WriteWarn("Exiting %s with code:%s" % (sys.argv[0], exitCode))
     if OnExitCallback:
         try:
-            OnExitCallback()
+            OnExitCallback(exitCode)
         except:
             pass
-    sys.exit()
+    time.sleep(0.1) 
+    if _exitCode == 0:
+        _exitCode = exitCode
+        IsRunning = False
+    else:
+        IsRunning = False
+        sys.exit(exitCode)
 
 def _dispatcherMessage():
     global Settings
@@ -249,12 +256,20 @@ def _dispatcherMessage():
     global PackageAssemblyVersion
     global ConstellationClientVersion
     global LastStateObjects
+    lastPing = datetime.datetime.now()
     while IsRunning:
         try:
             socks = dict(_poller.poll(1000))
+            if ((datetime.datetime.now() > lastPing) and (datetime.datetime.now() - lastPing).seconds >= 30):
+                WriteError("No ping from the Package Host since %s seconds" % (datetime.datetime.now() - lastPing).seconds)
+                _exit(2)                
+                break
             if socks:
                 message = _socket.recv_json()
-                if message['Type'] == "PACKAGESTATE":
+                if message['Type'] == "PING":
+                    lastPing = datetime.datetime.now()
+                    _socket.send_string("PONG")
+                elif message['Type'] == "PACKAGESTATE":
                     HasControlManager = message['HasControlManager']
                     IsConnected = message['IsConnected']
                     IsStandAlone = message['IsStandAlone']
@@ -271,15 +286,15 @@ def _dispatcherMessage():
                     if OnLastStateObjectsReceived:
                         try:
                             OnLastStateObjectsReceived()
-                        except:
-                            pass
+                        except Exception, e:
+                            WriteError("Error while invoking the OnLastStateObjectsReceived event handler : %s" % str(e))
                 elif message['Type'] == "CONNECTIONSTATE":
                     IsConnected = message['IsConnected']
                     if OnConnectionChanged:
                         try:
                             OnConnectionChanged()
-                        except:
-                            pass
+                        except Exception, e:
+                            WriteError("Error while invoking the OnConnectionChanged event handler : %s" % str(e))
                 elif message['Type'] == "MSG":
                     def _addSendResponse(tuple):
                         tuple.SendResponse = lambda ctx, rsp: SendResponse(ctx, rsp)
@@ -301,11 +316,14 @@ def _dispatcherMessage():
                         WriteError("Unable to deserialize the StateObject")
                     _onStateObjectUpdated(so)
                 elif message['Type'] == "EXIT":
-                    _exit()
-        except:
-            pass
+                    _exit(0)
+                    break
+        except Exception, e:
+            WriteError("Internal loop error : %s" % str(e))
 
 def Start(onStart = None):
+    global _exitCode
+    _exitCode = 0
     StartAsync()
     if onStart:
         msgCb = len(_messageCallbacks)
@@ -313,11 +331,13 @@ def Start(onStart = None):
             onStart()
         except Exception, e:
             WriteError("Fatal error: %s" % str(e))
-            _exit()
+            _exit(1)
         if len(_messageCallbacks) > msgCb:
             DeclarePackageDescriptor()
     while IsRunning:
         time.sleep(0.1)
+    if _exitCode:
+        sys.exit(_exitCode)
 
 def StartAsync():
     global IsRunning
@@ -330,5 +350,5 @@ def StartAsync():
     IsRunning = True
     t1.start()
     RefreshSettings()
-    while Settings is None:
+    while IsRunning and Settings is None:
         time.sleep(1.0)
