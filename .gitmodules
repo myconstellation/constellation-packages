@@ -10,3 +10,6 @@
 [submodule "Mikrotik/tik4net"]
 	path = Mikrotik/tik4net
 	url = https://github.com/sebastienwarin/tik4net
+[submodule "HWMonitor/LibreHardwareMonitor"]
+	path = HWMonitor/LibreHardwareMonitor
+	url = https://github.com/LibreHardwareMonitor/LibreHardwareMonitor

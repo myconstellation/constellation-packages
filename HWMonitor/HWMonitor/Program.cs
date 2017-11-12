@@ -62,7 +62,7 @@ namespace HWMonitor
             this.computer.FanControllerEnabled = true;
             this.computer.GPUEnabled = true;
             this.computer.HDDEnabled = true;
-            this.computer.NICEnabled = true;
+            this.computer.MainboardEnabled = true;
             this.computer.RAMEnabled = true;
 
             this.pushHardwareListOnChange = true;

@@ -1,6 +1,6 @@
 # HWMonitor Package for Constellation
 
-Hardware Monitor for Windows devices
+Hardware Monitor for Windows devices based on LibreHardwareMonitor (https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)
 
 ### StateObjects
   - All hardware list & sensors of your computer are pushed as StateObjects

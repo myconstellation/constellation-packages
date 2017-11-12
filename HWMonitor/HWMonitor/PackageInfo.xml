@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="HWMonitor"
-         Version="1.2.1"
-         Author="Sébastien Warin"
+         Version="2.0"
+         Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
-         Description="Hardware Monitor for Windows devices"
+         Description="Hardware Monitor for Windows devices based on LibreHardwareMonitor"
          Icon="monitor.png">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
     <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
       <Platform id="Unix" isCompliant="false" />
       <Platform id="MacOS" isCompliant="false" />
     </Platforms>

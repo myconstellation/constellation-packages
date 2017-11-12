@@ -179,8 +179,8 @@ namespace HWMonitor
                         return "W";
                     case SensorType.Data:
                         return "GB";
-                    case SensorType.DataRate:
-                        return "Bytes/sec";
+                    case SensorType.SmallData:
+                        return "MB";
                     default:
                         return string.Empty;
                 }
