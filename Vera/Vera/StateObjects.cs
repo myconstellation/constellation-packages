@@ -214,6 +214,10 @@ namespace VeraNet
     }
 
     [StateObject]
+    /// <summary>
+    /// Vera Thermostat
+    /// </summary>
+    /// <seealso cref="VeraNet.Thermostat" />
     public class Thermostat: PowerMeter
     {
         /// <summary>
@@ -223,18 +227,43 @@ namespace VeraNet
         /// The temperature.
         /// </value>
         public double Temperature { get; set; }
+        /// <summary>
+        /// Termostats state
+        /// </summary>
         public Objects.Devices.Thermostat.ModeState Hvacstate { get; set; }
+        /// <summary>
+        /// Thermostats mode
+        /// </summary>
         public Objects.Devices.Thermostat.ModeTarget Mode { get; set; }
+        /// <summary>
+        /// Check if device is responding
+        /// </summary>
         public bool CommFailure { get; set; }
         public double Setpoint { get; set; }
+        /// <summary>
+        /// Heat Temperature
+        /// </summary>
         public double Heat { get; set; }
+        /// <summary>
+        /// Cool Temperature
+        /// </summary>
         public double Cool { get; set; }
     }
 
     [StateObject]
+    /// <summary>
+    /// Vera DoorLock
+    /// </summary>
+    /// <seealso cref="VeraNet.DoorLock" />
     public class DoorLock : Device
     {
+        /// <summary>
+        /// Get door is locked
+        /// </summary>
         public bool Locked { get; set; }
+        /// <summary>
+        /// Check if device is responding
+        /// </summary>
         public bool CommFailure { get; set; }
     }
 

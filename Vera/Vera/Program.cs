@@ -201,6 +201,11 @@ namespace Vera
         }
 
         [MessageCallback]
+        /// <summary>
+        /// Sets temperature for thermostats
+        /// </summary>
+        /// <param name="request">the requests.</param>
+        /// <returns></returns>
         private bool SetTemperature(DeviceTemperatureRequest request)
         {
             VeraNet.Objects.Devices.Thermostat thermostatDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.Thermostat;
@@ -217,6 +222,11 @@ namespace Vera
         }
 
         [MessageCallback]
+        /// <summary>
+        /// Sets the termostat Mode
+        /// </summary>
+        /// <param name="request">the requests.</param>
+        /// <returns></returns>
         private bool SetThermostatMode(DeviceThermostatModeRequest request)
         {
             VeraNet.Objects.Devices.Thermostat thermostatDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.Thermostat;
@@ -233,6 +243,11 @@ namespace Vera
         }
 
         [MessageCallback]
+        /// <summary>
+        /// Set Door lock
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         private bool SetDoorLock(DeviceDoorLockRequest request)
         {
             VeraNet.Objects.Devices.DoorLock doorlock = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.DoorLock;
@@ -470,6 +485,9 @@ namespace Vera
             public WindowCoveringAction Action { get; set; }
         }
 
+        /// <summary>
+        /// Mode target for themostats
+        /// </summary>
         public enum ModeTarget
         {
             Off = 0,
@@ -504,6 +522,9 @@ namespace Vera
             /// </summary>
             public int DeviceID { get; set; }
 
+            /// <summary>
+            /// Thermostat Mode
+            /// </summary>
             public ModeTarget ModeTarget { get; set; }
         }
 
@@ -517,6 +538,9 @@ namespace Vera
             /// </summary>
             public int DeviceID { get; set; }
 
+            /// <summary>
+            /// value for lock of door
+            /// </summary>
             public bool Locked { get; set; }
         }
     }
