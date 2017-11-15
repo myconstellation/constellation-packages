@@ -200,6 +200,61 @@ namespace Vera
             }
         }
 
+        [MessageCallback]
+        private bool SetTemperature(DeviceTemperatureRequest request)
+        {
+            VeraNet.Objects.Devices.Thermostat thermostatDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.Thermostat;
+            if (thermostatDevice != null)
+            {
+                PackageHost.WriteInfo("Set temperature {0} to {1} ({2})", request.Temperature, thermostatDevice.Name, thermostatDevice.Id);
+                return thermostatDevice.SetTemperature(request.Temperature);
+            }
+            else
+            {
+                PackageHost.WriteError("The device #'{0}' not found !", request.DeviceID);
+                return false;
+            }
+        }
+
+        [MessageCallback]
+        private bool SetThermostatMode(DeviceThermostatModeRequest request)
+        {
+            VeraNet.Objects.Devices.Thermostat thermostatDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.Thermostat;
+            if (thermostatDevice != null)
+            {
+                PackageHost.WriteInfo("Set ModeTarget {0} to {1} ({2})", request.ModeTarget, thermostatDevice.Name, thermostatDevice.Id);
+                return thermostatDevice.SetModeTarget(request.ModeTarget.ToString());
+            }
+            else
+            {
+                PackageHost.WriteError("The device #'{0}' not found !", request.DeviceID);
+                return false;
+            }
+        }
+
+        [MessageCallback]
+        private bool SetDoorLock(DeviceDoorLockRequest request)
+        {
+            VeraNet.Objects.Devices.DoorLock doorlock = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.DoorLock;
+            if (doorlock != null)
+            {
+                PackageHost.WriteInfo("Set locked {0} to {1} ({2})", request.Locked, doorlock.Name, doorlock.Id);
+                if (request.Locked)
+                {
+                    return doorlock.LockDoor();
+                }
+                else
+                {
+                    return doorlock.UnLockDoor();
+                }
+            }
+            else
+            {
+                PackageHost.WriteError("The device #'{0}' not found !", request.DeviceID);
+                return false;
+            }
+        }
+
         private void PushDevice(VeraNet.Objects.Device device)
         {
             if (device != null && !string.IsNullOrEmpty(device.Name))
@@ -214,7 +269,42 @@ namespace Vera
                     { "Type", device.GetType().Name }
                 };
 
-                if (device is VeraNet.Objects.Devices.TemperatureSensor)
+                if (device is VeraNet.Objects.Devices.DoorLock)
+                {
+                    PackageHost.PushStateObject(device.Name, new DoorLock()
+                    {
+                        CommFailure = ((VeraNet.Objects.Devices.DoorLock)device).CommFailure,
+                        Locked = ((VeraNet.Objects.Devices.DoorLock)device).Locked,
+                        Id = device.Id,
+                        BatteryLevel = device.BatteryLevel,
+                        Room = device.Room != null ? device.Room.Name : string.Empty,
+                        Category = device.Category.Name,
+                        LastUpdate = device.LastUpdate,
+                        State = device.State
+                    }, metadatas: metadata);
+                }
+                else if (device is VeraNet.Objects.Devices.Thermostat)
+                {
+                    PackageHost.PushStateObject(device.Name, new Thermostat()
+                    {
+                        Temperature = ((VeraNet.Objects.Devices.Thermostat)device).Temperature,
+                        Watts = ((VeraNet.Objects.Devices.Thermostat)device).Watts,
+                        KWh = ((VeraNet.Objects.Devices.Thermostat)device).KWh,
+                        Hvacstate = ((VeraNet.Objects.Devices.Thermostat)device).Hvacstate,
+                        CommFailure = ((VeraNet.Objects.Devices.Thermostat)device).CommFailure,
+                        Cool = ((VeraNet.Objects.Devices.Thermostat)device).Cool,
+                        Heat = ((VeraNet.Objects.Devices.Thermostat)device).Heat,
+                        Mode = ((VeraNet.Objects.Devices.Thermostat)device).Mode,
+                        Setpoint = ((VeraNet.Objects.Devices.Thermostat)device).Setpoint,
+                        Id = device.Id,
+                        BatteryLevel = device.BatteryLevel,
+                        Room = device.Room != null ? device.Room.Name : string.Empty,
+                        Category = device.Category.Name,
+                        LastUpdate = device.LastUpdate,
+                        State = device.State
+                    }, metadatas: metadata);
+                }
+                else if (device is VeraNet.Objects.Devices.TemperatureSensor)
                 {
                     PackageHost.PushStateObject(device.Name, new TemperatureSensor()
                     {
@@ -378,6 +468,56 @@ namespace Vera
             /// The command to action : Up (0), Down(1), Stop(2)
             /// </summary>
             public WindowCoveringAction Action { get; set; }
+        }
+
+        public enum ModeTarget
+        {
+            Off = 0,
+            HeatOn = 1,
+            CoolOn = 2,
+            AutoChangeOver = 3
+        }
+
+        /// <summary>
+        /// Z-Wave Device request
+        /// </summary>
+        public class DeviceTemperatureRequest
+        {
+            /// <summary>
+            /// The device identifier.
+            /// </summary>
+            public int DeviceID { get; set; }
+
+            /// <summary>
+            /// The temperature to set
+            /// </summary>
+            public double Temperature { get; set; }
+        }
+
+        /// <summary>
+        /// Z-Wave Device request
+        /// </summary>
+        public class DeviceThermostatModeRequest
+        {
+            /// <summary>
+            /// The device identifier.
+            /// </summary>
+            public int DeviceID { get; set; }
+
+            public ModeTarget ModeTarget { get; set; }
+        }
+
+        /// <summary>
+        /// Z-Wave Device request
+        /// </summary>
+        public class DeviceDoorLockRequest
+        {
+            /// <summary>
+            /// The device identifier.
+            /// </summary>
+            public int DeviceID { get; set; }
+
+            public bool Locked { get; set; }
         }
     }
 }

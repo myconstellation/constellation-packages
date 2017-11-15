@@ -213,6 +213,31 @@ namespace VeraNet
         public int Level { get; set; }
     }
 
+    [StateObject]
+    public class Thermostat: PowerMeter
+    {
+        /// <summary>
+        /// Gets or sets the temperature.
+        /// </summary>
+        /// <value>
+        /// The temperature.
+        /// </value>
+        public double Temperature { get; set; }
+        public Objects.Devices.Thermostat.ModeState Hvacstate { get; set; }
+        public Objects.Devices.Thermostat.ModeTarget Mode { get; set; }
+        public bool CommFailure { get; set; }
+        public double Setpoint { get; set; }
+        public double Heat { get; set; }
+        public double Cool { get; set; }
+    }
+
+    [StateObject]
+    public class DoorLock : Device
+    {
+        public bool Locked { get; set; }
+        public bool CommFailure { get; set; }
+    }
+
     /// <summary>
     /// Vera Window Covering
     /// </summary>
