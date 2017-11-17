@@ -32,9 +32,9 @@ For example :
     <setting key="Monitoring">
       <content>
         [
-            { Name: "Google Public DNS", Type: "Ping", Hostname: "8.8.8.8", Interval: 10 },
-            { Name: "Local Constellation Service", Type: "Tcp",  Hostname: "localhost", Port: 8088 },
-            { Name: "Github.com", Type: "Http", Address: "https://github.com/myconstellation", Regex: "Constellation", Interval: 30 }
+           { "Name": "Google Public DNS", "Type": "Ping", "Hostname": "8.8.8.8", "Interval": 10 },
+           { "Name": "Local Constellation Service", "Type": "Tcp",  "Hostname": "localhost", "Port": 8088 },
+           { "Name": "Github.com", "Type": "Http", "Address": "https://github.com/myconstellation", "Regex": "Constellation", "Interval": 30 }
         ]
       </content>
     </setting>
@@ -44,27 +44,27 @@ For example :
 
 To monitor a network equipement with ICMP echo :
 ```json
-{ Name: "Ping My Machine", Type: "Ping", Hostname: "myhostname.mydomain.com" }
+{ "Name": "Ping My Machine", "Type": "Ping", "Hostname": "myhostname.mydomain.com" }
 ```
 
 By default the resource is check every minute but you can override this interval (in second):
 ```json
-{ Name: "Ping My Machine", Type: "Ping", Hostname: "myhostname.mydomain.com", Interval:10 }
+{ "Name": "Ping My Machine", "Type": "Ping", "Hostname": "myhostname.mydomain.com", "Interval":10 }
 ```
 
 To monitor a network TCP service :
 ```json
-{ Name: "My Web Server", Type: "TCP", Hostname: "myhostname.mydomain.com", Port: 80, Interval:10 }
+{ "Name": "My Web Server", "Type": "TCP", "Hostname": "myhostname.mydomain.com", "Port": 80, "Interval":10 }
 ```
 
 To monitor a Web page :
 ```json
-{ Name: "Check Sebastien.warin.fr", Type: "Http", Address: "http://sebastien.warin.fr" }
+{ "Name": "Check Sebastien.warin.fr", "Type": "Http", "Address": "http://sebastien.warin.fr" }
 ```
 
 You can also add a regex to check the HTTP response content w/ or wo/ custom interval :
 ```json
-{ Name: "Check Sebastien.warin.fr", Type: "Http", Address: "http://sebastien.warin.fr", Regex: "Le blog personnel et technique de Sebastien Warin", Interval: 30 }
+{ "Name": "Check Sebastien.warin.fr", "Type": "Http", "Address": "http://sebastien.warin.fr", "Regex": "Le blog personnel et technique de Sebastien Warin", "Interval": 30 }
 ```
 
 Every resource is pushed as StateObject and contain the result (boolean) and the response time (long).
