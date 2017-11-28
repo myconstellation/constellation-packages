@@ -46,7 +46,12 @@ namespace PerfCounter
                 {
                     try
                     {
-                        var perfCounter = new PerformanceCounter(counter.CategoryName, counter.CounterName, true);
+                        var perfCounter = new PerformanceCounter()
+                        {
+                            CategoryName = counter.CategoryName,
+                            CounterName = counter.CounterName,
+                            ReadOnly = true
+                        };
                         if (!string.IsNullOrEmpty(counter.InstanceName))
                         {
                             perfCounter.InstanceName = counter.InstanceName;

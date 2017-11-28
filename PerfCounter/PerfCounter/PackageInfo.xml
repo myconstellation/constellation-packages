@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="PerfCounter"
          Icon="perfcounter.png"
-         Version="1.0"
+         Version="1.0.2"
          Author="Sébastien Warin"
          URL="http://sebastien.warin.fr"         
          Description="Inject Windows Performance Counters into Constellation">
@@ -18,6 +18,7 @@
       <defaultContent>
         <perfCounterSection xmlns="urn:PerfCounter">
           <perfCounters>
+            <!-- For more examples : https://github.com/myconstellation/constellation-packages/tree/master/PerfCounter -->            
             <!-- Processor -->
             <perfCounter id="ProcessorTime" categoryName="Processor" counterName="% Processor Time" instanceName="_Total" />
             <perfCounter id="ProcessorQueueLength" categoryName="System" counterName="Processor Queue Length" />
@@ -39,6 +40,50 @@
             <perfCounter id="IISGetRequestPerSec" categoryName="Web Service" counterName="Get Requests/sec" instanceName="_Total"  />
             <perfCounter id="IISPostRequestPerSec" categoryName="Web Service" counterName="Post Requests/sec" instanceName="_Total"  />
             <perfCounter id="IISCurrentConnections" categoryName="Web Service" counterName="Current Connections" instanceName="_Total"  />
+            <!-- Constellation Server / HTTP requests -->
+            <perfCounter id="ConstellationHttpRequest" categoryName="Constellation Server" counterName="# HTTP Requests / sec" instanceName="default" />
+            <perfCounter id="ConstellationHttpRequestCount" categoryName="Constellation Server" counterName="Total HTTP Requests" instanceName="default" />
+            <!-- Constellation Server / Authorization middleware -->
+            <perfCounter id="ConstellationAccessGranted" categoryName="Constellation Server" counterName="# Access granted / sec" instanceName="default" />
+            <perfCounter id="ConstellationAccessGrantedCount" categoryName="Constellation Server" counterName="Total Access granted" instanceName="default" />
+            <perfCounter id="ConstellationAccessDenied" categoryName="Constellation Server" counterName="# Access denied / sec" instanceName="default" />
+            <perfCounter id="ConstellationAccessDeniedCount" categoryName="Constellation Server" counterName="Total Access denied" instanceName="default" />
+            <perfCounter id="ConstellationAccessChecked" categoryName="Constellation Server" counterName="# Check access / sec" instanceName="default" />
+            <perfCounter id="ConstellationAccessCheckedCount" categoryName="Constellation Server" counterName="Total Check access" instanceName="default" />
+            <!-- Constellation Server / StateObjects provider -->
+            <perfCounter id="ConstellationPushStateObject" categoryName="Constellation Server" counterName="# PushStateObject / sec" instanceName="default" />
+            <perfCounter id="ConstellationPushStateObjectCount" categoryName="Constellation Server" counterName="Total PushStateObject" instanceName="default" />
+            <perfCounter id="ConstellationUpdateStateObject" categoryName="Constellation Server" counterName="# UpdateStateObject / sec" instanceName="default" />
+            <perfCounter id="ConstellationUpdateStateObjectCount" categoryName="Constellation Server" counterName="Total UpdateStateObject" instanceName="default" />
+            <perfCounter id="ConstellationRequestStateObjects" categoryName="Constellation Server" counterName="# RequestStateObjects /sec" instanceName="default" />
+            <perfCounter id="ConstellationRequestStateObjectsCount" categoryName="Constellation Server" counterName="Total RequestStateObjects" instanceName="default" />
+            <perfCounter id="ConstellationSubscribeStateObjects" categoryName="Constellation Server" counterName="# SubscribeStateObjects / sec" instanceName="default" />
+            <perfCounter id="ConstellationSubscribeStateObjectsCount" categoryName="Constellation Server" counterName="Total SubscribeStateObjects" instanceName="default" />
+            <perfCounter id="ConstellationStateObjectsCount" categoryName="Constellation Server" counterName="Current StateObjects Count" instanceName="default" />
+            <perfCounter id="ConstellationStateObjectSubscriptionCount" categoryName="Constellation Server" counterName="Current StateObject Subscriptions" instanceName="default" />
+            <!-- Constellation Server / Messaging -->
+            <perfCounter id="ConstellationSendMessage" categoryName="Constellation Server" counterName="# SendMessage / sec" instanceName="default" />
+            <perfCounter id="ConstellationSendMessageCount" categoryName="Constellation Server" counterName="Total SendMessage" instanceName="default" />
+            <perfCounter id="ConstellationReceiveMessage" categoryName="Constellation Server" counterName="# ReceiveMessage / sec" instanceName="default" />
+            <perfCounter id="ConstellationReceiveMessageCount" categoryName="Constellation Server" counterName="Total ReceiveMessage" instanceName="default" />
+            <!-- Constellation Server / Logging -->
+            <perfCounter id="ConstellationWriteLog" categoryName="Constellation Server" counterName="# WriteLog / sec" instanceName="default" />
+            <perfCounter id="ConstellationWriteLogCount" categoryName="Constellation Server" counterName="Total WriteLog" instanceName="default" />
+            <!-- Constellation Server / Packages -->
+            <perfCounter id="ConstellationPackageConnections" categoryName="Constellation Server" counterName="Total Package connections" instanceName="default" />
+            <perfCounter id="ConstellationPackageDisconnections" categoryName="Constellation Server" counterName="Total Package disconnections" instanceName="default" />
+            <perfCounter id="ConstellationPackagesConnected" categoryName="Constellation Server" counterName="Current Packages connected" instanceName="default" />
+            <!-- Constellation Server / Sentinels -->
+            <perfCounter id="ConstellationSentinelConnections" categoryName="Constellation Server" counterName="Total Sentinel connections" instanceName="default" />
+            <perfCounter id="ConstellationSentinelDisconnections" categoryName="Constellation Server" counterName="Total Sentinel disconnections" instanceName="default" />
+            <perfCounter id="ConstellationSentinelsConnected" categoryName="Constellation Server" counterName="Current Sentinels connected" instanceName="default" />
+            <!-- Constellation Server / Consumers -->
+            <perfCounter id="ConstellationConsumerConnections" categoryName="Constellation Server" counterName="Total Consumers connections" instanceName="default" />
+            <perfCounter id="ConstellationConsumerDisconnections" categoryName="Constellation Server" counterName="Total Consumers disconnections" instanceName="default" />
+            <perfCounter id="ConstellationConsumerConnected" categoryName="Constellation Server" counterName="Current Consumers connected" instanceName="default" />
+            <!-- Constellation Server / API REST -->
+            <perfCounter id="ConstellationWebApiSubscriptionCount" categoryName="Constellation Server" counterName="Current subscriptions (HTTP REST API)" instanceName="default" />
+            <perfCounter id="ConstellationWebApiRequestInProcess" categoryName="Constellation Server" counterName="Current long-polling requests (HTTP REST API)" instanceName="default" />
           </perfCounters>
         </perfCounterSection>
       </defaultContent>
