@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="LightSensor"
+         Version="1.2.1"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Light sensor for Raspberry Pi"
+         Icon="shining-sun.png"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net40">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="false" />
+      <Platform id="Unix" isCompliant="true" />
+      <Platform id="MacOS" isCompliant="false" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Interval" isRequired="false" type="Int32" defaultValue="10" description="Interval to read sensors in second" />
+    <Setting name="PhotoResistorPin" isRequired="false" type="Int32" defaultValue="18" description="The photoresistor's pin (BCM mode)" />
+    <Setting name="PhotoResistorMaxValue" isRequired="false" type="Int32" defaultValue="30000" description="The max value for the photo resistor sensor" />
+    <Setting name="EnablePhotoResistor" isRequired="false" type="Boolean" defaultValue="true" description="Enable the photo resistor sensor" />
+    <Setting name="EnableTSL2561" isRequired="false" type="Boolean" defaultValue="true" description="Enable the TSL2561 sensor" />
+  </Settings>
+</Package>
