@@ -13,18 +13,21 @@ This package works with DHT11, DHT22 or AM2302 for Raspberry Pi.
 Before deploy this package on a Raspberry Pi :
 
   - Activate I2C
-
-```sudo raspi-config```
+```
+sudo raspi-config
+```
 
  - Install dependencies
-
-```sudo apt-get install build-essential python-dev git python-pip RPi.GPIO```
+```
+sudo apt-get install build-essential python-dev git python-pip RPi.GPIO
+```
 
  - Install Adafruit_Python_DHT library
-
-``git clone https://github.com/adafruit/Adafruit_Python_DHT.git
+```
+git clone https://github.com/adafruit/Adafruit_Python_DHT.git
 cd Adafruit_Python_DHT
-sudo python setup.py install``
+sudo python setup.py install
+```
 
  - Declare the package in a RPi sentinel with the following configuration :
 ```xml
