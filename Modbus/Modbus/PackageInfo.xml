@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Modbus"
+         Version="1.0.1"
+         Icon="modbus.png"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Raspberry Pi Modbus connector for Constellation"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net40">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="false" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Port" type="String" defaultValue="/dev/ttyAMA0" description="UART port" />
+    <Setting name="BaudRate" type="Int32" defaultValue="9600" description="UART baud rate" />
+    <Setting name="PinDE" type="Int32" description="BCM pin DE" isRequired="true" />
+    <Setting name="PinRE" type="Int32" description="BCM pin RE" isRequired="true" />
+    <Setting name="ModbusDebug" type="Boolean" description="Enable the RS485 debug mode" defaultValue="false" />
+    <Setting name="Devices" description="The modbus devices to request" type="JsonObject" isRequired="false" ignoreDefaultValue="true">
+      <defaultContent>
+        [
+          {
+            "Name": "My DZT meter", "SlaveID":1, "RegisterAddress":0, "RegistersCount":19, "RequestInterval": 5000, "StateObjectTypeName":"DZT",
+              "Properties": [
+                { "Name": "Volt", "Selector": "registers[0]/10.0", "Type":"Float", "Description": "Voltage (V)" },
+                { "Name": "Ampere", "Selector": "registers[1]/10.0", "Type":"Float", "Description": "Current (A)" },
+                { "Name": "Hz", "Selector": "registers[2]/10.0", "Type":"Float", "Description": "Frequency (Hz)" },
+                { "Name": "Watt", "Selector": "registers[3]", "Type":"Float", "Description": "Active power (W)" },
+                { "Name": "var", "Selector": "registers[4]", "Type":"Float", "Description": "Reactive power (var)" },
+                { "Name": "VA", "Selector": "registers[5]", "Type":"Float", "Description": "Apparent power (VA)" },
+                { "Name": "PF", "Selector": "registers[6]/10.0", "Type":"Float", "Description": "Power Factor" },
+                { "Name": "kWh_Total_In", "Selector": "(registers[7]+registers[8])/100.0", "Type":"Float", "Description": "Total imported active energy (kWh)" },
+                { "Name": "Kvarh_Total_In", "Selector": "(registers[17]+registers[18])/100.0", "Type":"Float", "Description": "Total imported reactive energy (kvarh)" }
+              ]
+          }
+        ]
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
