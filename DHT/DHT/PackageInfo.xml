@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="DHT"
+         Version="1.2.0"
+         Icon="thermometer.png"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="DHT11, DHT22 or AM2302 for Raspberry Pi (See the README.md before deploy this package on a Pi)"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net40">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="false" />
+      <Platform id="MacOS" isCompliant="false" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Interval" isRequired="false" type="Int32" defaultValue="10" description="Interval to read sensors in second" />
+    <Setting name="SensorPin" isRequired="true" type="Int32" defaultValue="4" description="The sensor's pin (BCM mode)" />
+    <Setting name="SensorType" isRequired="true" type="String" defaultValue="DHT22" description="The sensor's type (type should be set to DHT11, DHT22, or AM2302)" />
+  </Settings>
+</Package>
