@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="LightSensor"
-         Version="1.2.2"
+         Version="1.2.4"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Light sensor for Raspberry Pi"
