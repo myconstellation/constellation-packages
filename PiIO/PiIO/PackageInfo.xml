@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="PiIO"
+         Version="1.0.1"
+         Icon="circuit.png"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Digital I/O manager for Raspberry Pi"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net40">
+    <Platforms>
+      <Platform id="MacOS" isCompliant="false" />
+      <Platform id="Win32NT" isCompliant="false" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Configuration" type="JsonObject" isRequired="true" description="I/O configuration">
+      <defaultContent>
+        {
+          "PinMode": "BCM",
+          "Inputs": [
+            { "Name": "Button1", "Pin": 4 },
+            { "Name": "Button2", "Pin": 5, "Pull": "Up" },
+            { "Name": "Button2", "Pin": 6, "Pull": "Down" },
+          ],
+          "Outputs": [
+            { "Name": "Relay1", "Pin": 17 },
+            { "Name": "Relay2", "Pin": 18, "InitialState": true }
+          ]
+        }
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
