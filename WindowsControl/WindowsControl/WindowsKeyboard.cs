@@ -32,7 +32,11 @@ namespace WindowsControl
         {
             VolumeDown = 174,
             VolumeUp = 175,
-            VolumeMute = 173
+            VolumeMute = 173,
+            MediaNextTrack = 176,
+            MediaPreviousTrack = 177,
+            MediaPlayPause = 179,
+            MediaStop = 178
         }
 
         public static void SendKey(Keys key)
