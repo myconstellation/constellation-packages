@@ -147,7 +147,6 @@ namespace WindowsControl
             WindowsKeyboard.SendKey(WindowsKeyboard.Keys.VolumeMute);
         }
 
-
         /// <summary>
         /// Increase volume.
         /// </summary>
@@ -164,6 +163,42 @@ namespace WindowsControl
         public void VolumeDown()
         {
             WindowsKeyboard.SendKey(WindowsKeyboard.Keys.VolumeDown);
+        }
+
+        /// <summary>  
+        /// Next track  
+        /// </summary>  
+        [MessageCallback]
+        public void MediaNextTrack()
+        {
+            WindowsKeyboard.SendKey(WindowsKeyboard.Keys.MediaNextTrack);
+        }
+
+        /// <summary>  
+        /// Previous track  
+        /// </summary>  
+        [MessageCallback]
+        public void MediaPreviousTrack()
+        {
+            WindowsKeyboard.SendKey(WindowsKeyboard.Keys.MediaPreviousTrack);
+        }
+
+        /// <summary>  
+        /// Toogle play pause of the current media  
+        /// </summary>  
+        [MessageCallback]
+        public void MediaPlayPause()
+        {
+            WindowsKeyboard.SendKey(WindowsKeyboard.Keys.MediaPlayPause);
+        }
+
+        /// <summary>  
+        /// Stop the curent media  
+        /// </summary>  
+        [MessageCallback]
+        public void MediaStop()
+        {
+            WindowsKeyboard.SendKey(WindowsKeyboard.Keys.MediaStop);
         }
 
         /// <summary>
