@@ -9,6 +9,7 @@ Connect your Orange Set-top box (Orange LiveBox TV) to Constellation
   - SwitchTo(string epgId) : Switches to EPG identifier
   - SwitchToChannel(Channel channel) : Switches to channel
   - SendKey(Key key, PressKeyMode mode = PressKeyMode.SinglePress) : Sends the remote controller key
+  - RefreshState() : Refreshes the current state
 
 ### Installation
 

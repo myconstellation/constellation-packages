@@ -54,13 +54,12 @@ namespace OrangeTV
                 // Update the current state
                 PackageHost.PushStateObject("State", this.orangeBox.CurrentState);
             };
+            this.orangeBox.StateUpdated += (s, e) => PackageHost.PushStateObject("State", this.orangeBox.CurrentState);
             // Get the current state
             var task = this.orangeBox.GetCurrentState();
             if (task.Wait(10000) && task.IsCompleted && !task.IsFaulted)
             {
-                // Push the current state
-                PackageHost.PushStateObject("State", task.Result);
-                // Listening event
+                // Listening events
                 this.orangeBox.StartListening();
                 // Read!
                 PackageHost.WriteInfo($"Connected to {task.Result.FriendlyName} ({task.Result.MacAddress})");
@@ -77,6 +76,16 @@ namespace OrangeTV
         public override void OnPreShutdown()
         {
             this.orangeBox.StopListening();
+        }
+
+        /// <summary>
+        /// Refreshes the current state.
+        /// </summary>
+        /// <returns></returns>
+        [MessageCallback]
+        public void RefreshState()
+        {
+            this.orangeBox.GetCurrentState();
         }
 
         /// <summary>

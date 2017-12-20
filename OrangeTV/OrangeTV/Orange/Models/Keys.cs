@@ -74,9 +74,9 @@
         Menu,
         [OrangeServiceId(164)]
         PlayPause,
-        [OrangeServiceId(168)]
-        FastForward,
         [OrangeServiceId(159)]
+        FastForward,
+        [OrangeServiceId(168)]
         FastBackward,
         [OrangeServiceId(167)]
         Record,

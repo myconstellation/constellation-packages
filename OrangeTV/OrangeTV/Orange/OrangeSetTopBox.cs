@@ -62,9 +62,14 @@ namespace OrangeTV
         }
 
         /// <summary>
-        /// The cancellation token source
+        /// The event notify cancellation token
         /// </summary>
-        private CancellationTokenSource cancellationTokenSource = null;
+        private CancellationTokenSource eventNotifyCancellationToken = null;
+
+        /// <summary>
+        /// The query state cancellation token
+        /// </summary>
+        private CancellationTokenSource queryStateCancellationToken = null;
 
         /// <summary>
         /// The automatic raise event
@@ -75,6 +80,11 @@ namespace OrangeTV
         /// Occurs when an event notification is received
         /// </summary>
         public event EventHandler<EventNotificationEventArgs> EventNotificationReceived;
+
+        /// <summary>
+        /// Occurs when the current state is updated.
+        /// </summary>
+        public event EventHandler StateUpdated;
 
         /// <summary>
         /// Gets the STB URI.
@@ -104,18 +114,26 @@ namespace OrangeTV
         /// </summary>
         public void StartListening()
         {
-            if (this.cancellationTokenSource == null)
+            if (this.eventNotifyCancellationToken == null)
             {
-                this.cancellationTokenSource = new CancellationTokenSource();
+                this.eventNotifyCancellationToken = new CancellationTokenSource();
+                // Start the query state loop if Time Shifting
+                if (this.CurrentState.TimeShiftingState)
+                {
+                    StartQueryStateLoop();
+                }
+                // Event notify loop
                 Task.Factory.StartNew(async () =>
                 {
-                    while (!Task.Factory.CancellationToken.IsCancellationRequested)
+                    while (!this.eventNotifyCancellationToken.IsCancellationRequested)
                     {
+                        // Query URL
                         var strResponse = await this.GetWebResponseAsync(new Uri(this.RootUri, "/remoteControl/notifyEvent"));
                         if (!string.IsNullOrEmpty(strResponse))
                         {
+                            // Read the JSON response
                             var response = JsonConvert.DeserializeObject<BaseResponse<EventNotification>>(strResponse, OrangeContractResolver.Settings).Result;
-                            if (response.Code == ResponseCode.EventNotification && this.EventNotificationReceived != null)
+                            if (response.Code == ResponseCode.EventNotification)
                             {
                                 // Find the custom notification
                                 var eventType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.GetCustomAttribute<EventNotificationAttribute>()?.EventType == response.Data.EventType);
@@ -123,16 +141,30 @@ namespace OrangeTV
                                 {
                                     response.Data = (EventNotification)JsonConvert.DeserializeObject(JObject.Parse(strResponse).SelectToken("result.data").ToString(), eventType, OrangeContractResolver.Settings);
                                 }
-                                // Update the current state
+                                // Update the current state with the event notification
                                 response.Data.UpdateState(this.CurrentState);
+                                this.StateUpdated?.Invoke(this, EventArgs.Empty);
+                                // Start the loop to query the state in timeshifting mode
+                                if (response.Data is TimeShiftingChanged)
+                                {
+                                    this.StartQueryStateLoop();
+                                }
+                                // Query the state if the context changed
+                                if (response.Data is ContextChanged)
+                                {
+                                    await this.GetCurrentState();
+                                }
                                 // Raise event notification
-                                var notification = new EventNotificationEventArgs() { Date = DateTime.Now, Notification = response.Data };
-                                Task.Factory.StartNew(() => this.EventNotificationReceived(this, notification));
+                                if (this.EventNotificationReceived != null)
+                                {
+                                    var notification = new EventNotificationEventArgs() { Date = DateTime.Now, Notification = response.Data };
+                                    Task.Factory.StartNew(() => this.EventNotificationReceived(this, notification));
+                                }
                             }
                         }
                         await Task.Delay(100);
                     }
-                }, cancellationTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                }, this.eventNotifyCancellationToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
         }
 
@@ -141,9 +173,15 @@ namespace OrangeTV
         /// </summary>
         public void StopListening()
         {
-            if (this.cancellationTokenSource != null)
+            if (this.eventNotifyCancellationToken != null)
             {
-                this.cancellationTokenSource.Cancel();
+                this.eventNotifyCancellationToken.Cancel();
+                this.eventNotifyCancellationToken = null;
+            }
+            if (this.queryStateCancellationToken != null)
+            {
+                this.queryStateCancellationToken.Cancel();
+                this.queryStateCancellationToken = null;
             }
         }
 
@@ -166,6 +204,7 @@ namespace OrangeTV
             while (currentState == null || currentState.Code != ResponseCode.OK);
             this.CurrentState = currentState.Data;
             this.autoRaiseEvent.Set();
+            this.StateUpdated?.Invoke(this, EventArgs.Empty);
             return currentState.Data;
         }
 
@@ -262,6 +301,35 @@ namespace OrangeTV
                     throw ex;
                 }
                 return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Starts the query state loop in case of TimeShifting.
+        /// </summary>
+        /// <param name="interval">The interval.</param>
+        private void StartQueryStateLoop(int interval = 5000)
+        {
+            if (queryStateCancellationToken == null)
+            {
+                queryStateCancellationToken = new CancellationTokenSource();
+                Task.Factory.StartNew(async () =>
+                {
+                    while (!queryStateCancellationToken.IsCancellationRequested)
+                    {
+                            // Query the state and wait interval
+                            await this.GetCurrentState();
+                        await Task.Delay(interval);
+                    }
+                }, queryStateCancellationToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
+            }
+            // If TimeShifting off, stop the loop !
+            if (!this.CurrentState.TimeShiftingState)
+            {
+                queryStateCancellationToken.Cancel();
+                queryStateCancellationToken = null;
+                // Refresh the state 2 seconds after the TimeShifting is off
+                Task.Delay(2000).ContinueWith((t) => this.GetCurrentState());
             }
         }
 

@@ -21,9 +21,12 @@
 
 namespace OrangeTV
 {
+    using Constellation.Package;
+
     /// <summary>
     /// Represent the state of the Orange's set-top box
     /// </summary>
+    [StateObject]
     public class State
     {
         /// <summary>
@@ -39,7 +42,7 @@ namespace OrangeTV
         public string PlayedMediaType { get; set; }
 
         /// <summary>
-        /// The state of the played media (ex: PLAY, PAUSE, REWIND, NA, ...)
+        /// The state of the played media (ex: PLAY, PAUSE, REWIND, FORWARD, NA, ...)
         /// </summary>
         [OrangeJsonProperty("playedMediaState")]
         public string PlayedMediaState { get; set; }
@@ -66,7 +69,7 @@ namespace OrangeTV
         /// </summary>
         [OrangeJsonProperty("playedMediaPosition")]
         public string PlayedMediaPosition { get; set; }
-        
+
         /// <summary>
         /// The current context
         /// </summary>
