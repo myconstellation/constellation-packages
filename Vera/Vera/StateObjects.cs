@@ -49,7 +49,7 @@ namespace VeraNet
         /// <value>
         /// The Vera state.
         /// </value>
-        public string State { get; set; }
+        public VeraNet.Objects.VeraState State { get; set; }
         /// <summary>
         /// Gets or sets the Vera comment.
         /// </summary>

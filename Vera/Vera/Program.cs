@@ -74,7 +74,7 @@ namespace Vera
                     {
                         DataVersion = e.DataVersion,
                         LoadTime = e.LoadTime,
-                        State = vera.CurrentState.ToString(),
+                        State = vera.CurrentState,
                         Comment = vera.CurrentComment,
                         Model = vera.Model,
                         SerialNumber = vera.SerialNumber,
