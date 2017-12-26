@@ -21,6 +21,7 @@
 
 namespace GraylogConnector
 {
+    using Arebis.Logging.GrayLog;
     using Constellation.Control;
     using Constellation.Package;
     using Newtonsoft.Json;
@@ -36,7 +37,7 @@ namespace GraylogConnector
     {
         internal const int TRUE = 1, FALSE = 0;
 
-        private List<Action<byte[]>> emitters = new List<Action<byte[]>>();
+        private List<Action<Dictionary<string, object>>> emitters = new List<Action<Dictionary<string, object>>>();
 
         static void Main(string[] args)
         {
@@ -63,11 +64,13 @@ namespace GraylogConnector
                     switch (output.Protocol)
                     {
                         case GelfOutputProtocol.Udp:
-                            emitters.Add(new Action<byte[]>(async data =>
+                            emitters.Add(new Action<Dictionary<string, object>>(async data =>
                             {
-                                UdpClient udpClient = new UdpClient();
-                                await udpClient.SendAsync(data, data.Length, output.Host, output.Port);
-                                udpClient.Close();
+                                using (var logger = new GrayLogUdpClient("constellation", output.Host, output.Port))
+                                {
+                                    String message = String.Format("{0}-{1}", DateTime.Now.ToString(), Guid.NewGuid().ToString());
+                                    logger.Send(data["short_message"] != null ? data["short_message"].ToString() : null, message, data);
+                                }
                             }));
                             break;
                         case GelfOutputProtocol.Tcp:
@@ -136,12 +139,12 @@ namespace GraylogConnector
                 { "host", e.SentinelName },
                 { "timestamp", Program.GetUnixTime(e.LastUpdate) },
                 { "short_message", string.Format("{0}/{1} is {2}", e.SentinelName, e.PackageName, e.State.ToString()) },
-                { "_package.isConnected", e.IsConnected ? TRUE : FALSE },
-                { "_package.version",  e.PackageVersion },
-                { "_package.state", e.State.ToString() },
-                { "_package.name", e.PackageName },
-                { "_package.connectionId", e.ConnectionId },
-                { "_package.constellationClientVersion", e.ConstellationClientVersion }
+                { "package.isConnected", e.IsConnected ? TRUE : FALSE },
+                { "package.version",  e.PackageVersion },
+                { "package.state", e.State.ToString() },
+                { "package.name", e.PackageName },
+                { "package.connectionId", e.ConnectionId },
+                { "package.constellationClientVersion", e.ConstellationClientVersion }
             };
             // Send data
             this.SendData(data);
@@ -155,13 +158,13 @@ namespace GraylogConnector
                 { "host", e.Sentinel.Description.SentinelName },
                 { "timestamp", Program.GetUnixTime(e.Sentinel.RegistrationDate) },
                 { "short_message",  string.Format("{0} is {1}connected", e.Sentinel.Description.SentinelName, e.Sentinel.IsConnected ? "" : "dis") },
-                { "_sentinel.isConnected", e.Sentinel.IsConnected ? TRUE : FALSE },
-                { "_sentinel.version", e.Sentinel.Description.Version },
-                { "_sentinel.clrVersion", e.Sentinel.Description.CLRVersion },
-                { "_sentinel.dnsHostname", e.Sentinel.Description.DnsHostName },
-                { "_sentinel.machineName", e.Sentinel.Description.MachineName },
-                { "_sentinel.osVersion", e.Sentinel.Description.OSVersion },
-                { "_sentinel.platform", e.Sentinel.Description.Platform }
+                { "sentinel.isConnected", e.Sentinel.IsConnected ? TRUE : FALSE },
+                { "sentinel.version", e.Sentinel.Description.Version },
+                { "sentinel.clrVersion", e.Sentinel.Description.CLRVersion },
+                { "sentinel.dnsHostname", e.Sentinel.Description.DnsHostName },
+                { "sentinel.machineName", e.Sentinel.Description.MachineName },
+                { "sentinel.osVersion", e.Sentinel.Description.OSVersion },
+                { "sentinel.platform", e.Sentinel.Description.Platform }
             };
             // Send data
             this.SendData(data);
@@ -196,26 +199,22 @@ namespace GraylogConnector
                 { "timestamp", Program.GetUnixTime(e.LogEntry.Date) },
                 { "short_message", e.LogEntry.Message },
                 { "level", level },
-                { "_package.name", e.LogEntry.PackageName}
+                { "package.name", e.LogEntry.PackageName}
             };
             // Send data
             this.SendData(data);
         }
 
-        private void SendData(object data)
+        private void SendData(Dictionary<string, object> data)
         {
             try
             {
-                // Serialize data to JSON
-                string json = JsonConvert.SerializeObject(data);
-                // Get UTF8 bytes
-                byte[] sendBytes = Encoding.UTF8.GetBytes(json + Environment.NewLine);
                 // Send to emitters
                 this.emitters.ForEach(emiter =>
                 {
                     try
                     {
-                        emiter(sendBytes);
+                        emiter(data);
                     }
                     catch (Exception ex)
                     {

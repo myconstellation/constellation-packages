@@ -33,6 +33,9 @@
     <DocumentationFile>bin\Release\GraylogConnector.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Arebis.Logging.GrayLog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=e4fb5f0885c75cfc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Arebis.Logging.GrayLog.1.7.0\lib\net45\Arebis.Logging.GrayLog.dll</HintPath>
+    </Reference>
     <Reference Include="Constellation.Common, Version=1.8.0.0, Culture=neutral, PublicKeyToken=324a4f45ff674ee1, processorArchitecture=MSIL">
       <HintPath>..\packages\Constellation.1.8.1.16288\lib\net45\Constellation.Common.dll</HintPath>
       <Private>True</Private>
@@ -42,8 +45,7 @@
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

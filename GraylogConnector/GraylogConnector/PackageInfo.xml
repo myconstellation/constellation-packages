@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="GraylogConnector"
          Icon="graylog_icon.png"
-         Version="1.5.3"
+         Version="1.6.0"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Send StateObjects, Package logs, Sentinel updates or Package states to a GELF server (Graylog, logstash, ...)"

@@ -35,7 +35,7 @@ namespace GraylogConnector
         public string Name { get; set; }
         public string Type { get; set; }
 
-        public StateObjectSubscription(Action<object> sendData, Subscription subscription)
+        public StateObjectSubscription(Action<Dictionary<string, object>> sendData, Subscription subscription)
             : this(subscription.Sentinel, subscription.Package, subscription.Name, subscription.Type)
         {
             this.RegisterSubscription(subscription,
@@ -106,16 +106,16 @@ namespace GraylogConnector
                         { "host", stateObject.SentinelName },
                         { "timestamp", Program.GetUnixTime(stateObject.LastUpdate) },
                         { "short_message", string.Format("{0}/{1}/{2} is updated", stateObject.SentinelName, stateObject.PackageName, stateObject.Name) },
-                        { "_package.name", stateObject.PackageName},
-                        { "_stateobject.name", stateObject.Name},
-                        { "_stateobject.type", stateObject.Type}
+                        { "package.name", stateObject.PackageName},
+                        { "stateobject.name", stateObject.Name},
+                        { "stateobject.type", stateObject.Type}
                     };
             // Expand metadatas
             if (stateObject.Metadatas != null)
             {
                 foreach (var metadata in stateObject.Metadatas)
                 {
-                    data.Add(string.Concat("_", stateObject.PackageName, ".metadata.", metadata.Key), metadata.Value);
+                    data.Add(string.Concat(stateObject.PackageName, ".metadata.", metadata.Key), metadata.Value);
                 }
             }
             // Expand value's properties  
@@ -140,7 +140,7 @@ namespace GraylogConnector
                     }
                     else
                     {
-                        string key = string.Concat("_", rootKey, parentKey, ".", item.Name);
+                        string key = string.Concat(rootKey, parentKey, ".", item.Name);
                         if (item.Value is JValue)
                         {
                             // Add the property value
@@ -157,7 +157,7 @@ namespace GraylogConnector
             else
             {
                 // It's a value
-                data.Add(string.Concat("_", rootKey, ".value", parentKey), this.FormatValue(input));
+                data.Add(string.Concat(rootKey, ".value", parentKey), this.FormatValue(input));
             }
         }
 

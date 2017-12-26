@@ -39,7 +39,7 @@ namespace GraylogConnector
 
         public bool IsRecording { get; set; }
 
-        public StateObjectAggregateSubscription(Action<object> sendData, Subscription subscription)
+        public StateObjectAggregateSubscription(Action<Dictionary<string, object>> sendData, Subscription subscription)
             : base(subscription.Sentinel, subscription.Package, subscription.Name, subscription.Type)
         {
             if (subscription.Aggregation.Interval == 0)
@@ -143,7 +143,7 @@ namespace GraylogConnector
                     foreach (var key in this.Values.Keys)
                     {
                         this.Values[key].Clear();
-                        this.Values[key].Add(Convert.ToDouble(this.GELFData["_" + stateObject.PackageName + "." + key]));
+                        this.Values[key].Add(Convert.ToDouble(this.GELFData[stateObject.PackageName + "." + key]));
                     }
                 }
                 else
@@ -151,19 +151,19 @@ namespace GraylogConnector
                     foreach (var key in this.Values.Keys)
                     {
                         var so = subscription.ConvertStateObjectToGELF(stateObject);
-                        this.Values[key].Add(Convert.ToDouble(so["_" + stateObject.PackageName + "." + key]));
+                        this.Values[key].Add(Convert.ToDouble(so[stateObject.PackageName + "." + key]));
                     }
                 }
             }
 
-            public void SendAggregateData(string package, HashSet<string> propertyToIncludeInfo, Action<object> sendData)
+            public void SendAggregateData(string package, HashSet<string> propertyToIncludeInfo, Action<Dictionary<string, object>> sendData)
             {
                 if (this.GELFData != null)
                 {
                     // Process the aggregate properties
                     foreach (var key in this.Values.Keys)
                     {
-                        string dataKey = "_" + package + "." + key;
+                        string dataKey =  package + "." + key;
                         // Replace by value average
                         this.GELFData[dataKey] = this.Values[key].Average();
                         // Add aggregate info
@@ -178,8 +178,8 @@ namespace GraylogConnector
                     }
                     if (propertyToIncludeInfo.Count > 0)
                     {
-                        this.GELFData.Add("_" + package + ".aggregate.startDate", Program.GetUnixTime(this.FirstValueDate));
-                        this.GELFData.Add("_" + package + ".aggregate.endDate", Program.GetUnixTime(DateTime.Now));
+                        this.GELFData.Add(package + ".aggregate.startDate", Program.GetUnixTime(this.FirstValueDate));
+                        this.GELFData.Add(package + ".aggregate.endDate", Program.GetUnixTime(DateTime.Now));
                     }
 
                     // Send data
