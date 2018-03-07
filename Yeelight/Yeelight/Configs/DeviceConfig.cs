@@ -1,31 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yeelight
+﻿namespace Yeelight.Configs
 {
     /// <summary>
-    /// Represents a bulb's configuration
+    /// Configuration for a device
     /// </summary>
-    public class Bulb
+    internal class DeviceConfig
     {
+        #region Public Properties
+
         /// <summary>
         /// Hostname or IP adress
         /// </summary>
         public string Hostname { get; set; }
 
         /// <summary>
-        /// Port of the bulb (default 55443) : optional
+        /// Name of the device
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Port of the device (default 55443) : optional
         /// </summary>
         [System.ComponentModel.DefaultValue(55443)]
         [Newtonsoft.Json.JsonProperty(DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Populate)]
         public int Port { get; set; }
 
-        /// <summary>
-        /// Name of the bulb
-        /// </summary>
-        public string Name { get; set; }
+        #endregion Public Properties
     }
 }
