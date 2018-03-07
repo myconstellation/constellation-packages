@@ -55,6 +55,7 @@ namespace Yeelight
                 {
                     device.OnNotificationReceived += (object sender, NotificationReceivedEventArgs e) =>
                     {
+                        //updated device properties
                         PackageHost.PushStateObject(device.Name, device.Properties);
                         PackageHost.WriteDebug(e.Result);
                     };
@@ -63,6 +64,9 @@ namespace Yeelight
                     {
                         PackageHost.WriteError(e.ExceptionObject);
                     };
+
+                    //initial device properties
+                    PackageHost.PushStateObject(device.Name, device.Properties);
                 }
 
                 _all.Add(dc.Name, device);
