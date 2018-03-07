@@ -46,8 +46,10 @@ namespace Yeelight
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
 
-            foreach (DeviceConfig dc in PackageHost.GetSettingAsJsonObject<IEnumerable<DeviceConfig>>("Devices"))
+            //parallel connection to the devices
+            PackageHost.GetSettingAsJsonObject<IEnumerable<DeviceConfig>>("Devices").AsParallel().ForAll(dc =>
             {
+                //create new device and connect 
                 Device device = new Device(dc.Hostname, dc.Port) { Name = dc.Name };
                 if (device.Connect().Result)
                 {
@@ -64,8 +66,9 @@ namespace Yeelight
                 }
 
                 _all.Add(dc.Name, device);
-            }
+            });
 
+            //creation of groups
             foreach (DeviceGroupConfig gc in PackageHost.GetSettingAsJsonObject<IEnumerable<DeviceGroupConfig>>("DeviceGroups"))
             {
                 DeviceGroup group = new DeviceGroup();
