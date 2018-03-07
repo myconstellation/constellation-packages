@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Yeelight"
+         Version="1.0"
+         Author="romain"
+         URL="http://www.mywebsite.com"
+         Description="Yeelight Copyright ©  2018"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Devices" description="List of the devices" type="JsonObject" isRequired="true" >
+      <defaultContent>
+        [{
+            "HostName": "192.168.0.123",
+            "Port": "55443",
+            "Name": "Salon"
+        },{
+            "HostName": "yeelight_bedroom",
+            "Name": "Bedroom"
+        }]
+      </defaultContent>
+    </Setting>
+    <Setting name="Groups" description="Groups of devices" type="JsonObject" isRequired="false">
+      <defaultContent>
+        [{
+          "Name" : "All",
+          "Devices" : ["Salon", "Bedroom"]
+        }]
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
