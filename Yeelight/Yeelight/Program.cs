@@ -51,25 +51,33 @@ namespace Yeelight
             {
                 //create new device and connect 
                 Device device = new Device(dc.Hostname, dc.Port) { Name = dc.Name };
-                if (device.Connect().Result)
+                try
                 {
-                    device.OnNotificationReceived += (object sender, NotificationReceivedEventArgs e) =>
+                    if (device.Connect().Result)
                     {
+                        PackageHost.WriteInfo($"Device {dc.Name} ({dc.Hostname}:{dc.Port}) connected");
+                        device.OnNotificationReceived += (object sender, NotificationReceivedEventArgs e) =>
+                        {
                         //updated device properties
-                        PackageHost.PushStateObject(device.Name, device.Properties);
-                        PackageHost.WriteDebug(e.Result);
-                    };
+                        PackageHost.PushStateObject(dc.Name, device.Properties);
+                            PackageHost.WriteDebug(e.Result);
+                        };
 
-                    device.OnError += (object sender, UnhandledExceptionEventArgs e) =>
-                    {
-                        PackageHost.WriteError(e.ExceptionObject);
-                    };
+                        device.OnError += (object sender, UnhandledExceptionEventArgs e) =>
+                        {
+                            PackageHost.WriteError(e.ExceptionObject);
+                        };
 
-                    //initial device properties
-                    PackageHost.PushStateObject(device.Name, device.Properties);
+                        //initial device properties
+                        PackageHost.PushStateObject(dc.Name, device.Properties);
+                    }
+
+                    _all.Add(dc.Name, device);
                 }
-
-                _all.Add(dc.Name, device);
+                catch(Exception ex)
+                {
+                    PackageHost.WriteError($"Unable to connect to device {dc.Name} ({dc.Hostname}:{dc.Port}) : {ex.Message}"); ;
+                }
             });
 
             //creation of groups
@@ -252,6 +260,8 @@ namespace Yeelight
         [MessageCallback]
         public async Task<bool> Toggle(string deviceOrGroupName)
         {
+            PackageHost.WriteInfo($"Toggle : {deviceOrGroupName}");
+
             IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
 
             return await device.Toggle();
