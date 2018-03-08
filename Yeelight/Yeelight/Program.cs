@@ -81,7 +81,7 @@ namespace Yeelight
             });
 
             //creation of groups
-            foreach (DeviceGroupConfig gc in PackageHost.GetSettingAsJsonObject<IEnumerable<DeviceGroupConfig>>("DeviceGroups"))
+            foreach (DeviceGroupConfig gc in PackageHost.GetSettingAsJsonObject<IEnumerable<DeviceGroupConfig>>("Groups"))
             {
                 DeviceGroup group = new DeviceGroup();
                 foreach (Device device in gc.Devices.Select(x => _all.SingleOrDefault(d => d.Key == x).Value))
@@ -260,8 +260,6 @@ namespace Yeelight
         [MessageCallback]
         public async Task<bool> Toggle(string deviceOrGroupName)
         {
-            PackageHost.WriteInfo($"Toggle : {deviceOrGroupName}");
-
             IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
 
             return await device.Toggle();
