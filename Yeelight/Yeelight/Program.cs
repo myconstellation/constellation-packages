@@ -107,6 +107,16 @@ namespace Yeelight
         #region MessageCallbacks
 
         /// <summary>
+        /// Discover devices through LAN
+        /// </summary>
+        /// <returns></returns>
+        [MessageCallback]
+        public async Task<List<Device>> Discover()
+        {
+            return await DeviceLocator.Discover();
+        }
+
+        /// <summary>
         /// Get all properties from a Device
         /// </summary>
         /// <param name="deviceOrGroupName">Device's name</param>
