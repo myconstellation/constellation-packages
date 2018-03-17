@@ -2,9 +2,10 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Yeelight"
          Version="1.0"
-         Author="romain"
-         URL="http://www.mywebsite.com"
-         Description="Yeelight Copyright ©  2018"
+         Author="Romain Oddone"
+         URL="https://github.com/roddone"
+         Description="Control your Yeelight devices from Constellation"
+         Icon="yeelight.png"
          EnableControlHub="false">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
     <Platforms>
