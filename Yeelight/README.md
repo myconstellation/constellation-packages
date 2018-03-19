@@ -3,6 +3,7 @@
 This package allow you to control Xiaomi Yeelight smart-bulbs.
 
 ### MessageCallbacks
+ - Discover() : Discover Yeelight devices through LAN
  - GetAllProps(string deviceOrGroupName) : Get all the available properties for a bulb.
  - GetProp(string deviceOrGroupName, PROPERTIES property) : Get a single property by his key.
  - GetProps(string deviceOrGroupName, PROPERTIES property) : Get multiple properties by their keys.
