@@ -55,6 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Equipement\Gateway.cs" />
+    <Compile Include="Equipement\MagnetAq.cs" />
+    <Compile Include="Equipement\Plug.cs" />
+    <Compile Include="Equipement\SensorHTPAq.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\EquipementsList.cs" />
     <Compile Include="Equipement\Motion.cs" />
@@ -75,13 +78,13 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="XiaomiSmartHome.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishMethod="ConstellationServer" PublishServer="http://192.168.1.50:8088" />
+      <UserProperties PublishServer="http://192.168.1.50:8088" PublishMethod="ConstellationServer" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
