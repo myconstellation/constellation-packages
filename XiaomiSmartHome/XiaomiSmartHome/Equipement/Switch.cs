@@ -6,15 +6,15 @@ using static XiaomiSmartHome.Model.Response;
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Windows door sensor
+    /// Smart Wireless Switch
     /// </summary>
-    [StateObject, XiaomiEquipement(Constants.MAGNET)]
-    public class Magnet
+    [StateObject, XiaomiEquipement(Constants.SWITCH)]
+    public class Switch
     {
         /// <summary>
         /// Model type
         /// </summary>
-        public string Model { get; set; } = Constants.MAGNET;
+        public string Model { get; set; } = Constants.SWITCH;
 
         /// <summary>
         /// SID (mac adress)
@@ -30,7 +30,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Battery type
         /// </summary>
-        public string Battery { get; set; } = Constants.CR1632;
+        public string Battery { get; set; } = Constants.CR2450;
 
         /// <summary>
         /// Battery level
@@ -40,19 +40,20 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report
         /// </summary>
-        public MagnetReport Report { get; set; }
+        public SwitchReport Report { get; set; }
     }
 
     /// <summary>
-    /// Magnet sensor last report
+    /// Smart Wireless Switch last report
     /// </summary>
     /// <example>
-    /// {"cmd":"report","model":"magnet","sid":"xxxxx","short_id":xxxx,"data":"{\"status\":\"open\"}"}
-    /// {"cmd":"report","model":"magnet","sid":"xxxxx","short_id":xxxx,"data":"{\"status\":\"close\"}"}
-    /// {"cmd":"report","model":"magnet","sid":"xxxxx","short_id":xxxx,"data":"{\"no_close\":\"60\"}"}
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"click\"}"}
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"double_click\"}"}
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"long_click_press\"}"}
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"long_click_release\"}"}
     /// </example>
-    [StateObject, XiaomiEquipement("magnet_report")]
-    public class MagnetReport
+    [StateObject, XiaomiEquipement("switch_report")]
+    public class SwitchReport
     {
         /// <summary>
         /// Voltage left
@@ -60,14 +61,8 @@ namespace XiaomiSmartHome.Equipement
         public int Voltage { get; set; }
 
         /// <summary>
-        /// Magnet sensor state
+        /// Smart Wireless Switch state
         /// </summary>
         public string Status { get; set; }
-
-        /// <summary>
-        /// Time since door / window is open
-        /// </summary>
-        [JsonProperty("no_close")]
-        public string NoClose { get; set; }
     }
 }

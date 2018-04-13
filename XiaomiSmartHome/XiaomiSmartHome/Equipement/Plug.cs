@@ -6,15 +6,15 @@ using static XiaomiSmartHome.Model.Response;
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Windows door sensor
+    /// Wall plug
     /// </summary>
-    [StateObject, XiaomiEquipement(Constants.MAGNET)]
-    public class Magnet
+    [StateObject, XiaomiEquipement(Constants.PLUG)]
+    public class Plug
     {
         /// <summary>
         /// Model type
         /// </summary>
-        public string Model { get; set; } = Constants.MAGNET;
+        public string Model { get; set; } = Constants.PLUG;
 
         /// <summary>
         /// SID (mac adress)
@@ -30,7 +30,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Battery type
         /// </summary>
-        public string Battery { get; set; } = Constants.CR1632;
+        public string Battery { get; set; } = Constants.SECTOR;
 
         /// <summary>
         /// Battery level
@@ -40,19 +40,18 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Last report
         /// </summary>
-        public MagnetReport Report { get; set; }
+        public PlugReport Report { get; set; }
     }
 
     /// <summary>
-    /// Magnet sensor last report
+    /// Plug last report
     /// </summary>
     /// <example>
-    /// {"cmd":"report","model":"magnet","sid":"xxxxx","short_id":xxxx,"data":"{\"status\":\"open\"}"}
-    /// {"cmd":"report","model":"magnet","sid":"xxxxx","short_id":xxxx,"data":"{\"status\":\"close\"}"}
-    /// {"cmd":"report","model":"magnet","sid":"xxxxx","short_id":xxxx,"data":"{\"no_close\":\"60\"}"}
+    /// {"cmd":"report","model":"plug","sid":"xxxxx","short_id":xxx,"data":"{\"status\":\"on\"}"}
+    /// {"cmd":"heartbeat","model":"plug","sid":"xxxxx","short_id":xxx,"data":"{\"voltage\":3600,\"status\":\"on\",\"inuse\":\"1\",\"power_consumed\":\"20482\",\"load_power\":\"0.97\"}"}
     /// </example>
-    [StateObject, XiaomiEquipement("magnet_report")]
-    public class MagnetReport
+    [StateObject, XiaomiEquipement("plug_report")]
+    public class PlugReport
     {
         /// <summary>
         /// Voltage left
@@ -60,14 +59,25 @@ namespace XiaomiSmartHome.Equipement
         public int Voltage { get; set; }
 
         /// <summary>
-        /// Magnet sensor state
+        /// Plug state
         /// </summary>
         public string Status { get; set; }
 
         /// <summary>
-        /// Time since door / window is open
+        /// In use
         /// </summary>
-        [JsonProperty("no_close")]
-        public string NoClose { get; set; }
+        public int InUse { get; set; }
+
+        /// <summary>
+        /// Total power consumed
+        /// </summary>
+        [JsonProperty("power_consumed")]
+        public int PowerConsumed { get; set; }
+
+        /// <summary>
+        /// Current load power
+        /// </summary>
+        [JsonProperty("load_power")]
+        public float LoadPower { get; set; }
     }
 }

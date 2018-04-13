@@ -1,5 +1,6 @@
 ﻿using Constellation;
 using Constellation.Package;
+using Newtonsoft.Json;
 using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
@@ -7,13 +8,13 @@ namespace XiaomiSmartHome.Equipement
     /// <summary>
     /// Humidity / Temperature sensor
     /// </summary>
-    [StateObject, XiaomiEquipement("sensor_ht")]
+    [StateObject, XiaomiEquipement(Constants.SENSOR_HT)]
     public class SensorHT
     {
         /// <summary>
         /// Model type.
         /// </summary>
-        public string Model { get; set; } = "sensor_ht";
+        public string Model { get; set; } = Constants.SENSOR_HT;
 
         /// <summary>
         /// SID (mac adress).
@@ -21,9 +22,15 @@ namespace XiaomiSmartHome.Equipement
         public string Sid { get; set; }
 
         /// <summary>
+        /// Short id
+        /// </summary>
+        [JsonProperty("short_id")]
+        public int ShortId { get; set; }
+
+        /// <summary>
         /// Battery type.
         /// </summary>
-        public string Battery { get; set; } = "CR2032";
+        public string Battery { get; set; } = Constants.CR2032;
 
         /// <summary>
         /// Battery level.
