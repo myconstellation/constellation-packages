@@ -1,18 +1,23 @@
 ﻿using Constellation.Package;
 using Constellation;
+using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Drawing;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Mon StateObject complexe
+    /// Xiaomi gateway
     /// </summary>
-    [StateObject]
+    [StateObject, XiaomiEquipement(Constants.GATEWAY)]
     public class Gateway
     {
         /// <summary>
         /// Model type.
         /// </summary>
-        public string Model { get; set; } = "gateway";
+        public string Model { get; set; } = Constants.GATEWAY;
 
         /// <summary>
         /// SID (mac adress).
@@ -20,9 +25,20 @@ namespace XiaomiSmartHome.Equipement
         public string Sid { get; set; }
 
         /// <summary>
+        /// Short id
+        /// </summary>
+        [JsonProperty("short_id")]
+        public int ShortId { get; set; }
+
+        /// <summary>
         /// Battery type.
         /// </summary>
-        public string Battery { get; set; } = "Sector";
+        public string Battery { get; set; } = Constants.SECTOR;
+
+        /// <summary>
+        /// Battery level
+        /// </summary>
+        public int BatteryLevel { get; set; }
 
         /// <summary>
         /// Last token.
@@ -38,9 +54,19 @@ namespace XiaomiSmartHome.Equipement
     /// <summary>
     /// Gateway last report
     /// </summary>
-    [StateObject]
+    /// <example>
+    /// {"cmd":"report","model":"gateway","sid":"xxxx","short_id":x,"data":"{\"rgb\":1677727487,\"illumination\":1292}"}
+    /// {"cmd":"heartbeat","model":"gateway","sid":"xxxx","short_id":"x","token":"xxxx","data":"{\"ip\":\"x.x.x.x\"}"}
+    /// </example>
+    [StateObject, XiaomiEquipement("gateway_report")]
     public class GatewayReport
     {
+
+        /// <summary>
+        /// Gets or sets the number.
+        /// </summary>
+        public string IP { get; set; }
+
         /// <summary>
         /// Led color in rgb.
         /// </summary>
@@ -50,13 +76,5 @@ namespace XiaomiSmartHome.Equipement
         /// Illumination in lux.
         /// </summary>
         public int Illumination { get; set; }
-    }
-
-    public class GatewayHeartbeat
-    {
-        /// <summary>
-        /// Gets or sets the number.
-        /// </summary>
-        public string IP { get; set; }
     }
 }
