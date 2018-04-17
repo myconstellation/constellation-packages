@@ -7,8 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web.Script.Serialization;
 using XiaomiSmartHome.Model;
+using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
@@ -26,17 +26,17 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Equipment list connected to gateway
         /// </summary>
-        public List<dynamic> lEquipements = new List<dynamic>();
+        public List<Equipment> lEquipements = new List<Equipment>();
 
         /// <summary>
         /// Get the gateway in equipement list
         /// TODO multiple gateway support
         /// </summary>
-        public Gateway gateway
+        public Gateway Gateway
         {
             get
             {
-                return lEquipements.First(cur => cur.Model.Equals(Constants.GATEWAY));
+                return lEquipements.First(cur => cur.Model.Equals(EquipmentType.Gateway)) as Gateway;
             }
         }
         #endregion
@@ -57,7 +57,10 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         public void InitEquipements()
         {
-            Gateway gateway = new Gateway();
+            Gateway gateway = new Gateway
+            {
+                Model = EquipmentType.Gateway
+            };
             lEquipements.Add(gateway);
 
             // Load all equipements
@@ -71,7 +74,7 @@ namespace XiaomiSmartHome.Equipement
         {
             try
             {
-                this.SendCommand(Constants.GET_ID_LISTE, null, null);
+                this.SendCommand(CommandType.GetIdList, null, null);
             }
             catch (Exception ex)
             {
@@ -87,7 +90,7 @@ namespace XiaomiSmartHome.Equipement
         {
             try
             {
-                this.SendCommand(Constants.READ, sid, null);
+                this.SendCommand(CommandType.Read, sid, null);
             }
             catch (Exception ex)
             {
@@ -101,18 +104,16 @@ namespace XiaomiSmartHome.Equipement
         /// <param name="resp">Data received from gateway</param>
         public void ProcessUdpDiagram(string resp)
         {
-            dynamic model;
-
             try
             {
                 Response reponse = JsonConvert.DeserializeObject<Response>(resp);
 
-                if (reponse.Cmd.Equals(Constants.HEARTBEAT) && PackageHost.GetSettingValue<bool>(Constants.HEARTBEAT_LOG))
+                if (reponse.Cmd.Equals(CommandType.Heartbeat) && PackageHost.GetSettingValue<bool>(Constants.HEARTBEAT_LOG))
                 {
                     PackageHost.WriteInfo("{0}", resp);
                 }
 
-                if (reponse.Cmd.Equals(Constants.REPORT) && PackageHost.GetSettingValue<bool>(Constants.REPORT_LOG))
+                if (reponse.Cmd.Equals(CommandType.Report) && PackageHost.GetSettingValue<bool>(Constants.REPORT_LOG))
                 {
                     PackageHost.WriteInfo("{0}", resp);
                 }
@@ -120,54 +121,56 @@ namespace XiaomiSmartHome.Equipement
                 switch (reponse.Cmd)
                 {
                     // Id list acknowledgement : we read items
-                    case Constants.GET_ID_LISTE_ACK:
+                    case CommandType.GetIdListAck:
                         // Set gateway data
-                        this.gateway.Sid = reponse.Sid;
-                        this.gateway.Token = reponse.Token;
-                        PackageHost.PushStateObject<Gateway>(Constants.GATEWAY, gateway);
+                        this.Gateway.Sid = reponse.Sid;
+                        this.Gateway.Token = reponse.Token;
+                        PackageHost.PushStateObject<Gateway>(EquipmentType.Gateway.GetRealName(), Gateway);
 
                         // Init other equipements
-                        foreach (string equipementSid in new JavaScriptSerializer().Deserialize<string[]>(reponse.Data))
+                        foreach (string equipementSid in JsonConvert.DeserializeObject<string[]>(reponse.Data))
                         {
                             this.ReadEquipement(equipementSid);
                         }
                         break;
 
                     // Read acknowledgement : we create equipements
-                    case Constants.READ_ACK:
-                    default:
-                        model = this.GetModel(reponse.Model);
-                        dynamic data = JsonConvert.DeserializeObject(reponse.Data, this.GetModelReportType(reponse.Model));
-                        model.BatteryLevel = ParseVoltage(data.Voltage);
-                        model.Sid = reponse.Sid;
-                        model.Report = data;
-                        lEquipements.Add(model);
-                        this.PushStateObject(reponse.Sid, model);
+                    case CommandType.ReadAck:
+                        Type type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(cur => cur.Name.ToLower().Equals(reponse.Model.GetRealName()));
+                        if (type != null)
+                        {
+                            dynamic model = JsonConvert.DeserializeObject(resp, type);
+                            model.Update(JsonConvert.DeserializeObject(reponse.Data, type));
+                            lEquipements.Add(model);
+                            this.PushStateObject(reponse.Sid, model);
+                        }
                         break;
 
-                    // Report : we set report
-                    case Constants.REPORT:
-                        model = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid));
-                        dynamic parse = JsonConvert.DeserializeObject(reponse.Data, this.GetModelReportType(reponse.Model));
-                        model.Report = parse;
-                        this.PushStateObject(reponse.Sid, model);
-                        break;
+                    // We update equipment
+                    case CommandType.Report:
+                    case CommandType.Heartbeat:
+                    case CommandType.WriteAck:
+                        // write ack plug : if set on => read to get LoadPower ?
+                        if (reponse.Cmd.Equals(CommandType.WriteAck) && reponse.Data.Contains("error"))
+                        {
+                            PackageHost.WriteError("write ack error : {0}", resp);
+                        }
+                        
+                        Equipment equipment = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid));
+                        // Update gateway token
+                        if(equipment.Model.Equals(EquipmentType.Gateway) && reponse.Cmd.Equals(CommandType.Heartbeat))
+                        {
+                            (equipment as Gateway).Token = reponse.Token;
+                        }
 
-                    // For hearbeat we update equipement.
-                    case Constants.HEARTBEAT:
-                        model = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid));
-                        JsonConvert.PopulateObject(resp, model);
-                        this.PushStateObject(reponse.Sid, model);
-                        break;
-
-                    case Constants.WRITE_ACK:
-                        // {"cmd":"write_ack","model":"gateway","sid":"xxxxx","short_id":0,"data":"{\"rgb\":0,\"illumination\":1292,\"proto_version\":\"1.0.9\"}"}
+                        equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()));
+                        this.PushStateObject(reponse.Sid, equipment);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                PackageHost.WriteError("Error SaveEquipement : {0}", ex);
+                PackageHost.WriteError("Error ProcessUdpDiagram : {0}", ex);
                 return;
             }
         }
@@ -176,25 +179,24 @@ namespace XiaomiSmartHome.Equipement
         /// Send command to gateway
         /// </summary>
         /// <returns></returns>
-        public void SendCommand(string cmd, string sid, Dictionary<string, object> lParam)
+        public void SendCommand(CommandType cmd, string sid, Dictionary<string, object> lParam)
         {
-            dynamic model = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(sid));
+            Equipment model = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(sid));
 
             // Add key to command data
             lParam?.Add("key", this.GetActualKey());
             Command command = new Command
             {
-                Cmd = cmd,
-                Model = model?.Model,
+                Cmd = cmd.GetRealName(),
+                Model = model?.Model.GetRealName(),
                 Sid = sid,
                 Short_id = model?.ShortId,
-                Key = model?.Model == Constants.GATEWAY ? "8" : null, // Why 8 ? what if not present ?
+                Key = model?.Model == EquipmentType.Gateway ? "8" : null, // Why 8 ? what if not present ?
                 Data = lParam
             };
 
-            string scommand = JsonConvert.SerializeObject(command, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-
-            ProcessUdpDiagram(this.udpClientWrapper.SendToGateway(Encoding.ASCII.GetBytes(scommand)));
+            string sCommand = JsonConvert.SerializeObject(command, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            ProcessUdpDiagram(this.udpClientWrapper.SendToGateway(Encoding.ASCII.GetBytes(sCommand)));
         }
 
         #region PRIVATE METHODS
@@ -207,9 +209,9 @@ namespace XiaomiSmartHome.Equipement
         private void PushStateObject(string sid, dynamic model)
         {
             string name;
-            if (model.Model.Equals(Constants.GATEWAY))
+            if (model.Model.Equals(EquipmentType.Gateway))
             {
-                name = Constants.GATEWAY;
+                name = EquipmentType.Gateway.GetRealName();
             }
             //// Get personal name based on user setting
             else if (!PackageHost.TryGetSettingValue<string>(sid, out name))
@@ -218,40 +220,6 @@ namespace XiaomiSmartHome.Equipement
             }
 
             PackageHost.PushStateObject<dynamic>(name, model);
-        }
-
-        /// <summary>
-        /// Get instance of model type
-        /// </summary>
-        /// <param name="model">The model type</param>
-        /// <returns></returns>
-        private dynamic GetModel(string model)
-        {
-            Type modelType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == model);
-            if (modelType == null)
-            {
-                PackageHost.WriteError("{0} type not found !", model);
-                return null;
-            }
-
-            return Activator.CreateInstance(modelType);
-        }
-
-        /// <summary>
-        /// Get type of model report
-        /// </summary>
-        /// <param name="model">The model type</param>
-        /// <returns></returns>
-        private Type GetModelReportType(string model)
-        {
-            Type modelReportType = Assembly.GetExecutingAssembly().GetTypes().SingleOrDefault(t => t.GetCustomAttribute<Response.XiaomiEquipementAttribute>()?.Model == model + "_report");
-            if (modelReportType == null)
-            {
-                PackageHost.WriteError("{0}_report type not found !", model);
-                return null;
-            }
-
-            return modelReportType;
         }
 
         /// <summary>
@@ -277,7 +245,7 @@ namespace XiaomiSmartHome.Equipement
                 CryptoStreamMode.Write
             );
 
-            byte[] gwToken = Encoding.ASCII.GetBytes(gateway.Token);
+            byte[] gwToken = Encoding.ASCII.GetBytes(Gateway.Token);
 
             // Start encrypting.
             cryptoStream.Write(gwToken, 0, gwToken.Length);
@@ -297,20 +265,6 @@ namespace XiaomiSmartHome.Equipement
 
             // Return encrypted string.
             return cipherText;
-        }
-
-        /// <summary>
-        /// Get percent battery left
-        /// </summary>
-        /// <param name="voltage"></param>
-        /// <returns></returns>
-        public int ParseVoltage(int voltage)
-        {
-            int maxVolt = 3300;
-            int minVolt = 2800;
-            if (voltage > maxVolt) voltage = maxVolt;
-            if (voltage < minVolt) voltage = minVolt;
-            return (int)Math.Round((((decimal)(voltage - minVolt) / (decimal)(maxVolt - minVolt)) * 100));
         }
 
         #endregion
