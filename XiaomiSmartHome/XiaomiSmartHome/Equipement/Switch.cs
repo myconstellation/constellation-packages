@@ -1,28 +1,21 @@
 ﻿using Constellation;
 using Constellation.Package;
-using Newtonsoft.Json;
 using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Motion sensor
+    /// Smart Wireless Switch
     /// </summary>
     [StateObject]
-    public class Motion : Equipment
+    public class Switch : Equipment
     {
-        /// <summary>
-        /// No motion since.
-        /// </summary>
-        [JsonProperty("no_motion")]
-        public string NoMotion { get; set; }
-        
         /// <summary>
         /// Ctor
         /// </summary>
-        public Motion()
+        public Switch()
         {
-            base.Battery = BatteryType.CR2450;
+            base.Battery = BatteryType.CR1632;
         }
 
         /// <summary>
@@ -30,15 +23,14 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         public override void Update(object data)
         {
-            Motion curData = data as Motion;
+            Switch curData = data as Switch;
             if (curData.Voltage != default(int))
             {
                 this.Voltage = curData.Voltage;
-                base.BatteryLevel = base.ParseVoltage(curData.Voltage);
+                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
             }
 
             this.Status = curData.Status;
-            this.NoMotion = curData.NoMotion;
         }
     }
 }

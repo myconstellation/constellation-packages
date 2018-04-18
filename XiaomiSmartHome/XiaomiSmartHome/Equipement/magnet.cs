@@ -1,55 +1,44 @@
 ﻿using Constellation;
 using Constellation.Package;
-using static XiaomiSmartHome.Model.Response;
+using Newtonsoft.Json;
+using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Magnet sensor
+    /// Windows door sensor
     /// </summary>
-    [StateObject, XiaomiEquipement("magnet")]
-    public class Magnet
-    {
+    [StateObject]
+    public class Magnet : Equipment
+    {        
         /// <summary>
-        /// Model type
+        /// Time since door / window is open
         /// </summary>
-        public string Model { get; set; } = "magnet";
+        [JsonProperty("no_close")]
+        public string NoClose { get; set; }
 
         /// <summary>
-        /// SID (mac adress)
+        /// Ctor
         /// </summary>
-        public string Sid { get; set; }
+        public Magnet()
+        {
+            base.Battery = BatteryType.CR1632;
+        }
 
         /// <summary>
-        /// Battery type
+        /// Update equipment with last data
         /// </summary>
-        public string Battery { get; set; } = "CR1632";
+        public override void Update(object data)
+        {
+            Magnet curData = data as Magnet;
+            if (curData.Voltage != default(int))
+            {
+                this.Voltage = curData.Voltage;
+                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
+            }
 
-        /// <summary>
-        /// Battery level
-        /// </summary>
-        public int BatteryLevel { get; set; }
-
-        /// <summary>
-        /// Last report
-        /// </summary>
-        public MagnetReport Report { get; set; }
-    }
-
-    /// <summary>
-    /// Magnet sensor last report
-    /// </summary>
-    [StateObject, XiaomiEquipement("magnet_report")]
-    public class MagnetReport
-    {
-        /// <summary>
-        /// Voltage left
-        /// </summary>
-        public int Voltage { get; set; }
-
-        /// <summary>
-        /// Magnet sensor state
-        /// </summary>
-        public string Status { get; set; }
+            this.Status = curData.Status;
+            this.NoClose = curData.NoClose;
+        }
     }
 }

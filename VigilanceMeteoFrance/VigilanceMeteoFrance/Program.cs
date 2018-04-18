@@ -93,12 +93,16 @@ namespace VigilanceMeteoFrance
             var departement = Departement.ToString();
             var doc = XDocument.Load(Url);
             var depnode = doc.Descendants("risque").Where(c => c.Parent.Attribute("dep").Value == departement);
-
+            
             if (depnode.Any())
             {
                 List<VigilanceMeteoFrance.Models.Type> Type = new List<VigilanceMeteoFrance.Models.Type>();
+                int parent = 0;
                 foreach (var x in depnode)
                 {
+
+                    parent = Int32.Parse(x.Parent.Attribute("coul").Value);
+                    
                     switch (x.Attribute("val").Value)
                     {
                         case "1":
@@ -134,12 +138,15 @@ namespace VigilanceMeteoFrance
                     }
                     Type.Add(new VigilanceMeteoFrance.Models.Type() { Name = risque });
                 }
+                vigilance.Type = Type;
+                vigilance.Level = parent;
                 return vigilance;
             }
             else
             {
                 var bookNodes = doc.Descendants("DV").Where(c => c.Attribute("dep").Value == departement);
                 List<VigilanceMeteoFrance.Models.Type> Type = new List<VigilanceMeteoFrance.Models.Type>();
+                vigilance.Type = Type;
                 return vigilance;
             }
         }
