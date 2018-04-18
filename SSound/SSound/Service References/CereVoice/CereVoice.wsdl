@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="https://cerevoice.com/soap/cloudservice.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:types="https://cerevoice.com/soap/cloudschema" xmlns="http://schemas.xmlsoap.org/wsdl/" name="CereVoice" targetNamespace="https://cerevoice.com/soap/cloudservice.wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema>
+      <xsd:import schemaLocation="cloudschema.xsd" namespace="https://cerevoice.com/soap/cloudschema" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="speakSimpleRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+    <wsdl:part name="voice" type="xsd:string" />
+    <wsdl:part name="text" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="speakSimpleResponse">
+    <wsdl:part name="fileUrl" type="xsd:string" />
+    <wsdl:part name="charCount" type="xsd:int" />
+    <wsdl:part name="resultCode" type="xsd:int" />
+    <wsdl:part name="resultDescription" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="speakExtendedRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+    <wsdl:part name="voice" type="xsd:string" />
+    <wsdl:part name="text" type="xsd:string" />
+    <wsdl:part name="contentType" type="xsd:string" />
+    <wsdl:part name="sampleRate" type="xsd:int" />
+    <wsdl:part name="audio3D" type="xsd:boolean" />
+    <wsdl:part name="metadata" type="xsd:boolean" />
+  </wsdl:message>
+  <wsdl:message name="speakExtendedResponse">
+    <wsdl:part name="fileUrl" type="xsd:string" />
+    <wsdl:part name="charCount" type="xsd:int" />
+    <wsdl:part name="resultCode" type="xsd:int" />
+    <wsdl:part name="resultDescription" type="xsd:string" />
+    <wsdl:part name="metadataUrl" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="listVoicesRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="listVoicesResponse">
+    <wsdl:part name="voicesList" type="types:listVoices" />
+  </wsdl:message>
+  <wsdl:message name="listLexiconsRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="listLexiconsResponse">
+    <wsdl:part name="lexiconList" type="types:listLexicons" />
+  </wsdl:message>
+  <wsdl:message name="listAbbreviationsRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="listAbbreviationsResponse">
+    <wsdl:part name="abbreviationList" type="types:listAbbreviations" />
+  </wsdl:message>
+  <wsdl:message name="listAudioFormatsRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="listAudioFormatsResponse">
+    <wsdl:part name="formatList" type="types:listAudioFormats" />
+  </wsdl:message>
+  <wsdl:message name="getCreditRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="getCreditResponse">
+    <wsdl:part name="getcredit" type="types:GetCredit" />
+  </wsdl:message>
+  <wsdl:message name="uploadLexiconRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+    <wsdl:part name="lexiconFile" type="xsd:string" />
+    <wsdl:part name="language" type="xsd:string" />
+    <wsdl:part name="accent" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="uploadLexiconResponse">
+    <wsdl:part name="resultCode" type="xsd:int" />
+    <wsdl:part name="resultDescription" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="uploadAbbreviationsRequest">
+    <wsdl:part name="accountID" type="xsd:string" />
+    <wsdl:part name="password" type="xsd:string" />
+    <wsdl:part name="abbreviationFile" type="xsd:string" />
+    <wsdl:part name="language" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:message name="uploadAbbreviationsResponse">
+    <wsdl:part name="resultCode" type="xsd:int" />
+    <wsdl:part name="resultDescription" type="xsd:string" />
+  </wsdl:message>
+  <wsdl:portType name="CereVoiceCloudPortType">
+    <wsdl:operation name="speakSimple">
+      <wsdl:input message="tns:speakSimpleRequest" />
+      <wsdl:output message="tns:speakSimpleResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="speakExtended">
+      <wsdl:input message="tns:speakExtendedRequest" />
+      <wsdl:output message="tns:speakExtendedResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="listVoices">
+      <wsdl:input message="tns:listVoicesRequest" />
+      <wsdl:output message="tns:listVoicesResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="listLexicons">
+      <wsdl:input message="tns:listLexiconsRequest" />
+      <wsdl:output message="tns:listLexiconsResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="listAbbreviations">
+      <wsdl:input message="tns:listAbbreviationsRequest" />
+      <wsdl:output message="tns:listAbbreviationsResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="listAudioFormats">
+      <wsdl:input message="tns:listAudioFormatsRequest" />
+      <wsdl:output message="tns:listAudioFormatsResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="getCredit">
+      <wsdl:input message="tns:getCreditRequest" />
+      <wsdl:output message="tns:getCreditResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="uploadLexicon">
+      <wsdl:input message="tns:uploadLexiconRequest" />
+      <wsdl:output message="tns:uploadLexiconResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="uploadAbbreviations">
+      <wsdl:input message="tns:uploadAbbreviationsRequest" />
+      <wsdl:output message="tns:uploadAbbreviationsResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CereVoiceCloudBinding" type="tns:CereVoiceCloudPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <wsdl:operation name="speakSimple">
+      <soap:operation soapAction="#speakSimple" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="speakExtended">
+      <soap:operation soapAction="#speakExtended" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listVoices">
+      <soap:operation soapAction="#listVoices" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listLexicons">
+      <soap:operation soapAction="#listLexicons" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listAbbreviations">
+      <soap:operation soapAction="#listAbbreviations" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listAudioFormats">
+      <soap:operation soapAction="#listAudioFormats" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getCredit">
+      <soap:operation soapAction="#getCredit" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="uploadLexicon">
+      <soap:operation soapAction="#uploadLexicon" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="uploadAbbreviations">
+      <soap:operation soapAction="#uploadAbbreviations" />
+      <wsdl:input>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CereVoiceCloud">
+    <wsdl:port name="CereVoiceCloudPort" binding="tns:CereVoiceCloudBinding">
+      <soap:address location="https://cerevoice.com/soap/soap_1_1.php" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
