@@ -77,7 +77,10 @@ namespace SSound.Core
         /// <exception cref="Exception">Unable to read the SSound configuration section !</exception>
         public override void OnStart()
         {
-            configuration = PackageHost.GetSettingAsConfigurationSection<SSoundConfigurationSection>("ssoundConfiguration", true);
+            if (!PackageHost.TryGetSettingAsConfigurationSection<SSoundConfigurationSection>("ssoundConfiguration", out configuration))
+            {
+                PackageHost.WriteError("Unable to read the configuration, the defaut configuration will be use !");
+            }
             PackageHost.SubscribeMessages("SSound");
             PackageHost.WriteInfo("Starting S-Sound endpoint '{0}'", this.EndpointName);
             // Discovering and load the Output device
