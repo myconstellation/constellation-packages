@@ -5,9 +5,12 @@ This package queries and pushes informations about your Mikrotik device to Const
 ### StateObjects
   - All interfaces (Ethernet, Wireless, VLAN, etc ...)
   - System resource infos
-  - IP addresses
+  - IP v4 & v6 addresses
+  - IP v4 & v6 Pools
   - Queues Simple
   - DHCP Server Leases
+  - DHCP client v4 & v6
+  - IPv6 Neighbors
   - CapsMan Registration table (wireless clients connected to yours CAPs)
 
 ### Installation
