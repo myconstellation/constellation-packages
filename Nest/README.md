@@ -2,12 +2,17 @@
 
 This package connect your Nest devices into your Constellation.
 
-All your Nest structures, thermostats, smoke detectors and cameras are pushed as StateObjects.
+### StateObjects
+
+All your Nest structures, thermostats, smoke detectors and cameras are pushed as StateObjects with all detailled informations.
 
 ### MessageCallbacks
-  - SetAwayMode(structureId, bool) : Sets the away mode for the specified structure.
-  - SetTargetTemperature(thermostatId, double) : Sets the target temperature for for the specified thermostat.
-  - SetProperty(string path, string propertyName, object value) : Sets the property for a specified path.
+  - SetAwayMode(string structureId, bool isAway) : Sets the away mode for the specified structure.
+  - SetTemperatureScale(string thermostatId, bool isFahrenheit) : Sets the temperature scale (C/F) on a thermostat
+  - SetTargetTemperature(string thermostatId, double temperature) : Sets the target temperature for for the specified thermostat
+  - SetThermostatLabel(string thermostatId, string label) : Sets the thermostat label to give it a customized nickname
+  - SetCameraStreamingStatus(string cameraId, bool isStreaming) : Set the streaming status on a camera
+  - SetProperty(string path, string propertyName, object value) : Sets the property for a specified path
 
 ### Installation
 
