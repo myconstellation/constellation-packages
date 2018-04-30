@@ -111,7 +111,7 @@ namespace BetaSeries
 
             PackageHost.WriteInfo("BetaSeries planning fetched.");
 
-            return planning;
+            return planning?.episodes;
         }
 
         /// <summary>
