@@ -147,7 +147,7 @@ namespace Mikrotik
                         },
                         lifetime: PackageHost.GetSettingValue<int>("QueryInterval") * 2);
                 }
-                catch (TikCommandException ex) when (ex.Code == "0")
+                catch (TikCommandException ex) when (ex.Code == "0" || ex.Message.StartsWith("no such command"))
                 {
                     this.unsupportedCommands.Add(name);
                     PackageHost.WriteWarn("{0} is unsupported : {1}", name, ex.Message);
