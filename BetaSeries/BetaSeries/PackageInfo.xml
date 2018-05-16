@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="BetaSeries"
-         Version="1.0.0"
+         Version="1.1.0"
          Author="Romain ODDONE"
          URL="https://github.com/roddone"
          Description="Get your favourite shows planning with BetaSeries through Constellation"

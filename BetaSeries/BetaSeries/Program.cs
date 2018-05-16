@@ -121,11 +121,22 @@ namespace BetaSeries
         /// <param name="bulk">Mark all previous episodes as seen (default: true)</param>
         /// <returns></returns>
         [MessageCallback]
-        public void MarkEpisodeAsSeen(string id, bool bulk = true)
+        public bool MarkEpisodeAsSeen(string id, bool bulk = true)
         {
-            Net.Models.EPISODES.Watched.Post(new { id, bulk }).Wait();
+            try
+            {
+                var response = Net.Models.EPISODES.Watched.Post(new { id, bulk }).Result;
 
-            PackageHost.WriteInfo($"Episode '{id}' marked as seen.");
+                PackageHost.WriteInfo($"Episode '{id}' marked as seen.");
+
+                return response != null && response.errors.Count == 0;
+            }
+            catch(Exception ex)
+            {
+                PackageHost.WriteError($"An error occurred while seeing episode '{id}' : {ex.Message}");
+            }
+
+            return false;
         }
     }
 }
