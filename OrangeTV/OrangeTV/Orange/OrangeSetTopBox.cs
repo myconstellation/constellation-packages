@@ -1,7 +1,7 @@
 ﻿/*
  *	 OrangeTV Package for Constellation
  *	 Web site: http://www.myConstellation.io
- *	 Copyright (C) 2017 - Sebastien Warin <http://sebastien.warin.fr>	   	  
+ *	 Copyright (C) 2017 - Sebastien Warin <http://sebastien.warin.fr>
  *	
  *	 Licensed to Constellation under one or more contributor
  *	 license agreements. Constellation licenses this file to you under
@@ -112,7 +112,7 @@ namespace OrangeTV
         /// <summary>
         /// Starts the listening for event notification.
         /// </summary>
-        public void StartListening()
+        public void StartListening(Action<Exception> onError = null, bool continueOnError = true)
         {
             if (this.eventNotifyCancellationToken == null)
             {
@@ -127,39 +127,53 @@ namespace OrangeTV
                 {
                     while (!this.eventNotifyCancellationToken.IsCancellationRequested)
                     {
-                        // Query URL
-                        var strResponse = await this.GetWebResponseAsync(new Uri(this.RootUri, "/remoteControl/notifyEvent"));
-                        if (!string.IsNullOrEmpty(strResponse))
+                        try
                         {
-                            // Read the JSON response
-                            var response = JsonConvert.DeserializeObject<BaseResponse<EventNotification>>(strResponse, OrangeContractResolver.Settings).Result;
-                            if (response.Code == ResponseCode.EventNotification)
+                            // Query URL
+                            var strResponse = await this.GetWebResponseAsync(new Uri(this.RootUri, "/remoteControl/notifyEvent"));
+                            if (!string.IsNullOrEmpty(strResponse))
                             {
-                                // Find the custom notification
-                                var eventType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.GetCustomAttribute<EventNotificationAttribute>()?.EventType == response.Data.EventType);
-                                if (eventType != null)
+                                // Read the JSON response
+                                var response = JsonConvert.DeserializeObject<BaseResponse<EventNotification>>(strResponse, OrangeContractResolver.Settings).Result;
+                                if (response.Code == ResponseCode.EventNotification)
                                 {
-                                    response.Data = (EventNotification)JsonConvert.DeserializeObject(JObject.Parse(strResponse).SelectToken("result.data").ToString(), eventType, OrangeContractResolver.Settings);
+                                    // Find the custom notification
+                                    var eventType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.GetCustomAttribute<EventNotificationAttribute>()?.EventType == response.Data.EventType);
+                                    if (eventType != null)
+                                    {
+                                        response.Data = (EventNotification)JsonConvert.DeserializeObject(JObject.Parse(strResponse).SelectToken("result.data").ToString(), eventType, OrangeContractResolver.Settings);
+                                    }
+                                    // Update the current state with the event notification
+                                    response.Data.UpdateState(this.CurrentState);
+                                    this.StateUpdated?.Invoke(this, EventArgs.Empty);
+                                    // Start the loop to query the state in timeshifting mode
+                                    if (response.Data is TimeShiftingChanged)
+                                    {
+                                        this.StartQueryStateLoop();
+                                    }
+                                    // Query the state if the context changed
+                                    if (response.Data is ContextChanged)
+                                    {
+                                        await this.GetCurrentState();
+                                    }
+                                    // Raise event notification
+                                    if (this.EventNotificationReceived != null)
+                                    {
+                                        var notification = new EventNotificationEventArgs() { Date = DateTime.Now, Notification = response.Data };
+                                        await Task.Factory.StartNew(() => this.EventNotificationReceived(this, notification));
+                                    }
                                 }
-                                // Update the current state with the event notification
-                                response.Data.UpdateState(this.CurrentState);
-                                this.StateUpdated?.Invoke(this, EventArgs.Empty);
-                                // Start the loop to query the state in timeshifting mode
-                                if (response.Data is TimeShiftingChanged)
-                                {
-                                    this.StartQueryStateLoop();
-                                }
-                                // Query the state if the context changed
-                                if (response.Data is ContextChanged)
-                                {
-                                    await this.GetCurrentState();
-                                }
-                                // Raise event notification
-                                if (this.EventNotificationReceived != null)
-                                {
-                                    var notification = new EventNotificationEventArgs() { Date = DateTime.Now, Notification = response.Data };
-                                    Task.Factory.StartNew(() => this.EventNotificationReceived(this, notification));
-                                }
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            if (!continueOnError)
+                            {
+                                throw;
+                            }
+                            else
+                            {
+                                onError?.Invoke(ex);
                             }
                         }
                         await Task.Delay(100);

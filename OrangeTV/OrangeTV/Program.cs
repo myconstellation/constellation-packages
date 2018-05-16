@@ -23,6 +23,7 @@ namespace OrangeTV
 {
     using Constellation.Package;
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// OrangeTV Package
@@ -60,7 +61,11 @@ namespace OrangeTV
             if (task.Wait(10000) && task.IsCompleted && !task.IsFaulted)
             {
                 // Listening events
-                this.orangeBox.StartListening();
+                this.orangeBox.StartListening(async (error) =>
+                {
+                    PackageHost.WriteError(error.ToString());
+                    await Task.Delay(2000);
+                });
                 // Read!
                 PackageHost.WriteInfo($"Connected to {task.Result.FriendlyName} ({task.Result.MacAddress})");
             }
@@ -83,9 +88,9 @@ namespace OrangeTV
         /// </summary>
         /// <returns></returns>
         [MessageCallback]
-        public void RefreshState()
+        public async Task<State> RefreshState()
         {
-            this.orangeBox.GetCurrentState();
+            return await this.orangeBox.GetCurrentState();
         }
 
         /// <summary>
@@ -94,10 +99,10 @@ namespace OrangeTV
         /// <param name="epgId">The EPG identifier.</param>
         /// <returns></returns>
         [MessageCallback]
-        public bool SwitchTo(string epgId)
+        public async Task<bool> SwitchTo(string epgId)
         {
             PackageHost.WriteInfo($"Switching to EPG #{epgId}");
-            return this.orangeBox.SwitchTo(epgId).Result;
+            return await this.orangeBox.SwitchTo(epgId);
         }
 
         /// <summary>
@@ -106,10 +111,10 @@ namespace OrangeTV
         /// <param name="channel">The channel.</param>
         /// <returns></returns>
         [MessageCallback]
-        public bool SwitchToChannel(Channel channel)
+        public async Task<bool> SwitchToChannel(Channel channel)
         {
             PackageHost.WriteInfo($"Switching to channel #{channel.GetOrangeServiceId()} ({channel.ToString()})");
-            return this.orangeBox.SwitchToChannel(channel).Result;
+            return await this.orangeBox.SwitchToChannel(channel);
         }
 
         /// <summary>
@@ -119,10 +124,10 @@ namespace OrangeTV
         /// <param name="mode">The mode (SinglePress by default).</param>
         /// <returns></returns>
         [MessageCallback]
-        public bool SendKey(Key key, PressKeyMode mode = PressKeyMode.SinglePress)
+        public async Task<bool> SendKey(Key key, PressKeyMode mode = PressKeyMode.SinglePress)
         {
             PackageHost.WriteInfo($"Sending key #{key.GetOrangeServiceId()} ({key.ToString()}) as {mode.ToString()}");
-            return this.orangeBox.SendKey(key, mode).Result;
+            return await this.orangeBox.SendKey(key, mode);
         }
     }
 }
