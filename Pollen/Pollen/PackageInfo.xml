@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Pollen"
+         Version="1.0"
+         Author="Swil"
+		 Icon="Logo.bmp"
+         URL="http://www.myconstellation.io"
+         Description="Récupération des information sur les allergènes via le site de la RNSA"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="DepartementNumber" isRequired="true" type="String" description="Votre numéro de département"/>
+  </Settings>
+</Package>
