@@ -83,25 +83,25 @@ namespace Pollen
 
             // Construction des données
             Bitmap img = new Bitmap(fileName);
-            vegetaux.Add(new Vegetal("cupressacees", img.GetPixel(126, 46).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("noisetier", img.GetPixel(126, 67).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("aulne", img.GetPixel(126, 87).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("peuplier", img.GetPixel(126, 107).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("saule", img.GetPixel(126, 126).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("frene", img.GetPixel(126, 147).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("charme", img.GetPixel(126, 165).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("bouleau", img.GetPixel(126, 186).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("platane", img.GetPixel(126, 205).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("chene", img.GetPixel(126, 226).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("oliver", img.GetPixel(126, 246).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("tilleul", img.GetPixel(126, 265).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("chataignier", img.GetPixel(126, 286).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("rumex", img.GetPixel(126, 303).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("graminees", img.GetPixel(126, 323).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("plantain", img.GetPixel(126, 345).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("articacees", img.GetPixel(126, 364).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("armoises", img.GetPixel(126, 382).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("ambroisie", img.GetPixel(126, 402).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Cupressacees", img.GetPixel(126, 46).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Noisetier", img.GetPixel(126, 67).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Aulne", img.GetPixel(126, 87).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Peuplier", img.GetPixel(126, 107).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Saule", img.GetPixel(126, 126).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Frene", img.GetPixel(126, 147).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Charme", img.GetPixel(126, 165).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Bouleau", img.GetPixel(126, 186).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Platane", img.GetPixel(126, 205).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Chene", img.GetPixel(126, 226).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Oliver", img.GetPixel(126, 246).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Tilleul", img.GetPixel(126, 265).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Chataignier", img.GetPixel(126, 286).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Rumex", img.GetPixel(126, 303).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Graminees", img.GetPixel(126, 323).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Plantain", img.GetPixel(126, 345).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Articacees", img.GetPixel(126, 364).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Armoises", img.GetPixel(126, 382).Name.Remove(0, 2)));
+            vegetaux.Add(new Vegetal("Ambroisie", img.GetPixel(126, 402).Name.Remove(0, 2)));
             img.Dispose();
 
             //vegetaux.ForEach(delegate (Vegetal veg)
@@ -109,7 +109,7 @@ namespace Pollen
             //    Console.WriteLine(veg.ToString());
             //});
 
-            PackageHost.PushStateObject("pollen", vegetaux);
+            PackageHost.PushStateObject("Pollens", vegetaux);
         }
     }
 }
