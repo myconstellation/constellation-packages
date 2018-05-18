@@ -1,4 +1,5 @@
 ﻿using Constellation.Package;
+using LiteDB;
 using Newtonsoft.Json;
 using System;
 using static XiaomiSmartHome.Enums;

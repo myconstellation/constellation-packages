@@ -61,6 +61,7 @@ namespace XiaomiSmartHome.Equipement
             }
             else
             {
+                // TODO : call read to set power
                 this.InUse = curData.InUse;
                 if (curData.LoadPower != default(int))
                 {
