@@ -1,15 +1,59 @@
 ﻿using Constellation;
 using Constellation.Package;
-using static XiaomiSmartHome.Enums;
+using Newtonsoft.Json;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Humidity / Temperature sensor
     /// </summary>
-    [StateObject]
-    public class SensorHT : Equipment
+    [StateObject, XiaomiEquipement(Constants.SENSOR_HT)]
+    public class SensorHT
     {
+        /// <summary>
+        /// Model type.
+        /// </summary>
+        public string Model { get; set; } = Constants.SENSOR_HT;
+
+        /// <summary>
+        /// SID (mac adress).
+        /// </summary>
+        public string Sid { get; set; }
+
+        /// <summary>
+        /// Short id
+        /// </summary>
+        [JsonProperty("short_id")]
+        public int ShortId { get; set; }
+
+        /// <summary>
+        /// Battery type.
+        /// </summary>
+        public string Battery { get; set; } = Constants.CR2032;
+
+        /// <summary>
+        /// Battery level.
+        /// </summary>
+        public int BatteryLevel { get; set; }
+
+        /// <summary>
+        /// Last report.
+        /// </summary>
+        public SensorHTReport Report { get; set; }
+    }
+
+    /// <summary>
+    /// Humidity / Temperature sensor last report
+    /// </summary>
+    [StateObject, XiaomiEquipement("sensor_ht_report")]
+    public class SensorHTReport
+    {
+        /// <summary>
+        /// Voltage left.
+        /// </summary>
+        public int Voltage { get; set; }
+
         /// <summary>
         /// Temperature level in ºC.
         /// </summary>
@@ -19,30 +63,5 @@ namespace XiaomiSmartHome.Equipement
         /// Humidity level in %.
         /// </summary>
         public int Humidity { get; set; }
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public SensorHT()
-        {
-            base.Battery = BatteryType.CR2032;
-        }
-
-        /// <summary>
-        /// Update equipment with last data
-        /// </summary>
-        public override void Update(object data)
-        {
-            SensorHT curData = data as SensorHT;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
-            }
-
-            this.Status = curData.Status;
-            this.Temperature = curData.Temperature;
-            this.Humidity = curData.Humidity;
-        }
     }
 }

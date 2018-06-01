@@ -1,36 +1,68 @@
 ﻿using Constellation;
 using Constellation.Package;
-using static XiaomiSmartHome.Enums;
+using Newtonsoft.Json;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Smart Wireless Switch
     /// </summary>
-    [StateObject]
-    public class Switch : Equipment
+    [StateObject, XiaomiEquipement(Constants.SWITCH)]
+    public class Switch
     {
         /// <summary>
-        /// Ctor
+        /// Model type
         /// </summary>
-        public Switch()
-        {
-            base.Battery = BatteryType.CR1632;
-        }
+        public string Model { get; set; } = Constants.SWITCH;
 
         /// <summary>
-        /// Update equipment with last data
+        /// SID (mac adress)
         /// </summary>
-        public override void Update(object data)
-        {
-            Switch curData = data as Switch;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
-            }
+        public string Sid { get; set; }
 
-            this.Status = curData.Status;
-        }
+        /// <summary>
+        /// Short id
+        /// </summary>
+        [JsonProperty("short_id")]
+        public int ShortId { get; set; }
+
+        /// <summary>
+        /// Battery type
+        /// </summary>
+        public string Battery { get; set; } = Constants.CR2450;
+
+        /// <summary>
+        /// Battery level
+        /// </summary>
+        public int BatteryLevel { get; set; }
+
+        /// <summary>
+        /// Last report
+        /// </summary>
+        public SwitchReport Report { get; set; }
+    }
+
+    /// <summary>
+    /// Smart Wireless Switch last report
+    /// </summary>
+    /// <example>
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"click\"}"}
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"double_click\"}"}
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"long_click_press\"}"}
+    /// {"cmd":"report","model":"switch","sid":"xxxx","short_id":xxx,"data":"{\"status\":\"long_click_release\"}"}
+    /// </example>
+    [StateObject, XiaomiEquipement("switch_report")]
+    public class SwitchReport
+    {
+        /// <summary>
+        /// Voltage left
+        /// </summary>
+        public int Voltage { get; set; }
+
+        /// <summary>
+        /// Smart Wireless Switch state
+        /// </summary>
+        public string Status { get; set; }
     }
 }

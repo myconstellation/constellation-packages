@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using static XiaomiSmartHome.Enums;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace XiaomiSmartHome.Model
 {
@@ -14,13 +13,13 @@ namespace XiaomiSmartHome.Model
         /// Command name
         /// </summary>
         [JsonProperty("cmd")]
-        public CommandType Cmd { get; set; }
+        public string Cmd { get; set; }
 
         /// <summary>
         /// Model type
         /// </summary>
         [JsonProperty("model")]
-        public EquipmentType Model { get; set; }
+        public string Model { get; set; }
 
         /// <summary>
         /// SID (mac adress)
@@ -45,5 +44,23 @@ namespace XiaomiSmartHome.Model
         /// </summary>
         [JsonProperty("data")]
         public string Data { get; set; }
+  
+        /// <summary>
+        /// Get type by model name in attribute
+        /// </summary>
+        public class XiaomiEquipementAttribute : Attribute
+        {
+            /// <summary>
+            /// Model name
+            /// </summary>
+            public string Model { get; set; }
+            /// <summary>
+            /// Attribute value
+            /// </summary>
+            public XiaomiEquipementAttribute(string model)
+            {
+                this.Model = model;
+            }
+        }
     }
 }

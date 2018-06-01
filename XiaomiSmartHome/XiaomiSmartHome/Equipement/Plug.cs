@@ -1,16 +1,68 @@
 ﻿using Constellation;
 using Constellation.Package;
 using Newtonsoft.Json;
-using static XiaomiSmartHome.Enums;
+using static XiaomiSmartHome.Model.Response;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
     /// Wall plug
     /// </summary>
-    [StateObject]
-    public class Plug : Equipment
+    [StateObject, XiaomiEquipement(Constants.PLUG)]
+    public class Plug
     {
+        /// <summary>
+        /// Model type
+        /// </summary>
+        public string Model { get; set; } = Constants.PLUG;
+
+        /// <summary>
+        /// SID (mac adress)
+        /// </summary>
+        public string Sid { get; set; }
+
+        /// <summary>
+        /// Short id
+        /// </summary>
+        [JsonProperty("short_id")]
+        public int ShortId { get; set; }
+
+        /// <summary>
+        /// Battery type
+        /// </summary>
+        public string Battery { get; set; } = Constants.SECTOR;
+
+        /// <summary>
+        /// Battery level
+        /// </summary>
+        public int BatteryLevel { get; set; }
+
+        /// <summary>
+        /// Last report
+        /// </summary>
+        public PlugReport Report { get; set; }
+    }
+
+    /// <summary>
+    /// Plug last report
+    /// </summary>
+    /// <example>
+    /// {"cmd":"report","model":"plug","sid":"xxxxx","short_id":xxx,"data":"{\"status\":\"on\"}"}
+    /// {"cmd":"heartbeat","model":"plug","sid":"xxxxx","short_id":xxx,"data":"{\"voltage\":3600,\"status\":\"on\",\"inuse\":\"1\",\"power_consumed\":\"20482\",\"load_power\":\"0.97\"}"}
+    /// </example>
+    [StateObject, XiaomiEquipement("plug_report")]
+    public class PlugReport
+    {
+        /// <summary>
+        /// Voltage left
+        /// </summary>
+        public int Voltage { get; set; }
+
+        /// <summary>
+        /// Plug state
+        /// </summary>
+        public string Status { get; set; }
+
         /// <summary>
         /// In use
         /// </summary>
@@ -27,48 +79,5 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         [JsonProperty("load_power")]
         public float LoadPower { get; set; }
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public Plug()
-        {
-            base.Battery = BatteryType.SECTOR;
-            base.BatteryLevel = 100;
-        }
-
-        /// <summary>
-        /// Update equipment with last data
-        /// </summary>
-        public override void Update(object data)
-        {
-            Plug curData = data as Plug;
-            this.Status = curData.Status;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-            }
-
-            if (curData.PowerConsumed != default(int))
-            {
-                this.PowerConsumed = curData.PowerConsumed;
-            }
-
-            if (!string.IsNullOrWhiteSpace(curData.Status) && curData.Status.Equals("off"))
-            {
-                this.InUse = 0;
-                this.LoadPower = 0;
-            }
-            else
-            {
-                // TODO : call read to set power
-                this.InUse = curData.InUse;
-                if (curData.LoadPower != default(int))
-                {
-                    this.LoadPower = curData.LoadPower;
-                }
-            }
-
-        }
     }
 }
