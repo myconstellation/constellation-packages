@@ -36,6 +36,9 @@
     <Reference Include="Constellation.Common, Version=1.8.0.0, Culture=neutral, PublicKeyToken=324a4f45ff674ee1, processorArchitecture=MSIL">
       <HintPath>..\packages\Constellation.1.8.3.17190\lib\net45\Constellation.Common.dll</HintPath>
     </Reference>
+    <Reference Include="LiteDB, Version=4.1.2.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.4.1.2\lib\net40\LiteDB.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
     </Reference>
@@ -46,6 +49,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
@@ -56,10 +60,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Equipement\EquipementController.cs" />
     <Compile Include="Equipement\EquipementManager.cs" />
+    <Compile Include="Equipement\Equipment.cs" />
     <Compile Include="Equipement\Gateway.cs" />
+    <Compile Include="Equipement\MagnetAq2.cs" />
+    <Compile Include="Equipement\MotionAq2.cs" />
     <Compile Include="Equipement\Plug.cs" />
+    <Compile Include="Equipement\WallSwitchOneButon.cs" />
+    <Compile Include="Equipement\Weather.cs" />
     <Compile Include="Equipement\Switch.cs" />
     <Compile Include="Model\Command.cs" />
     <Compile Include="Model\Response.cs" />

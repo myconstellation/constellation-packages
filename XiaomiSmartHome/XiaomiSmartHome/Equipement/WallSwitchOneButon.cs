@@ -6,21 +6,22 @@ using static XiaomiSmartHome.Enums;
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Motion sensor
+    /// Smart Wireless Switch
     /// </summary>
     [StateObject]
-    public class Motion : Equipment
+    public class WallSwitchOneButon : Equipment
     {
         /// <summary>
-        /// No motion since.
+        /// Action
         /// </summary>
-        [JsonProperty("no_motion")]
-        public string NoMotion { get; set; }
-        
+        [JsonProperty("channel_0")]
+        public new string Status { get; set; }
+
+
         /// <summary>
         /// Ctor
         /// </summary>
-        public Motion()
+        public WallSwitchOneButon()
         {
             base.Battery = BatteryType.CR2450;
         }
@@ -30,15 +31,14 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         public override void Update(object data)
         {
-            Motion curData = data as Motion;
+            WallSwitchOneButon curData = data as WallSwitchOneButon;
             if (curData.Voltage != default(int))
             {
                 this.Voltage = curData.Voltage;
-                base.BatteryLevel = base.ParseVoltage(curData.Voltage);
+                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
             }
 
             this.Status = curData.Status;
-            this.NoMotion = curData.NoMotion;
         }
     }
 }
