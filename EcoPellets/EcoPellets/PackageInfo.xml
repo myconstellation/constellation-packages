@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="EcoPellets"
+         Version="1.0"
+         Author="Swil"
+		 Icon="Logo.png"
+         URL="http://www.myconstellation.io"
+         Description="Package permettant d'intérroger l'api d'EcoPellets"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="UniqueId" isRequired="true" type="String" description="Votre identifant unique pour EcoPellets"/>
+  </Settings>
+</Package>
