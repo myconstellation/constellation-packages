@@ -19,6 +19,11 @@ namespace XiaomiSmartHome.Equipement
     {
         #region PROPERTIES
         /// <summary>
+        /// Chemin des logs
+        /// </summary>
+        string logPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\log.txt";
+
+        /// <summary>
         /// Wrapper to communicate with gateway
         /// </summary>
         MulticastUdpClient udpClientWrapper;
@@ -104,6 +109,8 @@ namespace XiaomiSmartHome.Equipement
         /// <param name="resp">Data received from gateway</param>
         public void ProcessUdpDiagram(string resp)
         {
+            //File.AppendAllText("data.txt", resp + "\r\n");
+
             try
             {
                 Response reponse = JsonConvert.DeserializeObject<Response>(resp);
@@ -136,7 +143,7 @@ namespace XiaomiSmartHome.Equipement
 
                     // Read acknowledgement : we create equipements
                     case CommandType.ReadAck:
-                        Type type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(cur => cur.Name.ToLower().Equals(reponse.Model.GetRealName()));
+                        Type type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(cur => cur.Name.ToLower().Equals(reponse.Model.ToString().ToLower()));
                         if (type != null)
                         {
                             dynamic model = JsonConvert.DeserializeObject(resp, type);
@@ -155,16 +162,18 @@ namespace XiaomiSmartHome.Equipement
                         {
                             PackageHost.WriteError("write ack error : {0}", resp);
                         }
-                        
-                        Equipment equipment = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid));
-                        // Update gateway token
-                        if(equipment.Model.Equals(EquipmentType.Gateway) && reponse.Cmd.Equals(CommandType.Heartbeat))
+                        else
                         {
-                            (equipment as Gateway).Token = reponse.Token;
-                        }
+                            Equipment equipment = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid));
+                            // Update gateway token
+                            if (equipment.Model.Equals(EquipmentType.Gateway) && reponse.Cmd.Equals(CommandType.Heartbeat))
+                            {
+                                (equipment as Gateway).Token = reponse.Token;
+                            }
 
-                        equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()));
-                        this.PushStateObject(reponse.Sid, equipment);
+                            equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()));
+                            this.PushStateObject(reponse.Sid, equipment);
+                        }
                         break;
                 }
             }
