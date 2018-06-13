@@ -143,7 +143,31 @@ namespace XiaomiSmartHome
             /// Equipement type windows door sensor
             /// </summary>
             [EnumMember(Value = "magnet")]
-            Magnet = 5
+            Magnet = 5,
+
+            /// <summary>
+            /// Equipement type motion detector v2
+            /// </summary>
+            [EnumMember(Value = "sensor_motion.aq2")]
+            MotionAq2 = 6,
+
+            /// <summary>
+            /// Equipement type windows door sensor v2
+            /// </summary>
+            [EnumMember(Value = "sensor_magnet.aq2")]
+            MagnetAq2 = 7,
+
+            /// <summary>
+            /// Equipement type capteur température et humidité
+            /// </summary>
+            [EnumMember(Value = "weather.v1")]
+            Weather = 8,
+
+            /// <summary>
+            /// Equipement type switch mural un bouton
+            /// </summary>
+            [EnumMember(Value = "86sw1")]
+            WallSwitchOneButon = 9,
         }
 
         /// <summary>

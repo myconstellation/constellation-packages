@@ -34,5 +34,10 @@
         /// Setting name for activation of report log
         /// </summary>
         public const string REPORT_LOG = "ReportLog";
+
+        /// <summary>
+        /// Name of the alarme state object
+        /// </summary>
+        public const string ALARM_SO_NAME = "Alarme";
     }
 }
