@@ -1,5 +1,4 @@
 ﻿using Constellation.Package;
-using LiteDB;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -173,7 +172,6 @@ namespace XiaomiSmartHome.Equipement
                             }
 
                             equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()));
-                            this.WriteLog(equipment);
                             this.PushStateObject(reponse.Sid, equipment);
                         }
                         break;
@@ -211,25 +209,6 @@ namespace XiaomiSmartHome.Equipement
         }
 
         #region PRIVATE METHODS
-
-        /// <summary>
-        /// Ajoute un log au fichier plat
-        /// </summary>
-        /// <param name="equipment">Données à logger</param>
-        private void WriteLog(Equipment equipment)
-        {
-            //using (StreamWriter writer = File.AppendText(logPath))
-            //{
-            //   writer.WriteLine(data);
-            //}
-
-
-            //using (var db = new LiteDatabase(@"xiaomi.db"))
-            //{
-            //    var collection = db.GetCollection<Equipment>(equipment.GetType().Name);
-            //    collection.Insert(equipment);
-            //}
-        }
 
         /// <summary>
         /// Push state object to constellation

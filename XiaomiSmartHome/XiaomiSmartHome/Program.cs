@@ -271,11 +271,6 @@ namespace XiaomiSmartHome
 
             // Write ack
             equipementManager.ProcessUdpDiagram(@"{""cmd"":""write_ack"",""model"":""gateway"",""sid"":""7811dcdf0ae6"",""short_id"":0,""data"":""{\""rgb\"":1677727487,\""illumination\"":1292,\""proto_version\"":\""1.0.9\""}""}");
-
-            //using (var db = new LiteDB.LiteDatabase(@"xiaomi.db"))
-            //{
-            //    var results = db.GetCollection<Equipment>("plug").Find(x => x.ShortId.Equals(40845));
-            //};
         }
     }
 }
