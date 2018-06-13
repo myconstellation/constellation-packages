@@ -29,12 +29,7 @@
         /// Setting name for activation of heartbeat log
         /// </summary>
         public const string HEARTBEAT_LOG = "HeartbeatLog";
-
-        /// <summary>
-        /// Setting name for activation of report log
-        /// </summary>
-        public const string REPORT_LOG = "ReportLog";
-
+        
         /// <summary>
         /// Name of the alarme state object
         /// </summary>
