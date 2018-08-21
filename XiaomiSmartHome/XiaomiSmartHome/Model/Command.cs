@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace XiaomiSmartHome.Model
-{ 
+{
     /// <summary>
-    /// Response from the gateway
+    /// Command to the gateway
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class EquipementsList
+    public class Command
     {
         /// <summary>
         /// Command name
@@ -15,21 +16,33 @@ namespace XiaomiSmartHome.Model
         public string Cmd { get; set; }
 
         /// <summary>
+        /// Model type
+        /// </summary>
+        [JsonProperty("model")]
+        public string Model { get; set; }
+
+        /// <summary>
         /// SID (mac adress)
         /// </summary>
         [JsonProperty("sid")]
         public string Sid { get; set; }
 
         /// <summary>
-        /// Last token
+        /// Short ID
         /// </summary>
-        [JsonProperty("token")]
-        public string Token { get; set; }
+        [JsonProperty("short_id")]
+        public int? Short_id { get; set; }
 
         /// <summary>
-        /// List of equipements Sid
+        /// Key
+        /// </summary>
+        [JsonProperty("key")]
+        public string Key { get; set; }
+        
+        /// <summary>
+        /// params
         /// </summary>
         [JsonProperty("data")]
-        public string Data { get; set; }
+        public Dictionary<string, object> Data { get; set; }
     }
 }

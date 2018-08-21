@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:tns="https://cerevoice.com/soap/cloudschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://cerevoice.com/soap/cloudschema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:complexType name="Error">
+    <xsd:all>
+      <xsd:element name="resultCode" type="xsd:int" />
+      <xsd:element name="resultDescription" type="xsd:string" />
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:complexType name="formatArray">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" maxOccurs="unbounded" name="format" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="listAudioFormats">
+    <xsd:choice>
+      <xsd:element name="formatList" type="tns:formatArray" />
+      <xsd:element name="error" type="tns:Error" />
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="voice">
+    <xsd:all>
+      <xsd:element name="sampleRate" type="xsd:int" />
+      <xsd:element name="voiceName" type="xsd:string" />
+      <xsd:element name="languageCodeISO" type="xsd:string" />
+      <xsd:element name="countryCodeISO" type="xsd:string" />
+      <xsd:element name="accentCode" type="xsd:string" />
+      <xsd:element name="gender" type="xsd:string" />
+      <xsd:element name="languageCodeMicrosoft" type="xsd:string" />
+      <xsd:element name="country" type="xsd:string" />
+      <xsd:element name="region" type="xsd:string" />
+      <xsd:element name="accent" type="xsd:string" />
+      <xsd:element name="language" type="xsd:string" />
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:complexType name="voiceArray">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" maxOccurs="unbounded" name="vArray" type="tns:voice" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="listVoices">
+    <xsd:choice>
+      <xsd:element name="voicesList" type="tns:voiceArray" />
+      <xsd:element name="error" type="tns:Error" />
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="Credit">
+    <xsd:all>
+      <xsd:element name="freeCredit" type="xsd:int" />
+      <xsd:element name="paidCredit" type="xsd:int" />
+      <xsd:element name="charsAvailable" type="xsd:int" />
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:complexType name="GetCredit">
+    <xsd:choice>
+      <xsd:element name="credit" type="tns:Credit" />
+      <xsd:element name="error" type="tns:Error" />
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="lexicon">
+    <xsd:all>
+      <xsd:element name="url" type="xsd:string" />
+      <xsd:element name="language" type="xsd:string" />
+      <xsd:element name="accent" type="xsd:string" />
+      <xsd:element name="lastModified" type="xsd:string" />
+      <xsd:element name="size" type="xsd:string" />
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:complexType name="lexiconArray">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" maxOccurs="unbounded" name="lArray" type="tns:lexicon" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="listLexicons">
+    <xsd:choice>
+      <xsd:element name="lexiconList" type="tns:lexiconArray" />
+      <xsd:element name="error" type="tns:Error" />
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="abbreviation">
+    <xsd:all>
+      <xsd:element name="url" type="xsd:string" />
+      <xsd:element name="language" type="xsd:string" />
+      <xsd:element name="lastModified" type="xsd:string" />
+      <xsd:element name="size" type="xsd:string" />
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:complexType name="abbreviationArray">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" maxOccurs="unbounded" name="aArray" type="tns:abbreviation" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="listAbbreviations">
+    <xsd:choice>
+      <xsd:element name="abbreviationList" type="tns:abbreviationArray" />
+      <xsd:element name="error" type="tns:Error" />
+    </xsd:choice>
+  </xsd:complexType>
+</xsd:schema>

@@ -1,55 +1,44 @@
 ﻿using Constellation;
 using Constellation.Package;
-using static XiaomiSmartHome.Model.Response;
+using Newtonsoft.Json;
+using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Motuon sensor
+    /// Motion sensor
     /// </summary>
-    [StateObject, XiaomiEquipement("motion")]
-    public class Motion
+    [StateObject]
+    public class Motion : Equipment
     {
         /// <summary>
-        /// Model type.
+        /// No motion since.
         /// </summary>
-        public string Model { get; set; } = "motion";
+        [JsonProperty("no_motion")]
+        public string NoMotion { get; set; }
+        
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        public Motion()
+        {
+            base.Battery = BatteryType.CR2450;
+        }
 
         /// <summary>
-        /// SID (mac adress).
+        /// Update equipment with last data
         /// </summary>
-        public string Sid { get; set; }
+        public override void Update(object data)
+        {
+            Motion curData = data as Motion;
+            if (curData.Voltage != default(int))
+            {
+                this.Voltage = curData.Voltage;
+                base.BatteryLevel = base.ParseVoltage(curData.Voltage);
+            }
 
-        /// <summary>
-        /// Battery type.
-        /// </summary>
-        public string Battery { get; set; } = "CR2450";
-
-        /// <summary>
-        /// Battery level.
-        /// </summary>
-        public int BatteryLevel { get; set; }
-
-        /// <summary>
-        /// Last report.
-        /// </summary>
-        public MotionReport Report { get; set; }
-    }
-
-    /// <summary>
-    /// Motion sensor last report
-    /// </summary>
-    [StateObject, XiaomiEquipement("motion_report")]
-    public class MotionReport
-    {
-        /// <summary>
-        /// Voltage left.
-        /// </summary>
-        public int Voltage { get; set; }
-
-        /// <summary>
-        /// Motion sensor state.
-        /// </summary>
-        public string Status { get; set; }      
+            this.Status = curData.Status;
+            this.NoMotion = curData.NoMotion;
+        }
     }
 }
