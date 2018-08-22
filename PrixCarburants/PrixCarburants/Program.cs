@@ -27,18 +27,23 @@ using static System.Math;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace PrixEssence
 {
+    /// <summary>
+    /// Constellation package to get fuel prices in French gas stations
+    /// </summary>
     public class Program : PackageBase
     {
-        private static CultureInfo format = new CultureInfo("en-US");
-        private int n;
-        private Timer t;
-        private XmlDocument doc;
+        private static readonly CultureInfo _format = new CultureInfo("en-US");
+        private static Timer _timer;
+        private static StationsList _list;
+
+        #region Message Callbacks
 
         /// <summary>
-        /// Get cheapeast price for a fuel type in a given radius
+        /// Get the cheapest gas station for a fuel type in a given radius
         /// </summary>
         /// <param name="lat"> User lattitude (WGS84)</param>
         /// <param name="lon"> User longitude (WGS84)</param>
@@ -46,55 +51,91 @@ namespace PrixEssence
         /// <param name="range">Range in meters to find the station</param>
         /// <returns>GPS coordinates of the cheapest station, fuel type and price</returns>
         [MessageCallback]
-        public BestPrice BestPriceInArea(double lat, double lon, string fuel, int range = 1000)
+        public Station BestPriceInArea(double lat, double lon, Fuel fuel, int range = 1000)
         {
-            List<BestPrice> l = new List<BestPrice>();
-            // Let's find the stations in a given range
-            var stations = doc.SelectNodes("//pdv");
-            foreach (XmlNode s in stations)
-            {
-                if (s.Attributes["latitude"].Value.Length == 0 || s.Attributes["longitude"].Value.Length == 0)
-                    continue;
-                int idStation = int.Parse(s.Attributes["id"].Value);
-                double latStation, lonStation;
-                if (!Double.TryParse(s.Attributes["latitude"].Value, NumberStyles.Any, format, out latStation))
-                    latStation = int.Parse(s.Attributes["latitude"].Value);
-                if (!Double.TryParse(s.Attributes["longitude"].Value, NumberStyles.Any, format, out lonStation))
-                    lonStation = int.Parse(s.Attributes["longitude"].Value);
-                // Gas stations should have their coordinates in WGS84*100000 .
-                if (GetDistance(lat, lon, latStation / 100000, lonStation / 100000) > range)
-                    continue;
-                // Now we only have stations in the given range
-                var prices = s.SelectNodes("prix[@nom=\"" + fuel + "\"]");
-                if (prices.Count == 0)
-                    continue;
-                l.Add(new BestPrice(latStation / 100000, lonStation / 100000, fuel, GetPrice(idStation, fuel)));
-            }
-            return l.OrderBy(p => p.Price).ToArray()[0];
+            List<Station> results = FindInArea(lat, lon, range).FindAll(pdv => pdv.Prices.Any(p => p.Id == fuel));
+
+            return results.OrderBy(pdv => pdv.Prices.FirstOrDefault(prix => prix.Id == fuel).Value).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Find all Gas station in a given radius
+        /// </summary>
+        /// <param name="lat"></param>
+        /// <param name="lon"></param>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        [MessageCallback]
+        public List<Station> FindInArea(double lat, double lon, int range = 1000)
+        {
+            return _list.Stations.FindAll(pdv => GetDistance(lat, lon, pdv.Latitude, pdv.Longitude) <= range);
         }
 
         /// <summary>
         /// Get price of a fuel type in a station
         /// </summary>
         /// <param name="id">ID of the station on Prix-carburants.</param>
-        /// <param name="carburant">Car's fuel type</param>
+        /// <param name="fuel">Car's fuel type</param>
         /// <returns>Fuel price</returns>
         [MessageCallback]
-        public double GetPrice(int id, string carburant)
+        public double? GetPrice(int id, Fuel fuel)
         {
-            XmlNode node = doc.DocumentElement.SelectSingleNode("pdv[@id=\"" + id + "\"]/prix[@nom=\"" + carburant + "\"]");
-            try
-            {
-                return double.Parse(node.Attributes["valeur"].Value, format);
-            }
-            catch (Exception)
-            {
-                PackageHost.WriteError("Invalid value for {0}", carburant);
-            }
-
-            return 0.0;
+            return _list.Stations.FirstOrDefault(pdv => pdv.Id == id)?.Prices.FirstOrDefault(prix => prix.Id == fuel)?.Value;
         }
 
+        #endregion Message Callbacks
+
+        #region Init
+
+        /// <summary>
+        /// Main
+        /// </summary>
+        /// <param name="args"></param>
+        static void Main(string[] args)
+        {
+            PackageHost.Start<Program>(args);
+        }
+
+        /// <summary>
+        /// Called when the package is started.
+        /// </summary>
+        public override void OnStart()
+        {
+            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
+
+            PackageHost.TryGetSettingValue("interval", out int interval, 6);
+
+            Refresh(null, null);
+
+            // Set a timer to refesh prices every n hours
+            _timer = new Timer(interval * 3600 * 1000)
+            {
+                AutoReset = true
+            };
+            _timer.Elapsed += Refresh;
+            _timer.Start();
+        }
+
+        /// <summary>
+        /// Called when the package is stopped.
+        /// </summary>
+        public override void OnPreShutdown()
+        {
+            _timer.Close();
+        }
+
+        #endregion Init
+
+        #region private 
+
+        /// <summary>
+        /// COmpute distance from geographic coordinates
+        /// </summary>
+        /// <param name="lat1"></param>
+        /// <param name="lng1"></param>
+        /// <param name="lat2"></param>
+        /// <param name="lng2"></param>
+        /// <returns></returns>
         private static double GetDistance(double lat1, double lng1, double lat2, double lng2)
         {
             int earth_radius = 6378137;
@@ -113,94 +154,94 @@ namespace PrixEssence
         /// <summary>
         /// Get data from prix-carburants.gouv.fr
         /// </summary>
-        private void GetData()
+        private StationsList GetData()
         {
             // Get the data provided as a zip archive
-            WebClient wc = new WebClient();
-            try
+            using (WebClient wc = new WebClient())
             {
-                wc.DownloadFile("https://donnees.roulez-eco.fr/opendata/instantane", "prices.zip");
-            }
-            catch (Exception)
-            {
-                PackageHost.WriteError("Couldn't get prices");
-            }
-            FileStream zipToOpen = new FileStream("prices.zip", FileMode.Open);
-            ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Read);
-            Stream content = archive.Entries[0].Open();
-            // Getting data in the XML
-            XmlDocument doc = new XmlDocument();
-            doc.Load(content);
-            this.doc = doc;
-        }
-
-        /// <summary>
-        /// Push prices of the gas station chosen by user
-        /// </summary>
-        private void GetAllPrices()
-        {
-            int id = int.Parse(PackageHost.GetSettingValue("station"));
-            XmlNode node = doc.DocumentElement.SelectSingleNode("pdv[@id=\"" + id + "\"]");
-            var prices = node.SelectNodes("prix");
-            foreach (XmlNode p in prices)
-            {
-                // We push each price
-                string nom = p.Attributes["nom"].Value;
-                try
+                byte[] datas = wc.DownloadData("https://donnees.roulez-eco.fr/opendata/instantane");
+                using (MemoryStream str = new MemoryStream(datas))
                 {
-                    double valeur = double.Parse(p.Attributes["valeur"].Value, format);
-                    PackageHost.PushStateObject(nom, valeur);
-                }
-                catch (Exception)
-                {
+                    using (ZipArchive archive = new ZipArchive(str, ZipArchiveMode.Read))
+                    {
+                        using (Stream content = archive.Entries[0].Open())
+                        {
+                            XmlSerializer xs = new XmlSerializer(typeof(StationsList));
+                            return xs.Deserialize(content) as StationsList;
+                        }
+                    }
                 }
             }
-            PackageHost.WriteInfo("Prices updated");
-        }
-
-        static void Main(string[] args)
-        {
-            PackageHost.Start<Program>(args);
         }
 
         /// <summary>
-        /// Called when the package is started.
+        /// Gas stations refresh
         /// </summary>
-        public override void OnStart()
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        private void Refresh(object source, ElapsedEventArgs e)
         {
-            n = (PackageHost.GetSettingValue("interval").Length == 0) ? int.Parse(PackageHost.GetSettingValue("interval")) : 6;
-            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
-            GetData();
             try
             {
-                GetAllPrices();
+                _list = GetData();
+                PackageHost.WriteInfo("Gas stations list refreshed");
+
+                //range search enabled
+                if (PackageHost.TryGetSettingValue("latitude", out double latitude)
+                    && PackageHost.TryGetSettingValue("longitude", out double longitude)
+                    && PackageHost.TryGetSettingValue("range", out int range)
+                    )
+                {
+                    List<Station> areaResults = FindInArea(latitude, longitude, range);
+                    PackageHost.PushStateObject("InArea", areaResults);
+
+                    PackageHost.WriteInfo($"{areaResults.Count} gas stations found in specified area");
+
+                    //cheapest station for specified fuel type
+                    if (PackageHost.TryGetSettingValue("cheapest-fuel-types", out string fuelTypes))
+                    {
+                        foreach (string fuelType in fuelTypes.Split(','))
+                        {
+                            if (Enum.TryParse(fuelType.Trim(), true, out Fuel fuel))
+                            {
+                                Station cheapest = areaResults.FirstOrDefault(pdv => pdv.Prices.Any(p => p.Id == fuel));
+                                Dictionary<string, object> metadatas = null;
+
+                                if (cheapest != null)
+                                {
+                                    Price prix = cheapest.Prices.FirstOrDefault(p => p.Id == fuel);
+                                    metadatas = new Dictionary<string, object>()
+                                    {
+                                        ["price"] = prix.Value,
+                                        ["name"] = prix.Name
+                                    };
+                                }
+
+                                PackageHost.PushStateObject($"Cheapest-{fuelType}", cheapest, metadatas: metadatas);
+
+                                PackageHost.WriteInfo($"Cheapest '{fuelType}' found in specified area");
+                            }
+                        }
+                    }
+                }
+
+                //specific id search enabled
+                if (PackageHost.TryGetSettingValue("station-ids", out string stationIds))
+                {
+                    foreach (Station pdv in _list.Stations.FindAll(pdv => stationIds.Contains(pdv.Id.ToString())))
+                    {
+                        PackageHost.PushStateObject(pdv.Id.ToString(), pdv);
+
+                        PackageHost.WriteInfo($"Gas station '{pdv.Id}' found");
+                    }
+                }
             }
-            catch { }
-            // Set a timer to refesh prices every n hours
-            t = new Timer(n * 3600 * 1000)
+            catch (Exception ex)
             {
-                AutoReset = true
-            };
-            t.Elapsed += Refresh;
-            t.Start();
+                PackageHost.WriteError($"An error ocurred while getting datas : '{ex.Message}'");
+            }
         }
 
-        /// <summary>
-        /// Called when the package is stopped.
-        /// </summary>
-        public override void OnPreShutdown()
-        {
-            t.Close();
-        }
-
-        private void Refresh(Object source, ElapsedEventArgs e)
-        {
-            GetData();
-            try
-            {
-                GetAllPrices();
-            }
-            catch { }
-        }
+        #endregion private
     }
 }
