@@ -112,6 +112,7 @@ namespace OrangeTV
         /// <summary>
         /// Starts the listening for event notification.
         /// </summary>
+        [Obsolete("The URI /remoteControl/notifyEvent has been removed since version 07.35.80 (July 2018). This method is now obsolete !")]
         public void StartListening(Action<Exception> onError = null, bool continueOnError = true)
         {
             if (this.eventNotifyCancellationToken == null)
@@ -185,6 +186,7 @@ namespace OrangeTV
         /// <summary>
         /// Stops the listening.
         /// </summary>
+        [Obsolete("The URI /remoteControl/notifyEvent has been removed since version 07.35.80 (July 2018). This method is now obsolete !")]
         public void StopListening()
         {
             if (this.eventNotifyCancellationToken != null)
@@ -322,6 +324,7 @@ namespace OrangeTV
         /// Starts the query state loop in case of TimeShifting.
         /// </summary>
         /// <param name="interval">The interval.</param>
+        [Obsolete("The URI /remoteControl/notifyEvent has been removed since version 07.35.80 (July 2018). This method is now obsolete !")]
         private void StartQueryStateLoop(int interval = 5000)
         {
             if (queryStateCancellationToken == null)

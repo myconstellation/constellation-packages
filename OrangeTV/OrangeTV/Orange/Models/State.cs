@@ -51,18 +51,18 @@ namespace OrangeTV
         /// The played media identifier
         /// </summary>
         [OrangeJsonProperty("playedMediaId")]
-        public int PlayedMediaId { get; set; }
+        public int? PlayedMediaId { get; set; }
 
         /// <summary>
         /// The played channel name
         /// </summary>
-        public string PlayedChannelName => this.PlayedMediaId.GetOrangeServiceValue<Channel>().ToString();
+        public string PlayedChannelName => this.PlayedMediaId?.GetOrangeServiceValue<Channel>().ToString() ?? null;
 
         /// <summary>
         /// The played media context identifier
         /// </summary>
         [OrangeJsonProperty("playedMediaContextId")]
-        public int PlayedMediaContextId { get; set; }
+        public int? PlayedMediaContextId { get; set; }
 
         /// <summary>
         /// The played media position

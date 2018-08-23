@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="OrangeTV"
-         Version="1.1.2"
+         Version="1.2"
          Icon="Orange.png"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
@@ -16,5 +16,6 @@
   <Settings>
     <Setting name="Hostname" type="String" description="The Livebox TV hostname (or IP)" isRequired="true" ignoreLocalValue="true" />
     <Setting name="Verbose" type="Boolean" description="Verbose mode" defaultValue="false" isRequired="false" />
+    <Setting name="RefreshInterval" type="Int32" description="Refresh interval in millisecond" defaultValue="5000" isRequired="false" />
   </Settings>
 </Package>

@@ -24,6 +24,7 @@ namespace OrangeTV
     using Constellation.Package;
     using System;
     using System.Threading.Tasks;
+    using System.Timers;
 
     /// <summary>
     /// OrangeTV Package
@@ -31,6 +32,9 @@ namespace OrangeTV
     /// <seealso cref="Constellation.Package.PackageBase" />
     public class Program : PackageBase
     {
+        private Timer timer = null;
+        private Func<Task<bool>, bool> taskAfterSTBAction = null;
+
         private OrangeSetTopBox orangeBox = null;
 
         static void Main(string[] args)
@@ -43,6 +47,8 @@ namespace OrangeTV
         /// </summary>
         public override void OnStart()
         {
+            // After STB action, wait 1second and refresh the STB state
+            this.taskAfterSTBAction = action => { Task.Delay(1000).ContinueWith(_ => this.RefreshState()); return action.Result; };
             // Create the STB service
             this.orangeBox = new OrangeSetTopBox(PackageHost.GetSettingValue("Hostname"));
             // Attach the event notification
@@ -60,13 +66,12 @@ namespace OrangeTV
             var task = this.orangeBox.GetCurrentState();
             if (task.Wait(10000) && task.IsCompleted && !task.IsFaulted)
             {
-                // Listening events
-                this.orangeBox.StartListening(async (error) =>
-                {
-                    PackageHost.WriteError(error.ToString());
-                    await Task.Delay(2000);
-                });
-                // Read!
+                this.timer = new Timer(PackageHost.GetSettingValue<int>("RefreshInterval")) { AutoReset = true, Enabled = true };
+                this.timer.Elapsed += async (s, e) => await this.orangeBox.GetCurrentState();
+                this.timer.Start();
+                // The URI /remoteControl/notifyEvent has been removed since version 07.35.80 (July 2018). The event's listening below is now obsolete !
+                // this.orangeBox.StartListening();
+                // Ready!
                 PackageHost.WriteInfo($"Connected to {task.Result.FriendlyName} ({task.Result.MacAddress})");
             }
             else
@@ -80,7 +85,8 @@ namespace OrangeTV
         /// </summary>
         public override void OnPreShutdown()
         {
-            this.orangeBox.StopListening();
+            this.timer?.Stop();
+            //this.orangeBox.StopListening();
         }
 
         /// <summary>
@@ -102,7 +108,7 @@ namespace OrangeTV
         public async Task<bool> SwitchTo(string epgId)
         {
             PackageHost.WriteInfo($"Switching to EPG #{epgId}");
-            return await this.orangeBox.SwitchTo(epgId);
+            return await this.orangeBox.SwitchTo(epgId).ContinueWith(taskAfterSTBAction);
         }
 
         /// <summary>
@@ -114,7 +120,7 @@ namespace OrangeTV
         public async Task<bool> SwitchToChannel(Channel channel)
         {
             PackageHost.WriteInfo($"Switching to channel #{channel.GetOrangeServiceId()} ({channel.ToString()})");
-            return await this.orangeBox.SwitchToChannel(channel);
+            return await this.orangeBox.SwitchToChannel(channel).ContinueWith(taskAfterSTBAction);
         }
 
         /// <summary>
@@ -127,7 +133,7 @@ namespace OrangeTV
         public async Task<bool> SendKey(Key key, PressKeyMode mode = PressKeyMode.SinglePress)
         {
             PackageHost.WriteInfo($"Sending key #{key.GetOrangeServiceId()} ({key.ToString()}) as {mode.ToString()}");
-            return await this.orangeBox.SendKey(key, mode);
+            return await this.orangeBox.SendKey(key, mode).ContinueWith(taskAfterSTBAction);
         }
     }
 }
