@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="HuaweiMobileRouter"
+         Version="1.0"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Icon="logo.png"
+         Description="Connect your Orange Flybox / Airbox, Bouygues 4G Box or any Huawei mobile router to Constellation">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Host" type="String" description="Router's hostname, DNS or IP" isRequired="true" />
+    <Setting name="Username" type="String" description="Administrator username" isRequired="false" />
+    <Setting name="Password" type="String" description="Administrator password" isRequired="false" />
+    <Setting name="RefreshInterval" type="Int32" description="Refresh interval in millisecond" isRequired="false" defaultValue="5000" />
+    <Setting name="ForwardIncomingSMSTo" type="String" description="Forward the incoming SMS to the specifed group" isRequired="false" />
+    <Setting name="KeepSMSCopy" type="Boolean" description="Keep SMS on the SIM or delete after forwarding" isRequired="false" defaultValue="true" />
+  </Settings>
+</Package>
