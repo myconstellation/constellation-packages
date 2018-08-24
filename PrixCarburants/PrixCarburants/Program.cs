@@ -55,7 +55,7 @@ namespace PrixEssence
         {
             List<Station> results = FindInArea(lat, lon, range).FindAll(pdv => pdv.Prices.Any(p => p.Id == fuel));
 
-            return results.OrderBy(pdv => pdv.Prices.FirstOrDefault(prix => prix.Id == fuel).Value).FirstOrDefault();
+            return GetCheapestStationForFuelType(results, fuel);
         }
 
         /// <summary>
@@ -152,9 +152,22 @@ namespace PrixEssence
         }
 
         /// <summary>
+        /// Get the cheapest station in a list for a specified fuel
+        /// </summary>
+        /// <param name="stations"></param>
+        /// <param name="fuel"></param>
+        /// <returns></returns>
+        private static Station GetCheapestStationForFuelType(List<Station> stations, Fuel fuel)
+        {
+            return stations.FindAll(pdv => pdv.Prices.Any(prix => prix.Id == fuel)) // stations that matches the fuel
+                            .OrderBy(pdv => pdv.Prices.FirstOrDefault(prix => prix.Id == fuel)?.Value) // order by price
+                            .FirstOrDefault(); // take the first
+        }
+
+        /// <summary>
         /// Get data from prix-carburants.gouv.fr
         /// </summary>
-        private StationsList GetData()
+        private static StationsList GetData()
         {
             // Get the data provided as a zip archive
             using (WebClient wc = new WebClient())
@@ -204,17 +217,22 @@ namespace PrixEssence
                         {
                             if (Enum.TryParse(fuelType.Trim(), true, out Fuel fuel))
                             {
-                                Station cheapest = areaResults.FirstOrDefault(pdv => pdv.Prices.Any(p => p.Id == fuel));
+                                //get the station
+                                Station cheapest = GetCheapestStationForFuelType(areaResults, fuel);
                                 Dictionary<string, object> metadatas = null;
 
+                                //get the price of the fuel
                                 if (cheapest != null)
                                 {
                                     Price prix = cheapest.Prices.FirstOrDefault(p => p.Id == fuel);
-                                    metadatas = new Dictionary<string, object>()
+                                    if (prix != null)
                                     {
-                                        ["price"] = prix.Value,
-                                        ["name"] = prix.Name
-                                    };
+                                        metadatas = new Dictionary<string, object>()
+                                        {
+                                            ["price"] = prix.Value,
+                                            ["name"] = prix.Name
+                                        };
+                                    }
                                 }
 
                                 PackageHost.PushStateObject($"Cheapest-{fuelType}", cheapest, metadatas: metadatas);
