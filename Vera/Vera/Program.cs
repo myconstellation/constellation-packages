@@ -26,15 +26,22 @@ namespace Vera
     using System.Linq;
     using VeraNet;
 
-    class Program : PackageBase
+    /// <summary>
+    /// Vera Constellation package
+    /// </summary>
+    /// <seealso cref="Constellation.Package.PackageBase" />
+    public class Program : PackageBase
     {
+        private VeraController vera = null;
+
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
         }
 
-        private VeraController vera = null;
-
+        /// <summary>
+        /// Called before shutdown the package (the package is still connected to Constellation).
+        /// </summary>
         public override void OnPreShutdown()
         {
             if (vera != null)
@@ -44,6 +51,9 @@ namespace Vera
             }
         }
 
+        /// <summary>
+        /// Called when the package is started.
+        /// </summary>
         public override void OnStart()
         {
             PackageHost.WriteInfo("Initializing Vera");
@@ -66,20 +76,16 @@ namespace Vera
                     });
                 }
             };
+            vera.HouseModeChanged += (s, e) =>
+            {
+                PushVeraDevice();
+                PackageHost.WriteInfo("The house mode has changed to '{0}' (from '{1}')", e.NewMode.ToString(), e.OldMode.ToString());
+            };
             vera.DataReceived += (s, e) =>
             {
                 if (!string.IsNullOrEmpty(vera.SerialNumber))
                 {
-                    PackageHost.PushStateObject("Vera_" + vera.SerialNumber, new VeraDevice
-                    {
-                        DataVersion = e.DataVersion,
-                        LoadTime = e.LoadTime,
-                        State = vera.CurrentState.ToString(),
-                        Comment = vera.CurrentComment,
-                        Model = vera.Model,
-                        SerialNumber = vera.SerialNumber,
-                        Version = vera.Version
-                    });
+                    PushVeraDevice();
                 }
             };
 
@@ -98,7 +104,7 @@ namespace Vera
         /// <param name="idScene">The identifier scene.</param>
         /// <returns></returns>
         [MessageCallback]
-        private bool RunScene(int idScene)
+        public bool RunScene(int idScene)
         {
             VeraNet.Objects.Scene scene = vera.Scenes.FirstOrDefault(s => s.Id == idScene);
             if (scene != null)
@@ -114,12 +120,23 @@ namespace Vera
         }
 
         /// <summary>
+        /// Sets the house's mode.
+        /// </summary>
+        /// <param name="mode">The house's mode.</param>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool SetHouseMode(VeraNet.Objects.VeraHouseMode mode)
+        {
+            return vera.SetHouseMode(mode);
+        }
+
+        /// <summary>
         /// Sets the state of the switch.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [MessageCallback]
-        private bool SetSwitchState(DeviceRequest request)
+        public bool SetSwitchState(DeviceRequest request)
         {
             VeraNet.Objects.Devices.Switch switchDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.Switch;
             if (switchDevice != null)
@@ -147,7 +164,7 @@ namespace Vera
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [MessageCallback]
-        private bool SetWindowCoveringAction(DeviceActionRequest request)
+        public bool SetWindowCoveringAction(DeviceActionRequest request)
         {
             VeraNet.Objects.Devices.WindowCovering device = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.WindowCovering;
             if (device != null)
@@ -178,14 +195,13 @@ namespace Vera
             }
         }
 
-
         /// <summary>
         /// Sets the state and dimmable level.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
         [MessageCallback]
-        private bool SetDimmableLevel(DeviceRequest request)
+        public bool SetDimmableLevel(DeviceRequest request)
         {
             VeraNet.Objects.Devices.DimmableLight dimmableDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.DimmableLight;
             if (dimmableDevice != null)
@@ -200,13 +216,13 @@ namespace Vera
             }
         }
 
-        [MessageCallback]
         /// <summary>
         /// Sets temperature for thermostats
         /// </summary>
         /// <param name="request">the requests.</param>
         /// <returns></returns>
-        private bool SetTemperature(DeviceTemperatureRequest request)
+        [MessageCallback]
+        public bool SetTemperature(DeviceTemperatureRequest request)
         {
             VeraNet.Objects.Devices.Thermostat thermostatDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.Thermostat;
             if (thermostatDevice != null)
@@ -221,13 +237,13 @@ namespace Vera
             }
         }
 
-        [MessageCallback]
         /// <summary>
         /// Sets the termostat Mode
         /// </summary>
         /// <param name="request">the requests.</param>
         /// <returns></returns>
-        private bool SetThermostatMode(DeviceThermostatModeRequest request)
+        [MessageCallback]
+        public bool SetThermostatMode(DeviceThermostatModeRequest request)
         {
             VeraNet.Objects.Devices.Thermostat thermostatDevice = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.Thermostat;
             if (thermostatDevice != null)
@@ -242,13 +258,13 @@ namespace Vera
             }
         }
 
-        [MessageCallback]
         /// <summary>
         /// Set Door lock
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        private bool SetDoorLock(DeviceDoorLockRequest request)
+        [MessageCallback]
+        public bool SetDoorLock(DeviceDoorLockRequest request)
         {
             VeraNet.Objects.Devices.DoorLock doorlock = vera.Devices.FirstOrDefault(s => s.Id == request.DeviceID) as VeraNet.Objects.Devices.DoorLock;
             if (doorlock != null)
@@ -268,6 +284,21 @@ namespace Vera
                 PackageHost.WriteError("The device #'{0}' not found !", request.DeviceID);
                 return false;
             }
+        }
+
+        private void PushVeraDevice()
+        {
+            PackageHost.PushStateObject("Vera_" + vera.SerialNumber, new VeraDevice
+            {
+                DataVersion = vera.CurrentDataVersion,
+                LoadTime = vera.CurrentLoadTime,
+                State = vera.CurrentState.ToString(),
+                Comment = vera.CurrentComment,
+                Model = vera.Model,
+                SerialNumber = vera.SerialNumber,
+                Version = vera.Version,
+                HouseMode = vera.HouseMode
+            });
         }
 
         private void PushDevice(VeraNet.Objects.Device device)
@@ -424,124 +455,6 @@ namespace Vera
                     }, metadatas: metadata);
                 }
             }
-        }
-
-        /// <summary>
-        /// Z-Wave Device request
-        /// </summary>
-        public class DeviceRequest
-        {
-            /// <summary>
-            /// The device identifier.
-            /// </summary>
-            public int DeviceID { get; set; }
-
-            /// <summary>
-            /// The state of the device (True = On, False = Off)
-            /// </summary>
-            public bool State { get; set; }
-
-            /// <summary>
-            /// The level (0 to 100%) for dimmable device 
-            /// </summary>
-            public int Level { get; set; }
-        }
-
-
-        /// <summary>
-        /// Window Covering Action
-        /// </summary>
-        public enum WindowCoveringAction
-        {
-            /// <summary>
-            /// UP Command
-            /// </summary>
-            UP = 0,
-
-            /// <summary>
-            /// Down Command
-            /// </summary>
-            DOWN = 1,
-
-            /// <summary>
-            /// Stop Command
-            /// </summary>
-            STOP = 2
-        }
-
-        /// <summary>
-        /// Z-Wave Device request
-        /// </summary>
-        public class DeviceActionRequest
-        {
-            /// <summary>
-            /// The device identifier.
-            /// </summary>
-            public int DeviceID { get; set; }
-
-            /// <summary>
-            /// The command to action : Up (0), Down(1), Stop(2)
-            /// </summary>
-            public WindowCoveringAction Action { get; set; }
-        }
-
-        /// <summary>
-        /// Mode target for themostats
-        /// </summary>
-        public enum ModeTarget
-        {
-            Off = 0,
-            HeatOn = 1,
-            CoolOn = 2,
-            AutoChangeOver = 3
-        }
-
-        /// <summary>
-        /// Z-Wave Device request
-        /// </summary>
-        public class DeviceTemperatureRequest
-        {
-            /// <summary>
-            /// The device identifier.
-            /// </summary>
-            public int DeviceID { get; set; }
-
-            /// <summary>
-            /// The temperature to set
-            /// </summary>
-            public double Temperature { get; set; }
-        }
-
-        /// <summary>
-        /// Z-Wave Device request
-        /// </summary>
-        public class DeviceThermostatModeRequest
-        {
-            /// <summary>
-            /// The device identifier.
-            /// </summary>
-            public int DeviceID { get; set; }
-
-            /// <summary>
-            /// Thermostat Mode
-            /// </summary>
-            public ModeTarget ModeTarget { get; set; }
-        }
-
-        /// <summary>
-        /// Z-Wave Device request
-        /// </summary>
-        public class DeviceDoorLockRequest
-        {
-            /// <summary>
-            /// The device identifier.
-            /// </summary>
-            public int DeviceID { get; set; }
-
-            /// <summary>
-            /// value for lock of door
-            /// </summary>
-            public bool Locked { get; set; }
         }
     }
 }
