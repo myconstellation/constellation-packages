@@ -8,7 +8,9 @@ Control your Hue lighting system into your Constellation.
 ### MessageCallbacks
   - SetState(lightId, state) : Sets the state.
   - SetColor(lightId, r, g, b) : Sets the color.
-  - Set(lightId, state, hue, saturation, bri) : Sets the light state.
+  - Set(lightId, state, hue, saturation, bri) : Sets the light (HS) state.
+  - SetCT(lightId, state, colorTemperature, bri) : Sets the light (CT) state.
+  - SetColorTemperature(lightId, colorTemperature) : Sets the color temperature.
   - SetBrightness(lightId, brightness) : Sets the brightness.
   - ShowAlert(lightId, r, g, b, duration) : Shows the alert.
   - SetCommandToAll(command) : Sets the command to all.

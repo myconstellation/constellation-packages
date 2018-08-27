@@ -113,7 +113,7 @@ namespace Hue
         }
 
         /// <summary>
-        /// Sets the light state.
+        /// Sets the light (HS) state.
         /// </summary>
         /// <param name="lightId">The light identifier.</param>
         /// <param name="state">if set to <c>true</c> [state].</param>
@@ -124,6 +124,28 @@ namespace Hue
         public void Set(int lightId, bool state, int hue, int saturation, int bri)
         {
             this.SendCommandTo(new LightCommand() { On = state, Brightness = (byte)bri, Hue = hue, Saturation = saturation }, lightId == 0 ? null : new List<string>() { lightId.ToString() });
+        }
+
+        /// <summary>
+        /// Sets the light (CT) state.
+        /// </summary>
+        /// <param name="lightId">The light identifier.</param>
+        /// <param name="state">if set to <c>true</c> [state].</param>
+        /// <param name="colorTemperature">The color temperature.</param>
+        /// <param name="bri">The bri.</param>
+        public void SetCT(int lightId, bool state, int colorTemperature, int bri)
+        {
+            this.SendCommandTo(new LightCommand() { On = state, Brightness = (byte)bri, ColorTemperature = colorTemperature }, lightId == 0 ? null : new List<string>() { lightId.ToString() });
+        }
+
+        /// <summary>
+        /// Sets the color temperature.
+        /// </summary>
+        /// <param name="lightId">The light identifier.</param>
+        /// <param name="colorTemperature">The color temperature.</param>
+        public void SetColorTemperature(int lightId, int colorTemperature)
+        {
+            this.SendCommandTo(new LightCommand() { On = true,  ColorTemperature = colorTemperature }, lightId == 0 ? null : new List<string>() { lightId.ToString() });
         }
 
         /// <summary>
