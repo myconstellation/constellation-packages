@@ -133,6 +133,7 @@ namespace Hue
         /// <param name="state">if set to <c>true</c> [state].</param>
         /// <param name="colorTemperature">The color temperature.</param>
         /// <param name="bri">The bri.</param>
+        [MessageCallback]
         public void SetCT(int lightId, bool state, int colorTemperature, int bri)
         {
             this.SendCommandTo(new LightCommand() { On = state, Brightness = (byte)bri, ColorTemperature = colorTemperature }, lightId == 0 ? null : new List<string>() { lightId.ToString() });
@@ -143,6 +144,7 @@ namespace Hue
         /// </summary>
         /// <param name="lightId">The light identifier.</param>
         /// <param name="colorTemperature">The color temperature.</param>
+        [MessageCallback]
         public void SetColorTemperature(int lightId, int colorTemperature)
         {
             this.SendCommandTo(new LightCommand() { On = true,  ColorTemperature = colorTemperature }, lightId == 0 ? null : new List<string>() { lightId.ToString() });
