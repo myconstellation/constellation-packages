@@ -100,7 +100,7 @@
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishServer="http://10.2.4.121:8088" PublishMethod="ConstellationServer" />
+      <UserProperties PublishServer="http://localhost:8088" PublishMethod="ConstellationServer" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

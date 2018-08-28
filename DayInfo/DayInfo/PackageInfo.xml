@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="DayInfo"
-         Version="1.3"
+         Version="1.4"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Get the name day (in French) and sunset/sunrise informations"
