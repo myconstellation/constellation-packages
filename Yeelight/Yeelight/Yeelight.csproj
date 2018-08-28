@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Yeelight.XML</DocumentationFile>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,11 +37,11 @@
     <Reference Include="Constellation.Common, Version=1.8.0.0, Culture=neutral, PublicKeyToken=324a4f45ff674ee1, processorArchitecture=MSIL">
       <HintPath>..\packages\Constellation.1.8.3.17258\lib\net45\Constellation.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.3.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -53,8 +54,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="YeelightAPI, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\YeelightAPI.1.3.0\lib\net46\YeelightAPI.dll</HintPath>
+    <Reference Include="YeelightAPI, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YeelightAPI.1.5.0\lib\net46\YeelightAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -65,11 +66,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="PackageInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="yeelight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -81,6 +85,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
+      <UserProperties PublishMethod="ConstellationServer" PublishServer="https://www.constellation.roddone.ovh" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

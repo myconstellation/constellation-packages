@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using Yeelight.Configs;
 using YeelightAPI;
@@ -32,7 +33,14 @@ namespace Yeelight
             {
                 if (device.Value is IDisposable disposableDevice)
                 {
-                    disposableDevice.Dispose();
+                    try
+                    {
+                        disposableDevice.Dispose();
+                    }
+                    catch(Exception ex)
+                    {
+                        PackageHost.WriteError("Unable to dispose device '{dc.Name}' ({device.Hostname}:{device.Port})");
+                    }
                 }
             }
 
@@ -53,31 +61,22 @@ namespace Yeelight
                 Device device = new Device(dc.Hostname, dc.Port) { Name = dc.Name };
                 try
                 {
-                    if (device.Connect().Result)
+                    device.Connect().Wait();
+                    if (device.IsConnected)
                     {
-                        PackageHost.WriteInfo($"Device {dc.Name} ({dc.Hostname}:{dc.Port}) connected");
-                        device.OnNotificationReceived += (object sender, NotificationReceivedEventArgs e) =>
-                        {
-                        //updated device properties
-                        PackageHost.PushStateObject(dc.Name, device.Properties);
-                            PackageHost.WriteDebug(e.Result);
-                        };
+                        device.OnError -= ErrorEvent;
+                        device.OnError += ErrorEvent;
 
-                        device.OnError += (object sender, UnhandledExceptionEventArgs e) =>
-                        {
-                            PackageHost.WriteError(e.ExceptionObject);
-                        };
-
-                        //initial device properties
-                        PackageHost.PushStateObject(dc.Name, device.Properties);
+                        device.SetName(dc.Name).Wait();
+                        PackageHost.WriteInfo($"device '{dc.Name}' ({device.Hostname}:{device.Port}) connected");
                     }
-
-                    _all.Add(dc.Name, device);
                 }
                 catch(Exception ex)
                 {
-                    PackageHost.WriteError($"Unable to connect to device {dc.Name} ({dc.Hostname}:{dc.Port}) : {ex.Message}"); ;
+                    PackageHost.WriteWarn($"Cannot connect device '{device.Name}' ({device.Hostname}:{device.Port}), message : {ex.Message}");
                 }
+
+                _all.Add(dc.Name, device);
             });
 
             //creation of groups
@@ -91,6 +90,49 @@ namespace Yeelight
 
                 _all.Add(gc.Name, group);
             }
+
+            UpdateDevicesStateObjects();
+        }
+
+        private static void UpdateDevicesStateObjects()
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                Dictionary<string, bool> states = new Dictionary<string, bool>();
+                while (PackageHost.IsRunning)
+                {
+                    _all.AsParallel().ForAll(kvp =>
+                    {
+                        if (kvp.Value is Device device)
+                        {
+                            try
+                            {
+                                if (!device.IsConnected)
+                                {
+                                    device.Connect().Wait();
+                                }
+
+                                if (device.IsConnected)
+                                {
+                                    var props = device.GetAllProps().Result;
+                                    PackageHost.PushStateObject(kvp.Key, props, lifetime: 60);
+                                    states[kvp.Key] = true;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                if (!states.ContainsKey(kvp.Key) || states[kvp.Key] == true)
+                                { // log only if previous attempt was a success
+                                    PackageHost.WriteError($"An error occurred while fetching device '{device.Name}' ({device.Hostname}:{device.Port}) state, message : {ex.Message} | {ex.InnerException?.Message}");
+                                }
+
+                                states[kvp.Key] = false;
+                            }
+                        }
+                    });
+                    await Task.Delay(5000);
+                }
+            });
         }
 
         /// <summary>
@@ -104,16 +146,95 @@ namespace Yeelight
 
         #endregion Constellation Init
 
+        #region Yeelight Utils
+
+        /// <summary>
+        /// Error event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void ErrorEvent(object sender, UnhandledExceptionEventArgs e)
+        {
+            PackageHost.WriteError($"An unknown error occured : '{e.ExceptionObject}'");
+        }
+
+        /// <summary>
+        /// Get a controller device or group by its name
+        /// </summary>
+        /// <param name="deviceOrGroupName"></param>
+        /// <returns></returns>
+        private static IDeviceController GetControllerDevice(string deviceOrGroupName)
+        {
+            return _all[deviceOrGroupName] as IDeviceController;
+        }
+
+        /// <summary>
+        /// Get a reader device or group by its name
+        /// </summary>
+        /// <param name="deviceOrGroupName"></param>
+        /// <returns></returns>
+        private static IDeviceReader GetReaderDevice(string deviceOrGroupName)
+        {
+            return _all[deviceOrGroupName] as IDeviceReader;
+        }
+
+        #endregion
+
         #region MessageCallbacks
+
+        /// <summary>
+        /// Adjusts the Brightness
+        /// </summary>
+        /// <param name="deviceOrGroupName"></param>
+        /// <param name="percent">range between -100 and 100</param>
+        /// <param name="duration"></param>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool AdjustBrightness(string deviceOrGroupName, int percent, int? duration)
+        {
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
+
+            return device.AdjustBright(percent, duration).Result;
+        }
+
+        /// <summary>
+        /// Adjusts the Color
+        /// </summary>
+        /// <param name="deviceOrGroupName"></param>
+        /// <param name="percent">range between -100 and 100</param>
+        /// <param name="duration"></param>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool AdjustColor(string deviceOrGroupName, int percent, int? duration)
+        {
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
+
+            return device.AdjustColor(percent, duration).Result;
+        }
+
+        /// <summary>
+        /// Adjusts the Color temperature
+        /// </summary>
+        /// <param name="deviceOrGroupName"></param>
+        /// <param name="percent">range between -100 and 100</param>
+        /// <param name="duration"></param>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool AdjustColorTemperature(string deviceOrGroupName, int percent, int? duration)
+        {
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
+
+            return device.AdjustColorTemperature(percent, duration).Result;
+        }
 
         /// <summary>
         /// Discover devices through LAN
         /// </summary>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<List<Device>> Discover()
+        public List<Device> Discover()
         {
-            return await DeviceLocator.Discover();
+            return DeviceLocator.Discover().Result;
         }
 
         /// <summary>
@@ -122,11 +243,11 @@ namespace Yeelight
         /// <param name="deviceOrGroupName">Device's name</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<Dictionary<PROPERTIES, object>> GetAllProps(string deviceOrGroupName)
+        public Dictionary<PROPERTIES, object> GetAllProps(string deviceOrGroupName)
         {
-            IDeviceReader device = _all[deviceOrGroupName] as IDeviceReader;
+            IDeviceReader device = GetReaderDevice(deviceOrGroupName);
 
-            return await device.GetAllProps();
+            return device.GetAllProps().Result;
         }
 
         /// <summary>
@@ -136,11 +257,11 @@ namespace Yeelight
         /// <param name="property">Name of the property</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<object> GetProp(string deviceOrGroupName, PROPERTIES property)
+        public object GetProp(string deviceOrGroupName, PROPERTIES property)
         {
-            IDeviceReader device = _all[deviceOrGroupName] as IDeviceReader;
+            IDeviceReader device = GetReaderDevice(deviceOrGroupName);
 
-            return await device.GetProp(property);
+            return device.GetProp(property).Result;
         }
 
         /// <summary>
@@ -150,11 +271,11 @@ namespace Yeelight
         /// <param name="properties">list of properties names</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<Dictionary<PROPERTIES, object>> GetProps(string deviceOrGroupName, PROPERTIES properties)
+        public Dictionary<PROPERTIES, object> GetProps(string deviceOrGroupName, PROPERTIES properties)
         {
-            IDeviceReader device = _all[deviceOrGroupName] as IDeviceReader;
+            IDeviceReader device = GetReaderDevice(deviceOrGroupName);
 
-            return await device.GetProps(properties);
+            return device.GetProps(properties).Result;
         }
 
         /// <summary>
@@ -165,11 +286,11 @@ namespace Yeelight
         /// <param name="adjustProperty">the property to adjust</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> SetAdjust(string deviceOrGroupName, AdjustAction adjustAction, AdjustProperty adjustProperty)
+        public bool SetAdjust(string deviceOrGroupName, AdjustAction adjustAction, AdjustProperty adjustProperty)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.SetAdjust(adjustAction, adjustProperty);
+            return device.SetAdjust(adjustAction, adjustProperty).Result;
         }
 
         /// <summary>
@@ -180,11 +301,11 @@ namespace Yeelight
         /// <param name="smooth">Duration of the effect in milliseconds. Min : 50</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> SetBrightness(string deviceOrGroupName, int brightness, int? smooth = null)
+        public bool SetBrightness(string deviceOrGroupName, int brightness, int? smooth = null)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.SetBrightness(brightness, smooth);
+            return device.SetBrightness(brightness, smooth).Result;
         }
 
         /// <summary>
@@ -195,11 +316,11 @@ namespace Yeelight
         /// <param name="smooth">Duration of the effect in milliseconds. Min : 50</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> SetColorTemperature(string deviceOrGroupName, int temperature, int? smooth = null)
+        public bool SetColorTemperature(string deviceOrGroupName, int temperature, int? smooth = null)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.SetColorTemperature(temperature, smooth);
+            return device.SetColorTemperature(temperature, smooth).Result;
         }
 
         /// <summary>
@@ -208,11 +329,11 @@ namespace Yeelight
         /// <param name="deviceOrGroupName">Device's name</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> SetDefault(string deviceOrGroupName)
+        public bool SetDefault(string deviceOrGroupName)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.SetDefault();
+            return device.SetDefault().Result;
         }
 
         /// <summary>
@@ -224,11 +345,11 @@ namespace Yeelight
         /// <param name="smooth">Duration of the effect in milliseconds. Min : 50</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> SetHSVColor(string deviceOrGroupName, int hue, int sat, int? smooth = null)
+        public bool SetHSVColor(string deviceOrGroupName, int hue, int sat, int? smooth = null)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.SetHSVColor(hue, sat, smooth);
+            return device.SetHSVColor(hue, sat, smooth).Result;
         }
 
         /// <summary>
@@ -238,11 +359,11 @@ namespace Yeelight
         /// <param name="state">state : true is on, false is off</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> SetPower(string deviceOrGroupName, bool state = true)
+        public bool SetPower(string deviceOrGroupName, bool state = true)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.SetPower(state);
+            return device.SetPower(state).Result;
         }
 
         /// <summary>
@@ -255,11 +376,11 @@ namespace Yeelight
         /// <param name="smooth">Duration of the effect in milliseconds. Min : 50</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> SetRGBColor(string deviceOrGroupName, int red, int green, int blue, int? smooth = null)
+        public bool SetRGBColor(string deviceOrGroupName, int red, int green, int blue, int? smooth = null)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.SetRGBColor(red, green, blue, smooth);
+            return device.SetRGBColor(red, green, blue, smooth).Result;
         }
 
         /// <summary>
@@ -268,11 +389,11 @@ namespace Yeelight
         /// <param name="deviceOrGroupName">Device's name</param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> Toggle(string deviceOrGroupName)
+        public bool Toggle(string deviceOrGroupName)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.Toggle();
+            return device.Toggle().Result;
         }
 
         /// <summary>
@@ -282,11 +403,11 @@ namespace Yeelight
         /// <param name="smooth"></param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> TurnOff(string deviceOrGroupName, int? smooth = null)
+        public bool TurnOff(string deviceOrGroupName, int? smooth = null)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.TurnOff(smooth);
+            return device.TurnOff(smooth).Result;
         }
 
         /// <summary>
@@ -297,11 +418,11 @@ namespace Yeelight
         /// <param name="mode"></param>
         /// <returns></returns>
         [MessageCallback]
-        public async Task<bool> TurnOn(string deviceOrGroupName, int? smooth = null, PowerOnMode mode = PowerOnMode.Normal)
+        public bool TurnOn(string deviceOrGroupName, int? smooth = null, PowerOnMode mode = PowerOnMode.Normal)
         {
-            IDeviceController device = _all[deviceOrGroupName] as IDeviceController;
+            IDeviceController device = GetControllerDevice(deviceOrGroupName);
 
-            return await device.TurnOn(smooth, mode);
+            return device.TurnOn(smooth, mode).Result;
         }
 
         #endregion MessageCallbacks
