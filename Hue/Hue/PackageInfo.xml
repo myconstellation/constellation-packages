@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Hue"
          Icon="hue.png"
-         Version="1.1.4"
+         Version="1.1.5"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Control your Hue lighting system into your Constellation"

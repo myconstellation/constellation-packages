@@ -22,6 +22,8 @@
 namespace Hue
 {
     using Constellation.Package;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
     using Q42.HueApi;
     using System;
     using System.Collections.Generic;
@@ -109,7 +111,7 @@ namespace Hue
         [MessageCallback]
         public void SetColor(int lightId, int r, int g, int b)
         {
-            this.SendCommandTo(new LightCommand() { On = true }.SetColor(r, g, b), lightId == 0 ? null : new List<string>() { lightId.ToString() });
+            this.SendCommandTo(new Q42.HueApi.LightCommand() { On = true }.SetColor(r, g, b), lightId == 0 ? null : new List<string>() { lightId.ToString() });
         }
 
         /// <summary>
@@ -147,7 +149,7 @@ namespace Hue
         [MessageCallback]
         public void SetColorTemperature(int lightId, int colorTemperature)
         {
-            this.SendCommandTo(new LightCommand() { On = true,  ColorTemperature = colorTemperature }, lightId == 0 ? null : new List<string>() { lightId.ToString() });
+            this.SendCommandTo(new LightCommand() { On = true, ColorTemperature = colorTemperature }, lightId == 0 ? null : new List<string>() { lightId.ToString() });
         }
 
         /// <summary>
@@ -170,12 +172,12 @@ namespace Hue
         /// <param name="b">The b.</param>
         /// <param name="duration">The duration.</param>
         [MessageCallback]
-        public void ShowAlert(int lightId, int r, int g, int b, int duration)
+        public void ShowAlert(int lightId, int r, int g, int b, int duration = 1000)
         {
             // Get current state
             var light = hueClient.GetLightAsync(lightId.ToString()).GetAwaiter().GetResult();
             // Send command to show alert
-            this.SendCommandTo(new LightCommand()
+            this.SendCommandTo(new Q42.HueApi.LightCommand()
             {
                 On = true,
                 Alert = duration == 0 ? Alert.Once : Alert.Multiple,
@@ -184,13 +186,13 @@ namespace Hue
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(duration > 0 ? duration > 30000 ? 30000 : duration : 1000);
-                this.SendCommandTo(new LightCommand()
-               {
-                   On = light.State.On,
-                   ColorCoordinates = light.State.ColorCoordinates,
-                   ColorTemperature = light.State.ColorTemperature,
-                   Brightness = light.State.Brightness
-               }, new List<string>() { lightId.ToString() });
+                this.SendCommandTo(new Q42.HueApi.LightCommand()
+                {
+                    On = light.State.On,
+                    ColorCoordinates = light.State.ColorCoordinates,
+                    ColorTemperature = light.State.ColorTemperature,
+                    Brightness = light.State.Brightness
+                }, new List<string>() { lightId.ToString() });
             });
         }
 
@@ -212,7 +214,88 @@ namespace Hue
         [MessageCallback]
         public void SendCommandTo(LightCommand command, IEnumerable<string> lightList)
         {
+            this.SendCommandTo(command.ToQ42Command(), lightList);
+        }
+
+        private void SendCommandTo(Q42.HueApi.LightCommand command, IEnumerable<string> lightList)
+        {
             this.hueClient.SendCommandAsync(command, lightList);
+        }
+
+        /// <summary>
+        /// Compose a light command to send to a light
+        /// </summary>
+        public class LightCommand
+        {
+            /// <summary>
+            /// Gets or sets the colors based on CIE 1931 Color coordinates.
+            /// </summary>
+            public double[] ColorCoordinates { get; set; }
+            
+            /// <summary>
+            /// Gets or sets the brightness 0-255.
+            /// </summary>
+            public byte? Brightness { get; set; }
+
+            /// <summary>
+            /// Gets or sets the hue for Hue and Q42.HueApi.LightCommand.Saturation mode.
+            /// </summary>
+            public int? Hue { get; set; }
+
+            /// <summary>
+            /// Gets or sets the saturation for Q42.HueApi.LightCommand.Hue and Saturation mode.
+            /// </summary>
+            public int? Saturation { get; set; }
+
+            /// <summary>
+            /// Gets or sets the Color Temperature
+            /// </summary>
+            public int? ColorTemperature { get; set; }
+
+            /// <summary>
+            /// Gets or sets whether the light is on.
+            /// </summary>
+            public bool? On { get; set; }
+
+            /// <summary>
+            /// Gets or sets the current effect for the light.
+            /// </summary>
+            [JsonConverter(typeof(StringEnumConverter))]
+            public Effect? Effect { get; set; }
+
+            /// <summary>
+            /// Gets or sets the current alert for the light.
+            /// </summary>
+            /// <value>
+            /// The alert.
+            /// </value>
+            [JsonConverter(typeof(StringEnumConverter))]
+            public Alert? Alert { get; set; }
+
+            /// <summary>
+            /// Gets or sets the current alert for the light.
+            /// </summary>
+            public TimeSpan? TransitionTime { get; set; }
+
+            /// <summary>
+            /// Convert to Q42 LightCommand.
+            /// </summary>
+            /// <returns></returns>
+            public Q42.HueApi.LightCommand ToQ42Command()
+            {
+                return new Q42.HueApi.LightCommand
+                {
+                    Alert = this.Alert,
+                    Brightness = this.Brightness,
+                    ColorCoordinates = this.ColorCoordinates,
+                    ColorTemperature = this.ColorTemperature,
+                    Effect = this.Effect,
+                    Hue = this.Hue,
+                    On = this.On,
+                    Saturation = this.Saturation,
+                    TransitionTime = this.TransitionTime
+                };
+            }
         }
     }
 }
