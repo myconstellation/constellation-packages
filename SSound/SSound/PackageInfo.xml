@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="S-Sound"
+         Icon="ssound.png"
+         Version="1.5.1"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="A multi-room audio system for Constellation"
+         ExecutableFilename="SSound.exe">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net462">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true"/>
+      <Platform id="Unix" isCompliant="false"/>
+      <Platform id="MacOS" isCompliant="false"/>
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="ssoundConfiguration" type="ConfigurationSection" isRequired="false" ignoreLocalValue="true" ignoreDefaultValue="true" schemaXSD="SSoundConfigurationSectionDesigner.csd.xsd" description="SSound configuration schema">
+      <defaultContent>
+<!-- This is a sample, remove the XML comments or remove this setting to use the default configuration ! All attributes are optionals, adapts to your needs and see the documentation for more information ! 
+<ssoundConfiguration xmlns="urn:SSound"
+                     endpointName="Demo"
+                     outputDeviceName="Haut-parleurs / Casque"
+                     initialVolume="0.5" speechVolume="0.8"
+                     enableDlnaRenderer="true">
+  <inputs>
+    <device name="mic" autoPlay="true" inputDeviceName="Réseau de microphones" bufferMilliseconds="25" signalThreshold="5" hasSignalDuration="2000" noSignalDuration="30000" />
+    <device name="playback" inputDeviceName="Enregistr. playback" />
+  </inputs>
+  <cerevoice accountID="my_accound_id" password="your_password_here" voiceName="Suzanne" bitrate="48000" />
+</ssoundConfiguration>
+-->
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>

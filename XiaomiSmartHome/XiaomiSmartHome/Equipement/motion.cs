@@ -16,7 +16,7 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         [JsonProperty("no_motion")]
         public string NoMotion { get; set; }
-        
+
         /// <summary>
         /// Ctor
         /// </summary>

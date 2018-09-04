@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Mikrotik"
-         Version="1.2"
+         Version="1.3.1"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Push your Mikrotik device on Constellation"
@@ -9,8 +9,7 @@
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
     <Platforms>
       <Platform id="Win32NT" isCompliant="true" />
-      <!-- TODO : test on Linux -->
-      <!--<Platform id="Unix" isCompliant="true" />-->
+      <Platform id="Unix" isCompliant="true" />
     </Platforms>
   </Compatibility>
   <Settings>

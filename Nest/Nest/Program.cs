@@ -42,6 +42,9 @@ namespace Nest
             PackageHost.Start<Program>(args);
         }
 
+        /// <summary>
+        /// Called when the package is started.
+        /// </summary>
         public override void OnStart()
         {
             if (string.IsNullOrEmpty(PackageHost.GetSettingValue<string>("AccessToken")))
@@ -60,6 +63,7 @@ namespace Nest
                     {
                         PackageHost.WriteInfo("Connecting to Nest REST Streaming API ...");
                         request = WebRequest.CreateHttp(NEST_ROOT_URI + "/?auth=" + PackageHost.GetSettingValue<string>("AccessToken"));
+                        request.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                         request.Accept = "text/event-stream";
 
                         WebResponse response = request.GetResponse();
@@ -135,25 +139,61 @@ namespace Nest
         }
 
         /// <summary>
-        /// Sets the away mode for the specified Structure ID.
+        /// Sets the away mode for the specified Structure ID
         /// </summary>
         /// <param name="structureId">the structure's ID.</param>
         /// <param name="isAway">if set to <c>true</c> if is away.</param>
         [MessageCallback]
-        public void SetAwayMode(string structureId, bool isAway)
+        public bool SetAwayMode(string structureId, bool isAway)
         {
-            this.SetProperty("structures/" + structureId, "away", isAway ? "away" : "home");
+            return this.SetProperty("structures/" + structureId, "away", isAway ? "away" : "home");
         }
 
         /// <summary>
-        /// Sets the target temperature for the specified thermostat.
+        /// Sets the temperature scale (C/F) on a thermostat
+        /// </summary>
+        /// <param name="thermostatId">The thermostat identifier.</param>
+        /// <param name="isFahrenheit">if set to <c>true</c> display degrees Fahrenheit, otherwise, degrees Celcius</param>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool SetTemperatureScale(string thermostatId, bool isFahrenheit)
+        {
+            return this.SetProperty("devices/thermostats/" + thermostatId, "temperature_scale", isFahrenheit ? "F" : "C");
+        }
+
+        /// <summary>
+        /// Sets the target temperature for the specified thermostat
         /// </summary>
         /// <param name="thermostatId">The thermostat's ID.</param>
         /// <param name="temperature">The target temperature in Celcius.</param>
         [MessageCallback]
-        public void SetTargetTemperature(string thermostatId, double temperature)
+        public bool SetTargetTemperature(string thermostatId, double temperature)
         {
-            this.SetProperty("devices/thermostats/" + thermostatId, "target_temperature_c", temperature);
+            return this.SetProperty("devices/thermostats/" + thermostatId, "target_temperature_c", temperature);
+        }
+
+        /// <summary>
+        /// Sets the thermostat label to give it a customized nickname
+        /// </summary>
+        /// <param name="thermostatId">The thermostat identifier.</param>
+        /// <param name="label">The customized label</param>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool SetThermostatLabel(string thermostatId, string label)
+        {
+            return this.SetProperty("devices/thermostats/" + thermostatId, "label", label);
+        }
+
+        /// <summary>
+        /// Set the streaming status on a camera
+        /// </summary>
+        /// <param name="cameraId">The camera identifier.</param>
+        /// <param name="isStreaming">if set to <c>true</c> to enable to video streaming</param>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool SetCameraStreamingStatus(string cameraId, bool isStreaming)
+        {
+            return this.SetProperty("devices/cameras/" + cameraId, "is_streaming", isStreaming);
         }
 
         /// <summary>
@@ -163,17 +203,17 @@ namespace Nest
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="value">The value.</param>
         [MessageCallback]
-        private void SetProperty(string path, string propertyName, object value)
+        private bool SetProperty(string path, string propertyName, object value)
         {
-            this.Set(path, JsonConvert.SerializeObject(new Dictionary<string, object>() { { propertyName, value } }));
+            return this.Set(path, JsonConvert.SerializeObject(new Dictionary<string, object>() { { propertyName, value } }));
         }
 
-        private void Set(string path, string payload, int tries = 3)
+        private bool Set(string path, string payload, int tries = 3)
         {
             HttpWebRequest request = null;
             try
             {
-                request = WebRequest.CreateHttp(NEST_ROOT_URI + path + "?auth=" + PackageHost.GetSettingValue<string>("AccessToken"));
+                request = WebRequest.CreateHttp(NEST_ROOT_URI + path + "/?auth=" + PackageHost.GetSettingValue<string>("AccessToken"));
                 request.Method = "PUT";
                 using (Stream requestBody = request.GetRequestStream())
                 {
@@ -181,7 +221,7 @@ namespace Nest
                     requestBody.Write(payloadData, 0, payloadData.Length);
                     requestBody.Close();
                 }
-                WebResponse response = request.GetResponse();
+                var response = request.GetResponse() as HttpWebResponse;
                 using (Stream stream = response.GetResponseStream())
                 using (StreamReader reader = new StreamReader(stream))
                 {
@@ -194,13 +234,18 @@ namespace Nest
                         }
                     }
                 }
+                return response.StatusCode == HttpStatusCode.OK;
             }
             catch (Exception ex)
             {
                 PackageHost.WriteError("Error on '{0}' : '{1}'", path, ex.ToString());
                 if (tries-- > 0)
                 {
-                    this.Set(path, payload, tries);
+                    return this.Set(path, payload, tries);
+                }
+                else
+                {
+                    return false;
                 }
             }
             finally

@@ -21,7 +21,7 @@ namespace XiaomiSmartHome.Equipement
         public override void Update(object data, string cmdType)
         {
             MotionAq2 curData = data as MotionAq2;
-            
+
             base.Update(curData, cmdType);
 
             if (curData.Lux.HasValue)

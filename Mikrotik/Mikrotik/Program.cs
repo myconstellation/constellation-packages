@@ -1,7 +1,7 @@
 ﻿/*
  *	 Mikrotik Package for Constellation
  *	 Web site: http://www.myConstellation.io
- *	 Copyright (C) 2014-2017 - Sebastien Warin <http://sebastien.warin.fr>	   	  
+ *	 Copyright (C) 2014-2017 - Sebastien Warin <http://sebastien.warin.fr>
  *	
  *	 Licensed to Constellation under one or more contributor
  *	 license agreements. Constellation licenses this file to you under
@@ -32,6 +32,7 @@ namespace Mikrotik
     using tik4net.Objects.Interface;
     using tik4net.Objects.Ip;
     using tik4net.Objects.Ip.DhcpServer;
+    using tik4net.Objects.Ipv6;
     using tik4net.Objects.Queue;
     using tik4net.Objects.System;
 
@@ -41,11 +42,17 @@ namespace Mikrotik
     /// <seealso cref="Constellation.Package.PackageBase" />
     [StateObjectKnownTypes(
         typeof(SystemResource),
-        typeof(List<DhcpServerLease>),
-        typeof(List<CapsManRegistrationTable>),
-        typeof(List<QueueSimple>),
         typeof(List<Interface>),
-        typeof(List<IpAddress>))]
+        typeof(List<IpAddress>),
+        typeof(List<IpPool>),
+        typeof(List<QueueSimple>),
+        typeof(List<DhcpServerLease>),
+        typeof(List<IpDhcpClient>),
+        typeof(List<Ipv6Neighbor>),
+        typeof(List<Ipv6Pool>),
+        typeof(List<Ipv6Address>),
+        typeof(List<Ipv6DhcpClient>),
+        typeof(List<CapsManRegistrationTable>))]
     public class Program : PackageBase
     {
         private ITikConnection connection = null;
@@ -79,12 +86,22 @@ namespace Mikrotik
                                 // Test connection with simple command
                                 connection.CreateCommand("/system/identity/print").ExecuteScalar();
                                 // Query & push
+                                // - Base objects -
                                 this.QueryAndPush("SystemResource", () => connection.LoadSingle<SystemResource>());
-                                this.QueryAndPush("DhcpServerLeases", () => connection.LoadList<DhcpServerLease>());
-                                this.QueryAndPush("WirelessClients", () => connection.LoadList<CapsManRegistrationTable>());
-                                this.QueryAndPush("Queues", () => connection.LoadList<QueueSimple>());
-                                this.QueryAndPush("IpAddresses", () => connection.LoadList<IpAddress>());
                                 this.QueryAndPush("Interfaces", () => connection.LoadList<Interface>());
+                                this.QueryAndPush("IpAddresses", () => connection.LoadList<IpAddress>());
+                                this.QueryAndPush("Pools", () => connection.LoadList<IpPool>());
+                                this.QueryAndPush("Queues", () => connection.LoadList<QueueSimple>());
+                                // - DHCP client & server leases -
+                                this.QueryAndPush("DhcpClient", () => connection.LoadList<IpDhcpClient>());
+                                this.QueryAndPush("DhcpServerLeases", () => connection.LoadList<DhcpServerLease>());
+                                // - IPv6 objects -
+                                this.QueryAndPush("Ipv6Neighbors", () => connection.LoadList<Ipv6Neighbor>());
+                                this.QueryAndPush("Ipv6Pools", () => connection.LoadList<Ipv6Pool>());
+                                this.QueryAndPush("Ipv6Addresses", () => connection.LoadList<Ipv6Address>());
+                                this.QueryAndPush("Ipv6DhcpClient", () => connection.LoadList<Ipv6DhcpClient>());
+                                // - CAPSMAN registration table  -
+                                this.QueryAndPush("WirelessClients", () => connection.LoadList<CapsManRegistrationTable>());
                             }
                             catch (IOException)
                             {
@@ -130,7 +147,7 @@ namespace Mikrotik
                         },
                         lifetime: PackageHost.GetSettingValue<int>("QueryInterval") * 2);
                 }
-                catch (TikCommandException ex) when (ex.Code == "0")
+                catch (TikCommandException ex) when (ex.Code == "0" || ex.Message.StartsWith("no such command"))
                 {
                     this.unsupportedCommands.Add(name);
                     PackageHost.WriteWarn("{0} is unsupported : {1}", name, ex.Message);

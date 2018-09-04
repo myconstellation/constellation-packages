@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="SonyBravia"
+         Version="1.0.0"
+         Author="Romain ODDONE"
+         URL="https://github.com/roddone"
+         Description="Control your Sony Bravia devices from Constellation"
+         Icon="bravia.png"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+	<!-- My package settings -->
+    <Setting name="Hostname" type="String" isRequired="true" />
+    <Setting name="Port" type="Int32" isRequired="false" defaultValue="80" />
+    <Setting name="PinCode" type="String" isRequired="false" defaultValue="0000"/>
+  </Settings>
+</Package>
