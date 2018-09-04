@@ -1,0 +1,16 @@
+https://github.com/JTrotta/MonoSerialPort
+
+
+dmesg -s 1024
+
+
+lsusb
+lsusb -t
+
+blkid
+
+
+ttyS0
+/dev/ttyS
+/dev/ttyUSB
+/dev/ttyACM

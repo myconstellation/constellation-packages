@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
@@ -24,6 +25,15 @@ namespace XiaomiSmartHome.Equipement
         }
         #endregion
 
+        /// <summary>
+        /// Send Read cmd to refresh data
+        /// </summary>
+        /// <param name="sid">Equipement SID</param>
+        public void Read(string sid)
+        {
+            equipementManager.SendCommand(CommandType.Write, sid, null);
+        }
+
         #region GATEWAY
 
         /// <summary>
@@ -35,11 +45,11 @@ namespace XiaomiSmartHome.Equipement
         /// <param name="brightness">Brightness</param>
         public void TurnGatewayLightOn(int r, int g, int b, int? brightness = null)
         {
-            Gateway gw = equipementManager.gateway;
+            Gateway gw = equipementManager.Gateway;
             int curBrightness = brightness ?? 255;
-            if (!brightness.HasValue && gw?.Report?.Rgb > 0)
+            if (!brightness.HasValue && gw != null && gw.Rgb.HasValue)
             {
-                Color curColor = Color.FromArgb(gw.Report.Rgb);
+                Color curColor = Color.FromArgb(gw.Rgb.Value);
                 brightness = curColor.A;
             }
 
@@ -51,7 +61,7 @@ namespace XiaomiSmartHome.Equipement
                 { "rgb", argb }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, gw.Sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, gw.Sid, lParam);
         }
 
         /// <summary>
@@ -59,13 +69,13 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         public void TurnGatewayLightOff()
         {
-            Gateway gw = equipementManager.gateway;
+            Gateway gw = equipementManager.Gateway;
             Dictionary<string, object> lParam = new Dictionary<string, object>
             {
                 { "rgb", 0 }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, gw.Sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, gw.Sid, lParam);
         }
 
         /// <summary>
@@ -77,14 +87,14 @@ namespace XiaomiSmartHome.Equipement
         {
             //if ring_id in [9, 14-19]: not defined in gateway
 
-            Gateway gw = equipementManager.gateway;
+            Gateway gw = equipementManager.Gateway;
             Dictionary<string, object> lParam = new Dictionary<string, object>
             {
                 { "mid", mid },
                 { "vol", vol }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, gw.Sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, gw.Sid, lParam);
         }
 
         /// <summary>
@@ -92,13 +102,13 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         public void StopGatewaySound()
         {
-            Gateway gw = equipementManager.gateway;
+            Gateway gw = equipementManager.Gateway;
             Dictionary<string, object> lParam = new Dictionary<string, object>
             {
                 { "mid", 10000 }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, gw.Sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, gw.Sid, lParam);
         }
 
         #endregion
@@ -116,7 +126,8 @@ namespace XiaomiSmartHome.Equipement
                 { "status", "on" }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, sid, lParam);
+            Read(sid);
         }
 
         /// <summary>
@@ -130,7 +141,8 @@ namespace XiaomiSmartHome.Equipement
                 { "status", "off" }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, sid, lParam);
+            Read(sid);
         }
 
         #endregion
@@ -148,7 +160,7 @@ namespace XiaomiSmartHome.Equipement
                 { "status", "click" }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, sid, lParam);
         }
 
         /// <summary>
@@ -162,7 +174,7 @@ namespace XiaomiSmartHome.Equipement
                 { "status", "double_click" }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, sid, lParam);
         }
 
         /// <summary>
@@ -176,7 +188,7 @@ namespace XiaomiSmartHome.Equipement
                 { "status", "long_click_press" }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, sid, lParam);
         }
 
         /// <summary>
@@ -190,7 +202,7 @@ namespace XiaomiSmartHome.Equipement
                 { "status", "long_click_release" }
             };
 
-            equipementManager.SendCommand(Constants.WRITE, sid, lParam);
+            equipementManager.SendCommand(CommandType.Write, sid, lParam);
         }
 
         #endregion

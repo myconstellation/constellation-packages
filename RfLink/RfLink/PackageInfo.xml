@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="RfLink"
+         Version="1.0"
+         Author="swilhelm"
+         URL="http://www.mywebsite.com"
+         Description="RfLink Copyright ©  2018"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="PortName" type="String" description="The communications port" defaultValue="COM1" isRequired="true"></Setting>
+    <Setting name="Log" type="Boolean" description="Log message that transit over the rflink" defaultValue="false" isRequired="false"></Setting>
+    <Setting name="soCustomNames" type="JsonObject" description="Custom names for StateObjects" isRequired="false">
+      <defaultContent>{ "DeviceId": "SoName", "DeviceId2": "SoName2"  }</defaultContent>
+    </Setting>
+  </Settings>
+</Package>
