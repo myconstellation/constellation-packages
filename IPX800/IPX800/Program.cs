@@ -269,6 +269,7 @@ namespace IPX800
             PackageHost.PushStateObject(
                 (PackageHost.GetSettingValue<bool>("UseLabelAsStateObjectName") && ipxElement is IPXBaseElement baseElement) ? baseElement.Label : ipxElement.Id,
                 ipxElement,
+                metadatas: this.ipx.ElementsConfigurations?.FirstOrDefault(e => e.Id == ipxElement.Id)?.Metadatas ?? null,
                 lifetime: (this.elementTypesToPoll != null && (this.elementTypesToPoll.ContainsKey(GetArgument.All) || this.elementTypesToPoll.Values.Any(t => ipxElement.Type == t))) ? PackageHost.GetSettingValue<int>("PollInterval") * 2 : 0);
         }
 

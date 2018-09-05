@@ -57,5 +57,13 @@ namespace IPX800
         /// The element's options.
         /// </value>
         public Dictionary<string, object> Options { get; set; }
+
+        /// <summary>
+        /// Gets or sets the element's metadata added to the StateObject.
+        /// </summary>
+        /// <value>
+        /// The element's metadata added to the StateObject.
+        /// </value>
+        public Dictionary<string, object> Metadatas { get; set; }
     }
 }
