@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Modbus")]
+[assembly: AssemblyTitle("PiModbus")]
 [assembly: AssemblyDescription("Raspberry Pi Modbus connector for Constellation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Modbus")]
+[assembly: AssemblyProduct("PiModbus")]
 [assembly: AssemblyCopyright("Copyright © Sebastien.warin.fr 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

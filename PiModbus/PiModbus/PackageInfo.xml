@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
-         Name="Modbus"
+         Name="PiModbus"
          Version="1.0.2"
          Icon="modbus.png"
          Author="Sebastien Warin"

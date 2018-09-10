@@ -8,8 +8,8 @@
     <ProjectGuid>{A042DDF7-9412-4E31-86B2-63F9B453D0DA}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Modbus</RootNamespace>
-    <AssemblyName>Modbus</AssemblyName>
+    <RootNamespace>PiModbus</RootNamespace>
+    <AssemblyName>PiModbus</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -84,7 +84,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishMethod="ConstellationServer" PublishServer="http://skynet-server.ajsinfo.loc:8888/constellation" />
+      <UserProperties PublishServer="http://skynet-server.ajsinfo.loc:8888/constellation" PublishMethod="ConstellationServer" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

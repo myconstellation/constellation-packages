@@ -1,4 +1,4 @@
-﻿namespace Modbus
+﻿namespace PiModbus
 {
     using Constellation.Package;
     using Constellation.PythonProxy;
