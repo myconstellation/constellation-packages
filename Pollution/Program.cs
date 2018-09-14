@@ -23,22 +23,27 @@ namespace Pollution
         /// <summary>
         /// Url de l'api
         /// </summary>
-        static string baseUrl = "https://api.waqi.info";
+        private static readonly string baseUrl = "https://api.waqi.info";
 
         /// <summary>
         /// Feed
         /// </summary>
-        static string feed = "feed";
+        private static readonly string feed = "feed";
 
         /// <summary>
         /// Feed
         /// </summary>
-        static string map = "map/bounds";
+        private static readonly string map = "map/bounds";
 
         /// <summary>
         /// search
         /// </summary>
-        static string search = "search";
+        private static readonly string search = "search";
+
+        /// <summary>
+        /// Response error
+        /// </summary>
+        private static readonly string nug = "nug";
 
         static void Main(string[] args)
         {
@@ -130,9 +135,9 @@ namespace Pollution
             if (response.IsSuccessStatusCode)
             {
                 res = await response.Content.ReadAsStringAsync();
-                if(res.Contains("nug") && cpt < 3)
+                if (res.Contains(nug) && cpt < 5)
                 {
-                    System.Threading.Thread.Sleep(2000);
+                    System.Threading.Thread.Sleep(30000);
                     await Request(path, cpt++);
                 }
             }
@@ -147,10 +152,13 @@ namespace Pollution
         /// <param name="val">Valeur du SO</param>
         private static void PushStateObject(string nom, object val)
         {
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(val);
+            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(val);
 
-            PackageHost.WriteInfo("Mise à jours Pollution => {0} : {1}", nom, val);
-            PackageHost.PushStateObject(nom, val);
+            if (!val.ToString().Contains(nug))
+            {
+                PackageHost.WriteInfo("Mise à jours Pollution => {0} : {1}", nom, val);
+                PackageHost.PushStateObject(nom, val);
+            }
         }
     }
 }

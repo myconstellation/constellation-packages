@@ -68,7 +68,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishMethod="LocalFile" PublishPath="F:\DOMOTIQUE\ConstellationMasterGit\constellation-packages\Pollution" />
+      <UserProperties PublishPath="D:\_Personnel\DOMOTIQUE\ConstellationMasterGit\constellation-packages\Pollution" PublishMethod="LocalFile" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
