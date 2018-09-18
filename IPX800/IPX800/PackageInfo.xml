@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="IPX800"
-         Version="1.0.2"
+         Version="1.0.4"
          Icon="gce.png"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
@@ -18,8 +18,8 @@
     <Setting name="ApiKey" type="String" isRequired="false" defaultValue="apikey" description="The API key (leave blank if not use)" />
     <Setting name="UseLabelAsStateObjectName" type="Boolean" isRequired="false" defaultValue="true" description="Use the label (eg. label defined in ElementsConfigurations's setting) to name the StateObject or the IPX identifier" />
     <Setting name="PollInterval" type="Int32" isRequired="false" defaultValue="300" description="The polling interval in second" />
-    <Setting name="PollElementTypes" type="String" isRequired="false" description="The list (separated by comma) of element's types to poll (eg. XTHL, A, VA, XPWM, etc...). For more information read the README" />
-    <Setting name="ElementsConfigurations" type="JsonObject" isRequired="false" description="The list of known elements of your IPX to customize the label, room location and other options. Use https://goo.gl/Zc8hmx to generate this setting et read the README for more information" />
+    <Setting name="PollElementTypes" type="String" isRequired="false" ignoreLocalValue="true"  description="The list (separated by comma) of element's types to poll (eg. XTHL, A, VA, XPWM, etc...). For more information read the README" />
+    <Setting name="ElementsConfigurations" type="JsonObject" isRequired="false" ignoreLocalValue="true"  description="The list of known elements of your IPX to customize the label, room location and other options. Use https://goo.gl/Zc8hmx to generate this setting et read the README for more information" />
     <Setting name="IgnoreUnknownElement" type="Boolean" isRequired="false" defaultValue="true" description="Ignore all IPX elements that are not referenced in the ElementsConfigurations's setting" />
   </Settings>
 </Package>

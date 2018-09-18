@@ -82,6 +82,10 @@ namespace IPX800
                 {
                     PackageHost.WriteInfo($"Updating '{e2.PropertyName}' of '{(s2 as IIPXElement).Id}' => {s2}");
                     this.PushIPXElement(e.Element);
+                    if (s2 is BinaryState bs && bs.RefreshElementsOnUpdate?.Count > 0)
+                    {
+                        bs.RefreshElementsOnUpdate.ForEach(t => this.Refresh(t));
+                    }
                 };
                 this.PushIPXElement(e.Element);
             };

@@ -23,6 +23,9 @@ namespace IPX800.Elements
 {
     using IPX800.Enumerations;
     using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Represent a BinaryState element that can be On/true or Off/false (like an Output/Relay, Input, Virtual Output, Virtual Input, EnOcean switch/actuator/contact or a WatchDog)
@@ -38,6 +41,14 @@ namespace IPX800.Elements
     [IPXIdentifier(IPXIdentifierFormats.WatchDog, IPXElementType.WatchDog)]
     public class BinaryState : IPXBaseElement
     {
+        /// <summary>
+        /// Gets the element types to refresh on update.
+        /// </summary>
+        /// <value>
+        /// The element types to refresh on update.
+        /// </value>
+        internal List<GetArgument> RefreshElementsOnUpdate { get; private set; }
+
         /// <summary>
         /// Gets the state of this IPX element.
         /// </summary>
@@ -60,9 +71,14 @@ namespace IPX800.Elements
         /// <param name="config">The configuration.</param>
         public override void Configure(IPXElementConfiguration config)
         {
-            if (config?.Options?["NC"] != null)
+            if (config?.Options?.ContainsKey("NC") ?? false)
             {
                 this.NormallyClosed = (bool)config.Options["NC"];
+            }
+            if (config?.Options?.ContainsKey("RefreshOnUpdate") ?? false)
+            {
+                var args = Enum.GetValues(typeof(GetArgument)).Cast<GetArgument>();
+                this.RefreshElementsOnUpdate = ((string)config.Options["RefreshOnUpdate"]).Split(',').Select(type => args.FirstOrDefault(arg => arg.GetEnumMemberValue() == type)).ToList();
             }
         }
 
