@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Modbus"
+         Version="1.0"
+         Icon="modbus.png"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         Description="Modbus (RTU/TCP) connector for Constellation">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="TcpAddress" type="String" description="The Modbus TCP gateway address" />
+    <Setting name="TcpPort" type="Int32" description="The Modbus TCP gateway port" />
+    <Setting name="RtuSerialPort" type="String" description="The Modbus RTU serial port" />
+    <Setting name="RtuBaudRate" type="Int32" defaultValue="9600" description="The Modbus RTU serial baud rate" />
+    <Setting name="Verbose" type="Boolean" description="Enable the verbose mode" defaultValue="false" />
+    <Setting name="Devices" description="The modbus devices to request" type="JsonObject" isRequired="false" ignoreDefaultValue="true">
+      <defaultContent>
+        [
+          { Name: "MainCounter", DeviceType: "MCI.ContaxTri2M", SlaveID: 80, RequestInterval: 10 },
+          { Name: "Bedroom", DeviceType: "MCI.Contax1M", SlaveID: 6, RequestInterval: 30 },
+          { Name: "LivingRoom", DeviceType: "CarloGavazzi.EM100", SlaveID: 1, RequestInterval: 5 },
+          { Name: "Garage", DeviceType: "DTZ.EM6001", SlaveID: 2, RequestInterval: 120 },
+        ]
+      </defaultContent>
+    </Setting>
+    <Setting name="ModbusDeviceDefinitions" description="The ModBus devices definitions" type="JsonObject">
+      <defaultContent>
+        [
+          {
+            Name: "MCI.Contax1M", Description:"MCI CONTAX 1M 100A", Properties: [
+              { Name: "Hz", RegisterType: "Holding", Address: "130", Length: 1, Ratio:0.01, Type:"Float", Description: "Frequency (Hz)" },
+              { Name: "Volt", RegisterType: "Holding", Address: "131", Length: 1, Ratio:0.01, Type:"Float", Description: "Voltage (V)" },
+              { Name: "Ampere", RegisterType: "Holding", Address: "139", Length: 2, Ratio:0.001, Type:"Float", Description: "Current (A)" },
+              { Name: "Watt", RegisterType: "Holding", Address: "140", Length: 2, Type:"Float", Description: "Active power (W)" },
+              { Name: "var", RegisterType: "Holding", Address: "148", Length: 2, Type:"Float", Description: "Reactive power (var)" },
+              { Name: "VA", RegisterType: "Holding", Address: "150", Length: 2, Type:"Float", Description: "Apparent power (VA)" },
+              { Name: "PF", RegisterType: "Holding", Address: "158", Length: 1, Ratio:0.001, Type:"Float", Description: "Power Factor" },
+              { Name: "kWh_TotalIn", RegisterType: "Holding", Address: "A000", Length: 2, Ratio:0.01, Type:"Float", Description: "Total imported active energy (kWh)" },
+              { Name: "Kvarh_TotalIn", RegisterType: "Holding", Address: "A01E", Length: 2, Ratio:0.01, Type:"Float", Description: "Total imported reactive energy (kvarh)" },
+            ]
+          },
+          {
+            Name: "MCI.ContaxTri2M", Description:"MCI CONTAX S TRI 2M", Properties: [
+              { Name: "Hz", RegisterType: "Holding", Address: "2", Length: 1, Ratio:0.01, Type:"Float", Description: "Frequency (Hz)" },
+              { Name: "Volt_L1", RegisterType: "Holding", Address: "1000", Length: 2, Ratio:0.01, Type:"Int", Description: "L1-N PhaseA Voltage (V)" },
+              { Name: "Volt_L2", RegisterType: "Holding", Address: "1002", Length: 2, Ratio:0.01, Type:"Float", Description: "L2-N PhaseB Voltage (V)" },
+              { Name: "Volt_L3", RegisterType: "Holding", Address: "1004", Length: 2, Ratio:0.01, Type:"Float", Description: "L3-N PhaseC Voltage (V)" },
+              { Name: "Ampere_L1", RegisterType: "Holding", Address: "100C", Length: 2, Ratio:0.001, Type:"Float", Description: "PhaseA current" },
+              { Name: "Ampere_L2", RegisterType: "Holding", Address: "100E", Length: 2, Ratio:0.001, Type:"Float", Description: "PhaseB current" },
+              { Name: "Ampere_L3", RegisterType: "Holding", Address: "1010", Length: 2, Ratio:0.001, Type:"Float", Description: "PhaseC current" },
+              { Name: "PF", RegisterType: "Holding", Address: "1012", Length: 1, Ratio:0.001, Type:"Float", Description: "A+B+C Power Factor" },
+              { Name: "PF_L1", RegisterType: "Holding", Address: "1013", Length: 1, Ratio:0.001, Type:"Float", Description: "PhaseA Power Factor" },
+              { Name: "PF_L2", RegisterType: "Holding", Address: "1014", Length: 1, Ratio:0.001, Type:"Float", Description: "PhaseB Power Factor" },
+              { Name: "PF_L3", RegisterType: "Holding", Address: "1015", Length: 1, Ratio:0.001, Type:"Float", Description: "PhaseC Power Factor" },
+              { Name: "Watt", RegisterType: "Holding", Address: "6000", Length: 2, Type:"Float", Description: "A+B+C Active power (W)" },
+              { Name: "Watt_L1", RegisterType: "Holding", Address: "6002", Length: 2, Type:"Float", Description: "PhaseA Active power (W)" },
+              { Name: "Watt_L2", RegisterType: "Holding", Address: "6004", Length: 2, Type:"Float", Description: "PhaseB Active power (W)" },
+              { Name: "Watt_L3", RegisterType: "Holding", Address: "6006", Length: 2, Type:"Float", Description: "PhaseC Active power (W)" },
+              { Name: "var", RegisterType: "Holding", Address: "6000", Length: 2, Type:"Float", Description: "A+B+C Reactive power (var)" },
+              { Name: "var_L1", RegisterType: "Holding", Address: "6002", Length: 2, Type:"Float", Description: "PhaseA Reactive power (var)" },
+              { Name: "var_L2", RegisterType: "Holding", Address: "6004", Length: 2, Type:"Float", Description: "PhaseB Reactive power (var)" },
+              { Name: "var_L3", RegisterType: "Holding", Address: "6006", Length: 2, Type:"Float", Description: "PhaseC Reactive power (var)" },
+              { Name: "kWh_TotalIn", RegisterType: "Holding", Address: "7000", Length: 2, Ratio:0.1, Type:"Float", Description: "Total imported active energy (kWh)" },
+              { Name: "Kvarh_TotalIn", RegisterType: "Holding", Address: "7100", Length: 2, Ratio:0.1, Type:"Float", Description: "Total imported reactive energy (kvarh)" },
+              { Name: "OutputRelay", RegisterType: "Holding", Address: "8003", Length: 1, Type:"Boolean", Description: "Remote control output" }
+            ]
+          },
+          {
+            Name: "DTZ.EM6001", Description:"DZT 6001 80A Single phase kWh meter", Properties: [
+              { Name: "Volt", RegisterType: "Holding", Address: "0", Length: 1, Ratio:0.1, Type:"Float", Description: "Voltage (V)" },
+              { Name: "Ampere", RegisterType: "Holding", Address: "1", Length: 1, Ratio:0.1, Type:"Float", Description: "Current (A)" },
+              { Name: "Hz", RegisterType: "Holding", Address: "2", Length: 1, Ratio:0.1, Type:"Float", Description: "Frequency (Hz)" },
+              { Name: "Watt", RegisterType: "Holding", Address: "3", Length: 1, Type:"Float", Description: "Active power (W)" },
+              { Name: "var", RegisterType: "Holding", Address: "4", Length: 1, Type:"Float", Description: "Reactive power (var)" },
+              { Name: "VA", RegisterType: "Holding", Address: "5", Length: 1, Type:"Float", Description: "Apparent power (VA)" },
+              { Name: "PF", RegisterType: "Holding", Address: "6", Length: 1, Ratio:0.1, Type:"Float", Description: "Power Factor" },
+              { Name: "kWh_TotalIn", RegisterType: "Holding", Address: 7, Length: 2, Ratio:0.01, Type:"Float", Description: "Total imported active energy (kWh)" },
+              { Name: "Kvarh_TotalIn", RegisterType: "Holding", Address: "11", Length: 2, Ratio:0.01, Type:"Float", Description: "Total imported reactive energy (kvarh)" }
+            ]
+          },
+          {
+            Name: "CarloGavazzi.EM11x", Description:"Carlo Gavazzi EM11x Series", Properties: [
+              { Name: "Volt", RegisterType: "Holding", Address: "0", Length: 2, Ratio:0.1, Type:"Float", Description: "Voltage (V)" },
+              { Name: "Ampere", RegisterType: "Holding", Address: "2", Length: 2, Ratio:0.001, Type:"Float", Description: "Current (A)" },
+              { Name: "Watt", RegisterType: "Holding", Address: "4", Length: 2, Ratio:0.1, Type:"Float", Description: "Active power (W)" },
+              { Name: "VA", RegisterType: "Holding", Address: "6", Length: 2, Ratio:0.1, Type:"Float", Description: "Apparent power (VA)" },
+              { Name: "var", RegisterType: "Holding", Address: "8", Length: 2, Type:"Float", Description: "Reactive power (var)" },
+              { Name: "Wdmd", RegisterType: "Holding", Address: "A", Length: 2, Type:"Float", Description: "Requested average power calculate for the set interval (W)" },
+              { Name: "WdmdPeak", RegisterType: "Holding", Address: "C", Length: 2, Type:"Float", Description: "Maximum requested power reached since last reset (W)" },
+              { Name: "PF", RegisterType: "Holding", Address: "E", Length: 1, Ratio:0.001, Type:"Float", Description: "Power Factor" },
+              { Name: "Hz", RegisterType: "Holding", Address: "F", Length: 2, Ratio:0.1, Type:"Float", Description: "Frequency (Hz)" },
+              { Name: "kWh_TotalIn", RegisterType: "Holding", Address: "10", Length: 2, Ratio:0.1, Type:"Float", Description: "Total imported active energy (kWh)" },
+              { Name: "Kvarh_TotalIn", RegisterType: "Holding", Address: "12", Length: 2, Ratio:0.1, Type:"Float", Description: "Total imported reactive energy (kvarh)" },
+              { Name: "kWh_PartialIn", RegisterType: "Holding", Address: "14", Length: 2, Ratio:0.1, Type:"Float", Description: "Partial imported active energy (kWh)" },
+              { Name: "Kvarh_PartialIn", RegisterType: "Holding", Address: "16", Length: 2, Ratio:0.1, Type:"Float", Description: "Partial imported reactive energy  (kvarh)" },
+              { Name: "kWh_Tariff1In", RegisterType: "Holding", Address: "18", Length: 2, Ratio:0.1, Type:"Float", Description: "Active energy with tariff 1 (kWh)" },
+              { Name: "kWh_Tariff2In", RegisterType: "Holding", Address: "1A", Length: 2, Ratio:0.1, Type:"Float", Description: "Active energy with tariff 2 (kWh)" },
+              { Name: "kWh_TotalOut", RegisterType: "Holding", Address: "20", Length: 2, Ratio:0.1, Type:"Float", Description: "Total exported active energy (kWh)" },
+              { Name: "Kvarh_TotalOut", RegisterType: "Holding", Address: "22", Length: 2, Ratio:0.1, Type:"Float", Description: "Total exported reactive energy (kvarh)" },
+              { Name: "HourCounter", RegisterType: "Holding", Address: "2C", Length: 2, Ratio:0.01, Type:"Float", Description: "Counter uptime (hour)" }
+            ]
+          }
+        ]
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
