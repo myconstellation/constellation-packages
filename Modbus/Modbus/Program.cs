@@ -27,7 +27,9 @@ namespace Modbus
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
+    using System.IO;
     using System.Linq;
+    using System.Net.Sockets;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -39,6 +41,7 @@ namespace Modbus
         private const int AVG_REGISTER_READ_PER_SECOND = 10;
         private static readonly object syncLock = new object();
 
+        private int reconnectionGraceTime = 0;
         private ModbusClient modbusClient = null;
         private List<DeviceState> deviceStates = new List<DeviceState>();
 
@@ -95,7 +98,7 @@ namespace Modbus
                         foreach (DeviceState device in this.deviceStates)
                         {
                             // Need to request ?
-                            if (DateTime.Now.Subtract(device.LastUpdate).TotalSeconds >= device.Device.RequestInterval)
+                            if (this.modbusClient.Connected && DateTime.Now.Subtract(device.LastUpdate).TotalSeconds >= device.Device.RequestInterval)
                             {
                                 PackageHost.WriteLog(PackageHost.GetSettingValue<bool>("Verbose") ? LogLevel.Info : LogLevel.Debug, $"Requesting {device.Device}...");
                                 try
@@ -110,7 +113,7 @@ namespace Modbus
                                     {
                                         int attempt = 0;
                                         // Attempt the read the register
-                                        while (++attempt <= this.modbusClient.NumberOfRetries && !resultDict.ContainsKey(property.Name))
+                                        while (this.modbusClient.Connected && ++attempt <= this.modbusClient.NumberOfRetries && !resultDict.ContainsKey(property.Name))
                                         {
                                             PackageHost.WriteLog(PackageHost.GetSettingValue<bool>("Verbose") ? LogLevel.Info : LogLevel.Debug, $"Reading {property.Name} ({property.Address})");
                                             try
@@ -140,6 +143,23 @@ namespace Modbus
                                                         resultDict[property.Name] = (int)(float)resultDict[property.Name];
                                                     }
                                                 }
+                                                PackageHost.WriteLog(PackageHost.GetSettingValue<bool>("Verbose") ? LogLevel.Info : LogLevel.Debug, $"* {property.Name} ({property.Address}) = {resultDict[property.Name]}");
+                                            }
+                                            catch (IOException ex) when (ex.InnerException is SocketException socketError && socketError.SocketErrorCode == SocketError.TimedOut)
+                                            {
+                                                PackageHost.WriteLog(PackageHost.GetSettingValue<bool>("Verbose") ? LogLevel.Error : LogLevel.Debug, $"* {property.Name} ({property.Address}) = no response !");
+                                                // First polling and no answer ?
+                                                if (device.LastUpdate == DateTime.MinValue && resultDict.Count == 0)
+                                                {
+                                                    // Invalid slave Id ?
+                                                    break;
+                                                }
+                                                // Otherwise, check the connection
+                                                else if (this.modbusClient.IPAddress != null && !this.modbusClient.Available(PackageHost.GetSettingValue<int>("ConnectionTimeout")))
+                                                {
+                                                    PackageHost.WriteError("Connection timeout !");
+                                                    this.modbusClient.Disconnect();
+                                                }
                                             }
                                             catch (Exception ex)
                                             {
@@ -152,20 +172,50 @@ namespace Modbus
                                             }
                                         }
                                     }
-                                    // Push the StateObject 
-                                    PackageHost.PushStateObject(device.Device.Name, result,
-                                            type: $"Modbus.{device.Definition.Name}",
-                                            lifetime: (estimatedTotalReadingTime + device.Device.RequestInterval) * 2,
-                                            metadatas: new Dictionary<string, object>
-                                            {
-                                                ["SlaveID"] = device.Device.SlaveID
-                                            });
-                                    // Done !
-                                    device.LastUpdate = DateTime.Now;
+                                    // Check result
+                                    if (device.Definition.Properties.Count == resultDict.Count)
+                                    {
+                                        // Push the StateObject 
+                                        PackageHost.PushStateObject(device.Device.Name, result,
+                                                type: $"Modbus.{device.Definition.Name}",
+                                                lifetime: (estimatedTotalReadingTime + device.Device.RequestInterval) * 2,
+                                                metadatas: new Dictionary<string, object>
+                                                {
+                                                    ["SlaveID"] = device.Device.SlaveID
+                                                });
+                                        // Done !
+                                        device.LastUpdate = DateTime.Now;
+                                        PackageHost.WriteLog(PackageHost.GetSettingValue<bool>("Verbose") ? LogLevel.Info : LogLevel.Debug, $"{device.Device} is done!");
+                                    }
+                                    else if (resultDict.Count == 0 && device.LastUpdate == DateTime.MinValue)
+                                    {
+                                        // Exclude device!
+                                        device.LastUpdate = DateTime.MaxValue;
+                                        PackageHost.WriteWarn($"Unable to poll {device.Device}, no response. This device will be ignored !");
+                                    }
+                                    else
+                                    {
+                                        // Missing properties !
+                                        PackageHost.WriteError($"Unable to retrieve all defined registers for the device {device.Device}. The StateObject will not be updated !");
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
                                     PackageHost.WriteError($"Error to request {device.Device} : {ex.Message}");
+                                }
+                            }
+                            else if (!this.modbusClient.Connected)
+                            {
+                                try
+                                {
+                                    PackageHost.WriteInfo("Trying to reconnect ...");
+                                    this.modbusClient.Connect();
+                                }
+                                catch (Exception ex)
+                                {
+                                    PackageHost.WriteError($"Unable to reconnect : {ex.Message}. Next retry in {this.reconnectionGraceTime} seconds.");
+                                    await Task.Delay(this.reconnectionGraceTime * 1000);
+                                    this.reconnectionGraceTime = (this.reconnectionGraceTime * 2) > PackageHost.GetSettingValue<int>("ReconnectionMaxInterval") ? PackageHost.GetSettingValue<int>("ReconnectionMaxInterval") : this.reconnectionGraceTime * 2;
                                 }
                             }
                             await Task.Delay(500);
@@ -188,13 +238,15 @@ namespace Modbus
         }
         private void ModbusClient_ConnectedChanged(object sender)
         {
-            if (this.modbusClient.IPAddress != null)
+            string target = this.modbusClient.IPAddress != null ? $"{this.modbusClient.IPAddress}:{this.modbusClient.Port}" : this.modbusClient.SerialPort;
+            if (this.modbusClient.Connected)
             {
-                PackageHost.WriteInfo($"{(this.modbusClient.Connected ? "Connected to" : "Disconnected from")} {this.modbusClient.IPAddress}:{this.modbusClient.Port}");
+                PackageHost.WriteInfo($"Connected to {target}");
+                this.reconnectionGraceTime = PackageHost.GetSettingValue<int>("ReconnectionDefaultInterval");
             }
             else
             {
-                PackageHost.WriteInfo($"{(this.modbusClient.Connected ? "Connected to" : "Disconnected from")} {this.modbusClient.SerialPort}");
+                PackageHost.WriteWarn($"Disconnected from {target}");
             }
         }
 

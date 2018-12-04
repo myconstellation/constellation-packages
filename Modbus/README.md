@@ -73,6 +73,9 @@ In this case the package communicate to the Modbus via tcp://192.168.0.1:26
  - TcpPort (int) : The Modbus TCP gateway port
  - RtuSerialPort (string) : The Modbus RTU serial port
  - RtuBaudRate (int) : The Modbus RTU serial baud rate (9600 by default)
+ - ConnectionTimeout (int) : The connection timeout in millisecond (5000 by default)
+ - ReconnectionDefaultInterval (int) : The reconnection default interval in second (30 by default)
+ - ReconnectionMaxInterval (int) : The reconnection max interval in second (3600 by default)
  - Verbose (bool) : Enable the verbose mode (false by default)
  - ModbusDebug (bool) : Enble the RS485 debug mode (false by default)
  - Devices (json) : The modbus devices to request and publish as StateObject (optional)

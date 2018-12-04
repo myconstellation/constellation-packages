@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Modbus"
-         Version="1.0"
+         Version="1.1"
          Icon="modbus.png"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
@@ -16,6 +16,9 @@
     <Setting name="TcpPort" type="Int32" description="The Modbus TCP gateway port" />
     <Setting name="RtuSerialPort" type="String" description="The Modbus RTU serial port" />
     <Setting name="RtuBaudRate" type="Int32" defaultValue="9600" description="The Modbus RTU serial baud rate" />
+    <Setting name="ConnectionTimeout" type="Int32" description="The connection timeout in millisecond" defaultValue="5000" />
+    <Setting name="ReconnectionDefaultInterval" type="Int32" description="The reconnection default interval in second" defaultValue="30" />
+    <Setting name="ReconnectionMaxInterval" type="Int32" description="The reconnection max interval in second" defaultValue="3600" />
     <Setting name="Verbose" type="Boolean" description="Enable the verbose mode" defaultValue="false" />
     <Setting name="Devices" description="The modbus devices to request" type="JsonObject" isRequired="false" ignoreDefaultValue="true">
       <defaultContent>
