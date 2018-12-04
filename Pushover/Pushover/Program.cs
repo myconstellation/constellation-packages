@@ -29,6 +29,7 @@ namespace Pushover
     using System.Linq;
     using System.Net;
     using System.Text;
+    using System.Web;
 
     public class Program : PackageBase
     {
@@ -177,7 +178,7 @@ namespace Pushover
                         parameters = new Dictionary<string, string>();
                     }
                     parameters["token"] = PackageHost.GetSettingValue("Token");
-                    byte[] payloadData = UTF8Encoding.UTF8.GetBytes(string.Join("&", parameters.Select(p => p.Key + "=" + p.Value).ToArray()));
+                    byte[] payloadData = UTF8Encoding.UTF8.GetBytes(string.Join("&", parameters.Select(p => p.Key + "=" + HttpUtility.UrlEncode(p.Value)).ToArray()));
                     request.ContentType = "application/x-www-form-urlencoded";
                     request.ContentLength = payloadData.Length;
                     using (Stream requestBody = request.GetRequestStream())
