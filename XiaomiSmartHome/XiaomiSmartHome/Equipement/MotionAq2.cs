@@ -1,5 +1,6 @@
 ﻿using Constellation;
 using Constellation.Package;
+using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
@@ -17,10 +18,12 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
             MotionAq2 curData = data as MotionAq2;
-            base.Update(curData);
+
+            base.Update(curData, cmdType);
+
             if (curData.Lux.HasValue)
             {
                 this.Lux = curData.Lux;
