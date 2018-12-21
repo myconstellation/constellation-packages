@@ -3,7 +3,7 @@
          Name="Pollen"
          Version="1.0"
          Author="Swil"
-		 Icon="Logo.bmp"
+		 Icon="logo_rnsa.png"
          URL="http://www.myconstellation.io"
          Description="Récupération des information sur les allergènes via le site de la RNSA"
          EnableControlHub="false">
