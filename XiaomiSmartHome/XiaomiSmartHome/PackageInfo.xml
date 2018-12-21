@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="XiaomiSmartHome"
-         Version="2.2"
+         Version="2.3"
          Author="Hydro, Swil"
          Icon="XiaomiSmartHome.png"
          URL="http://www.myconstellation.io"
@@ -17,6 +17,10 @@
     <Setting name="GatewayMulticastIP" isRequired="false" type="String" defaultValue="224.0.0.50" description="Your gateway multicast ip adress" />
     <Setting name="GatewayMulticastPort" isRequired="false" type="Int32" defaultValue="9898" description="Your gateway multicast port" />
     <Setting name="HeartbeatLog" isRequired="false" type="Boolean" defaultValue="false" description="Show heartbeat logs in console"/>
+    <Setting name="ReportLog" isRequired="false" type="Boolean" defaultValue="false" description="Show report logs in console"/>
     <Setting name="GatewayPassword" isRequired="true" type="String" description="Your gateway password"/>
+    <Setting name="soCustomNames" type="JsonObject" description="Custom names for StateObjects" isRequired="false">
+      <defaultContent>{ "sid": "SoName", "sid2": "SoName2"  }</defaultContent>
+    </Setting>
   </Settings>
 </Package>

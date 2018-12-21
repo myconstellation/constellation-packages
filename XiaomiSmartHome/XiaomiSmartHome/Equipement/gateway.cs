@@ -43,9 +43,12 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
+            base.Update(data, cmdType);
+
             Gateway curData = data as Gateway;
+
             if (curData.IP != default(string))
             {
                 this.IP = curData.IP;
@@ -56,7 +59,10 @@ namespace XiaomiSmartHome.Equipement
                 this.Rgb = curData.Rgb;
             }
 
-            this.Illumination = curData.Illumination;
+            if (curData.Illumination.HasValue)
+            {
+                this.Illumination = curData.Illumination;
+            }
         }
     }
 }

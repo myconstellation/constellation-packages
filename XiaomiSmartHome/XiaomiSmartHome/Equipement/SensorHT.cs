@@ -31,16 +31,12 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
-            SensorHT curData = data as SensorHT;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
-            }
+            base.Update(data, cmdType);
 
-            this.Status = curData.Status;
+            SensorHT curData = data as SensorHT;
+
             this.Temperature = curData.Temperature;
             this.Humidity = curData.Humidity;
         }

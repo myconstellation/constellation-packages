@@ -1,14 +1,10 @@
-﻿using Constellation;
-using Constellation.Package;
+﻿using Constellation.Package;
 using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
-    /// <summary>
-    /// Windows door sensor v2
-    /// </summary>
     [StateObject]
-    public class MagnetAq2 : Magnet
+    public class SwitchAq2 : Switch
     {
         /// <summary>
         /// Update equipment with last data

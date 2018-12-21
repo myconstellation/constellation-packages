@@ -1,6 +1,6 @@
-﻿using Constellation.Package;
+﻿using System;
+using Constellation.Package;
 using Newtonsoft.Json;
-using System;
 using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
@@ -48,9 +48,38 @@ namespace XiaomiSmartHome.Equipement
         public string Status { get; set; }
 
         /// <summary>
+        /// Last command type
+        /// </summary>
+        public string CmdType { get; set; }
+
+        /// <summary>
+        /// Last status change date
+        /// </summary>
+        public DateTime LastSatusChange { get; set; }
+
+        /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public virtual void Update(object data) { }
+        /// <param name="data">The reported data</param>
+        /// <param name="cmdType">Commande type</param>
+        public virtual void Update(object data, string cmdType)
+        {
+            Equipment curData = data as Equipment;
+
+            if (curData != null && this.Status != curData.Status)
+            {
+                this.LastSatusChange = DateTime.Now;
+            }
+
+            this.CmdType = cmdType;
+            this.Status = curData.Status;
+
+            if (curData.Voltage != default(int))
+            {
+                this.Voltage = curData.Voltage;
+                this.BatteryLevel = this.ParseVoltage(curData.Voltage);
+            }
+        }
 
         /// <summary>
         /// Get percent battery left
