@@ -52,19 +52,12 @@ namespace Pollution
 
         public override void OnStart()
         {
-            PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
-            SetPollution();
-        }
-
-        private static async void SetPollution()
-        {
-            // Récupération des données de chez moi maintenant
-            await RecupererPollutionIp();
-            // puis toutes les 3h
             Timer syncTimer = new Timer(1000 * 3600 * 3);
             syncTimer.Elapsed += async (source, e) => { await RecupererPollutionIp(); };
             syncTimer.AutoReset = true;
             syncTimer.Enabled = true;
+            syncTimer.Start();
+            PackageHost.WriteInfo("Package started");
         }
 
         #region Feed
@@ -128,21 +121,23 @@ namespace Pollution
         /// <param name="path">url</param>
         /// <param name="cpt">compteur d'appel</param>
         /// <returns>Réponse de l'api sous forme de chaine</returns>
-        private static async Task<string> Request(string path, int cpt = 0)
+        private static async Task<object> Request(string path, int cpt = 0)
         {
-            string res = string.Empty;
-            HttpResponseMessage response = await client.GetAsync(path);
-            if (response.IsSuccessStatusCode)
+            object response = null;
+            HttpResponseMessage httpResponse = await client.GetAsync(path);
+            if (httpResponse.IsSuccessStatusCode)
             {
-                res = await response.Content.ReadAsStringAsync();
-                if (res.Contains(nug) && cpt < 5)
+                string strResponse = await httpResponse.Content.ReadAsStringAsync();
+                response = Newtonsoft.Json.JsonConvert.DeserializeObject(strResponse);
+                if (strResponse.Contains(nug) && cpt < 5)
                 {
-                    System.Threading.Thread.Sleep(30000);
-                    await Request(path, cpt++);
+                    await Task.Delay(30000);
+                    return await Request(path, cpt++);
+                    ;
                 }
             }
 
-            return res;
+            return response;
         }
 
         /// <summary>
@@ -156,8 +151,11 @@ namespace Pollution
 
             if (!val.ToString().Contains(nug))
             {
-                PackageHost.WriteInfo("Mise à jours Pollution => {0} : {1}", nom, val);
-                PackageHost.PushStateObject(nom, val);
+                if (PackageHost.GetSettingValue<bool>("Verbose"))
+                {
+                    PackageHost.WriteInfo("Mise à jours Pollution => {0} : {1}", nom, val);
+                }
+                PackageHost.PushStateObject(nom, val); // todo : lifetime en seconde (*2 interval) + metdata
             }
         }
     }
