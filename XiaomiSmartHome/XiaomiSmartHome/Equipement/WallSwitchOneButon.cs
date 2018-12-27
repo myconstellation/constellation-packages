@@ -11,11 +11,13 @@ namespace XiaomiSmartHome.Equipement
     [StateObject]
     public class WallSwitchOneButon : Equipment
     {
+        [JsonProperty("channel_0")]
+        private string _status { get; set; }
+
         /// <summary>
         /// Action
         /// </summary>
-        [JsonProperty("channel_0")]
-        public new string Status { get; set; }
+        new public string Status { get { return _status; } }
 
 
         /// <summary>
@@ -29,16 +31,21 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
-            WallSwitchOneButon curData = data as WallSwitchOneButon;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
-            }
+            var curData = data as WallSwitchOneButon;
+            this._status = curData.Status;
+            base.Update(data, cmdType);
+            // Peu etre les mettre après le base.update ?
+        }
 
-            this.Status = curData.Status;
+        /// <summary>
+        /// Force channel_0 to be serialized as Status
+        /// </summary>
+        /// <returns></returns>
+        public bool ShouldSerialize_status()
+        {
+            return false;
         }
     }
 }

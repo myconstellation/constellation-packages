@@ -40,14 +40,11 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
+            base.Update(data, cmdType);
+
             Plug curData = data as Plug;
-            this.Status = curData.Status;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-            }
 
             if (curData.PowerConsumed != default(int))
             {
@@ -61,14 +58,12 @@ namespace XiaomiSmartHome.Equipement
             }
             else
             {
-                // TODO : call read to set power
                 this.InUse = curData.InUse;
                 if (curData.LoadPower != default(int))
                 {
                     this.LoadPower = curData.LoadPower;
                 }
             }
-
         }
     }
 }

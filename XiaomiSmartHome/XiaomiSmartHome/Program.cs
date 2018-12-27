@@ -1,7 +1,8 @@
-﻿using Constellation.Package;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Constellation.Package;
 using XiaomiSmartHome.Equipement;
 
 namespace XiaomiSmartHome
@@ -31,6 +32,8 @@ namespace XiaomiSmartHome
         /// </summary>
         EquipementController equipementController;
 
+        private static Dictionary<string, string> soCustomNames = new Dictionary<string, string>();
+
         /// <summary>
         /// Call at start
         /// </summary>
@@ -47,8 +50,12 @@ namespace XiaomiSmartHome
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
 
-            // Initialize the alarm to off
-            PackageHost.PushStateObject<bool>(Constants.ALARM_SO_NAME, this.AlarmState);
+            // Get the custom names
+            soCustomNames = PackageHost.GetSettingAsJsonObject<Dictionary<string, string>>("soCustomNames");
+            PackageHost.SettingsUpdated += (s, e) =>
+            {
+                soCustomNames = PackageHost.GetSettingAsJsonObject<Dictionary<string, string>>("soCustomNames");
+            };
 
             Thread connexion = new Thread(new ThreadStart(this.StartListener));
             connexion.Start();
@@ -86,6 +93,16 @@ namespace XiaomiSmartHome
         private void OnUdpMessageReceived(object sender, MulticastUdpClient.UdpMessageReceivedEventArgs e)
         {
             equipementManager.ProcessUdpDiagram(ASCIIEncoding.ASCII.GetString(e.Buffer));
+        }
+
+        /// <summary>
+        /// Gets custom name of the state object by its id
+        /// </summary>
+        /// <param name="deviceId">Device id.</param>
+        /// <returns>The so name</returns>
+        public static string GetCustomSoName(string deviceId)
+        {
+            return (soCustomNames != null && soCustomNames.ContainsKey(deviceId)) ? soCustomNames[deviceId] : deviceId;
         }
 
         #region MESSAGE CALLBACK
@@ -271,6 +288,27 @@ namespace XiaomiSmartHome
 
             // Write ack
             equipementManager.ProcessUdpDiagram(@"{""cmd"":""write_ack"",""model"":""gateway"",""sid"":""7811dcdf0ae6"",""short_id"":0,""data"":""{\""rgb\"":1677727487,\""illumination\"":1292,\""proto_version\"":\""1.0.9\""}""}");
+
+
+            /*
+            Equipment e = null;
+            var resp = @"{""cmd"":""read_ack"",""model"":""86sw1"",""sid"":""158d000183b779"",""short_id"":33198,""data"":""{\""voltage\"":3075}""}";
+            Model.Response reponse = Newtonsoft.Json.JsonConvert.DeserializeObject<Model.Response>(resp);
+            System.Type type = System.Reflection.Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(cur => cur.Name.ToLower().Equals(reponse.Model.ToString().ToLower()));
+            if (type != null)
+            {
+                dynamic model = Newtonsoft.Json.JsonConvert.DeserializeObject(resp, type);
+                model.Update(Newtonsoft.Json.JsonConvert.DeserializeObject(reponse.Data, type));
+                e = model;
+            }
+
+            resp = @"{""cmd"":""report"",""model"":""86sw1"",""sid"":""158d000183b779"",""short_id"":33198,""data"":""{\""channel_0\"":\""click\""}""}";
+            reponse = Newtonsoft.Json.JsonConvert.DeserializeObject<Model.Response>(resp);
+            e.Update(Newtonsoft.Json.JsonConvert.DeserializeObject(reponse.Data, e.GetType()));
+
+            var r = Newtonsoft.Json.JsonConvert.SerializeObject(e);
+             */
+
         }
     }
 }

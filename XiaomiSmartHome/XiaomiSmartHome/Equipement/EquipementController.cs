@@ -25,6 +25,15 @@ namespace XiaomiSmartHome.Equipement
         }
         #endregion
 
+        /// <summary>
+        /// Send Read cmd to refresh data
+        /// </summary>
+        /// <param name="sid">Equipement SID</param>
+        public void Read(string sid)
+        {
+            equipementManager.SendCommand(CommandType.Write, sid, null);
+        }
+
         #region GATEWAY
 
         /// <summary>
@@ -118,6 +127,7 @@ namespace XiaomiSmartHome.Equipement
             };
 
             equipementManager.SendCommand(CommandType.Write, sid, lParam);
+            Read(sid);
         }
 
         /// <summary>
@@ -132,6 +142,7 @@ namespace XiaomiSmartHome.Equipement
             };
 
             equipementManager.SendCommand(CommandType.Write, sid, lParam);
+            Read(sid);
         }
 
         #endregion

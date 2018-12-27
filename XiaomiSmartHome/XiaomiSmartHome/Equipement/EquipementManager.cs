@@ -21,7 +21,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Chemin des logs
         /// </summary>
-        string logPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\log.txt";
+        private string logPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\log.txt";
 
         /// <summary>
         /// Wrapper to communicate with gateway
@@ -147,7 +147,7 @@ namespace XiaomiSmartHome.Equipement
                         if (type != null)
                         {
                             dynamic model = JsonConvert.DeserializeObject(resp, type);
-                            model.Update(JsonConvert.DeserializeObject(reponse.Data, type));
+                            model.Update(JsonConvert.DeserializeObject(reponse.Data, type), reponse.Cmd.ToString());
                             lEquipements.Add(model);
                             this.PushStateObject(reponse.Sid, model);
                         }
@@ -165,13 +165,14 @@ namespace XiaomiSmartHome.Equipement
                         else
                         {
                             Equipment equipment = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid));
+
                             // Update gateway token
                             if (equipment.Model.Equals(EquipmentType.Gateway) && reponse.Cmd.Equals(CommandType.Heartbeat))
                             {
                                 (equipment as Gateway).Token = reponse.Token;
                             }
 
-                            equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()));
+                            equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()), reponse.Cmd.ToString());
                             this.PushStateObject(reponse.Sid, equipment);
                         }
                         break;
@@ -222,10 +223,9 @@ namespace XiaomiSmartHome.Equipement
             {
                 name = EquipmentType.Gateway.GetRealName();
             }
-            //// Get personal name based on user setting
-            else if (!PackageHost.TryGetSettingValue<string>(sid, out name))
+            else
             {
-                name = sid;
+                name = Program.GetCustomSoName(sid);
             }
 
             PackageHost.PushStateObject<dynamic>(name, model);

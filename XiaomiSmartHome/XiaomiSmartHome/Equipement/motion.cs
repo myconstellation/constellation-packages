@@ -16,7 +16,7 @@ namespace XiaomiSmartHome.Equipement
         /// </summary>
         [JsonProperty("no_motion")]
         public string NoMotion { get; set; }
-        
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -28,16 +28,12 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
-            Motion curData = data as Motion;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-                base.BatteryLevel = base.ParseVoltage(curData.Voltage);
-            }
+            base.Update(data, cmdType);
 
-            this.Status = curData.Status;
+            Motion curData = data as Motion;
+
             this.NoMotion = curData.NoMotion;
         }
     }

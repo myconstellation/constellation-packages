@@ -1,28 +1,27 @@
-﻿using Constellation;
-using Constellation.Package;
+﻿using Constellation.Package;
 using Newtonsoft.Json;
 using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
     /// <summary>
-    /// Windows door sensor
+    /// Magic cube
     /// </summary>
     [StateObject]
-    public class Magnet : Equipment
+    public class Cube : Equipment
     {
         /// <summary>
-        /// Time since door / window is open
+        /// Rotation angle, the unit is degree(°). Positive numbers indicate clockwise rotations and negative numbers indicate counterclockwise rotations.
         /// </summary>
-        [JsonProperty("no_close")]
-        public string NoClose { get; set; }
-
+        [JsonProperty("rotate")]
+        public decimal? Rotate { get; set; }
+        
         /// <summary>
         /// Ctor
         /// </summary>
-        public Magnet()
+        public Cube()
         {
-            base.Battery = BatteryType.CR1632;
+            base.Battery = BatteryType.CR2450;
         }
 
         /// <summary>
@@ -32,8 +31,8 @@ namespace XiaomiSmartHome.Equipement
         {
             base.Update(data, cmdType);
 
-            Magnet curData = data as Magnet;
-            this.NoClose = curData.NoClose;
+            var curData = data as Cube;
+            this.Rotate = curData.Rotate;
         }
     }
 }
