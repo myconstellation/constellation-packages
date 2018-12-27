@@ -26,11 +26,11 @@ namespace IPX800
     using IPX800.Enumerations;
     using Newtonsoft.Json.Linq;
     using System;
-    using System.Linq;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Timers;
     using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Timers;
 
     /// <summary>
     /// IPX800v4 Constellation package
@@ -63,6 +63,35 @@ namespace IPX800
         /// </summary>
         public override void OnStart()
         {
+            // Getting last StateObjects from the previous instance
+            PackageHost.LastStateObjectsReceived += (s, e) =>
+            {
+                PackageHost.WriteInfo($"Receiving {e.StateObjects.Count} StateObject(s) from the previous package's instance");
+                // For each StateObjects
+                e.StateObjects.ForEach(so =>
+                {
+                    var elementId = so.DynamicValue.Id.Value;
+                    // For all BinaryState
+                    if (this.ipx.Elements.ContainsKey(elementId) && so.Type == typeof(BinaryState).FullName)
+                    {
+                        if (so.DynamicValue.State == this.ipx.Elements[elementId].State && so.DynamicValue.LastKnownActivity.Value != null)
+                        {
+                            // Restore the LastKnownActivity if the state unchanged
+                            PackageHost.WriteInfo($"Restoring the LastKnownActivity to {so.DynamicValue.LastKnownActivity.Value} for {so.DynamicValue.Label}");
+                            this.ipx.Elements[elementId].LastKnownActivity = Convert.ToDateTime(so.DynamicValue.LastKnownActivity.Value);
+                            this.PushIPXElement(this.ipx.Elements[elementId]);
+                        }
+                        else if (so.DynamicValue.State != this.ipx.Elements[elementId].State)
+                        {
+                            // Update the LastKnownActivity if the state changed
+                            PackageHost.WriteInfo($"Updating the LastKnownActivity for {so.DynamicValue.Label} (the state has changed)");
+                            this.ipx.Elements[elementId].LastKnownActivity = DateTime.Now;
+                            this.PushIPXElement(this.ipx.Elements[elementId]);
+                        }
+                    }
+                });
+            };
+
             // Load the element's types to poll
             this.LoadElementTypesToPoll();
 
@@ -105,6 +134,16 @@ namespace IPX800
                 this.timer.Elapsed += (s, e) => elementTypesToPoll.Keys.ToList().ForEach(type => this.ipx.Refresh(type));
                 this.timer.Start();
             }
+
+            // Update settings
+            PackageHost.SettingsUpdated += (s, e) =>
+            {
+                if (this.timer != null)
+                {
+                    this.timer.Interval = PackageHost.GetSettingValue<int>("PollInterval") * 1000;
+                    PackageHost.WriteInfo($"Updating the polling interval to {this.timer.Interval} ms");
+                }
+            };
 
 #if DEBUG
             // Used for debug  only !
