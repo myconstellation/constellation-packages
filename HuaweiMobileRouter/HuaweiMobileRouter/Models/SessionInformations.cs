@@ -33,4 +33,56 @@ namespace HuaweiMobileRouter.Models
         [XmlElement("TokInfo")]
         public string TokenId { get; set; }
     }
+
+    [StateObject, XmlRoot("response")]
+    public class TokenInformations
+    {
+        [XmlElement("token")]
+        public string TokenId { get; set; }
+    }
+
+    [XmlRoot("response")]
+    public class ChallengeResponse
+    {
+        [XmlElement("servernonce")]
+        public string ServerNonce { get; set; }
+        [XmlElement("modeselected")]
+        public int ModeSelected { get; set; }
+        [XmlElement("salt")]
+        public string Salt { get; set; }
+        [XmlElement("iterations")]
+        public int Iterations { get; set; }
+    }
+
+    [XmlRoot("response")]
+    public class AuthentificationResponse
+    {
+        [XmlElement("rsan")]
+        public string Rsan { get; set; }
+        [XmlElement("rsae")]
+        public string Rsae { get; set; }
+        [XmlElement("serversignature")]
+        public string ServerSignature { get; set; }
+        [XmlElement("rsapubkeysignature")]
+        public string RsaPublicKeySignature { get; set; }
+    }
+
+    [XmlRoot("response")]
+    public class LoginState
+    {
+        [XmlElement("username")]
+        public string Username { get; set; }
+        [XmlElement("password_type")]
+        public int PasswordType { get; set; }
+        [XmlElement("firstlogin")]
+        public int FirstLogin { get; set; }
+        [XmlElement("history_login_flag")]
+        public int HistoryLoginFlag { get; set; }
+        [XmlElement("extern_password_type")]
+        public int ExternPasswordType { get; set; }
+        [XmlElement("State")]
+        public int State { get; set; }
+        [XmlElement("userlevel")]
+        public string UserLevel { get; set; }
+    }
 }
