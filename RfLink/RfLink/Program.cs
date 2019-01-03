@@ -122,7 +122,7 @@ namespace RfLink
             // Push state object
             if (rf.Fields.ContainsKey("ID"))
             {
-                PackageHost.PushStateObject(this.GetCustomSoName(rf.Fields["ID"]), rf.Fields);
+                PackageHost.PushStateObject(this.GetCustomSoName(rf.Fields["ID"]), rf.Fields, lifetime: 3600);
             }
         }
 
@@ -139,7 +139,7 @@ namespace RfLink
                 RFData rf = ProtocolParser.ProcessData(message);
                 if (rf.Fields.ContainsKey("ID"))
                 {
-                    PackageHost.PushStateObject(this.GetCustomSoName(rf.Fields["ID"]), rf.Fields);
+                    PackageHost.PushStateObject(this.GetCustomSoName(rf.Fields["ID"]), rf.Fields, lifetime:3600);
                 }
             }
             catch (Exception ex)
