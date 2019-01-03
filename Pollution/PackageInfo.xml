@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Pollution"
+         Version="1.0"
+         Author="swilhelm"
+		 Icon="pollution.png"
+         Description="Récupération des données sur la pollution autours de vous, ou ailleur !"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net461">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="AqicnIdId" isRequired="true" type="String" description="Votre identifiant pour l'api (http://aqicn.org/api/fr/)"/>
+    <Setting name="RefreshInterval" isRequired="false" type="Int32" description="Interval, in hours, to refresh data" defaultValue="2"/>
+  </Settings>
+</Package>
