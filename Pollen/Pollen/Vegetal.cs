@@ -58,7 +58,7 @@ namespace Pollen
                     Niveau = 4;
                     break;
 
-                /// TODO CONFIRMER LA COULEUR
+                // TODO CONFIRMER LA COULEUR
                 case "FF0000":
                     Niveau = 5;
                     break;

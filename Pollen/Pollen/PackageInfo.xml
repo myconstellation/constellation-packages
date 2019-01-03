@@ -13,6 +13,8 @@
     </Platforms>
   </Compatibility>
   <Settings>
-    <Setting name="DepartementNumber" isRequired="true" type="String" description="Votre numéro de département"/>
+    <Setting name="DepartementNumber" isRequired="true" type="Int32" description="Votre numéro de département"/>
+    <Setting name="RefreshInterval" isRequired="true" type="Int32" defaultValue="10800" description="Intervale de rafraichissement"/>
+    <Setting name="Log" isRequired="true" type="Boolean" defaultValue="true" description="Log des traitements"/>
   </Settings>
 </Package>
