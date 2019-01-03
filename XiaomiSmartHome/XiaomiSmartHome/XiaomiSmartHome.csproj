@@ -97,7 +97,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishServer="http://109.20.177.209:8088" PublishMethod="ConstellationServer" />
+      <UserProperties PublishMethod="ConstellationServer" PublishServer="http://109.20.177.209:8088" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
