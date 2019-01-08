@@ -205,6 +205,16 @@ namespace XiaomiSmartHome
             equipementController.LongClickRelease(sid);
         }
 
+        /// <summary>
+        /// Call read on the sid to refresh data
+        /// </summary>
+        /// <param name="sid">Equipement SID</param>
+        [MessageCallback]
+        void Read(string sid)
+        {
+            equipementManager.ReadEquipement(sid);
+        }
+
         #endregion
 
         private void Test()
