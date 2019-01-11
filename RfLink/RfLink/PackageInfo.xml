@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="RfLink"
-         Version="1.0"
+         Version="1.1"
          Author="swilhelm"
 		 Icon="rflink.png"
          Description="RfLink Copyright ©  2018"
@@ -16,7 +16,7 @@
     <Setting name="PortName" type="String" description="The communications port" defaultValue="COM1" isRequired="true"></Setting>
     <Setting name="Log" type="Boolean" description="Log message that transit over the rflink" defaultValue="false" isRequired="false"></Setting>
     <Setting name="soCustomNames" type="JsonObject" description="Custom names for StateObjects" isRequired="false">
-      <defaultContent>{ "DeviceId": "SoName", "DeviceId2": "SoName2"  }</defaultContent>
+      <defaultContent>{ "DeviceId": {"Item1":"SoName", "Item2":lifetime}, ...  }</defaultContent>
     </Setting>
   </Settings>
 </Package>
