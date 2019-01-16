@@ -134,7 +134,8 @@ namespace Modbus
                                                 else
                                                 {
                                                     // Raw value
-                                                    int rawValue = datas.Length == 1 ? datas[0] : ((datas[0] << 8) + datas[1]);
+                                                    int rawValue = datas.Length == 1 ? unchecked((ushort)datas[0]) : ((unchecked((ushort)datas[0]) << 16) + unchecked((ushort)datas[1]));
+
                                                     // Apply the ratio and set the result
                                                     resultDict[property.Name] = (float)(rawValue * property.Ratio);
                                                     // Trucate Integer property
