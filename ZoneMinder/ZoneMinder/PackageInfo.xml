@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="ZoneMinder"
+         Version="1.0.7"
+         Icon="icon.png"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr"
+         PackageUrl="https://developer.myconstellation.io/package-library/zoneminder/"
+         Description="Connect your ZoneMinder (>= 1.29) video security system to Constellation"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="RootUri" type="String" isRequired="true" description="ZoneMinder root URI" />
+    <Setting name="Username" type="String" isRequired="true" description="ZoneMinder username" />
+    <Setting name="PasswordHash" type="String" isRequired="true" description="ZoneMinder password hash" />
+    <Setting name="SecretHash" type="String" isRequired="true" description="ZoneMinder secret hash" />
+    <Setting name="SystemRefreshInterval" type="Int32" isRequired="false" defaultValue="5000" ignoreLocalValue="true" description="Interval (in ms) to refresh system data" />
+    <Setting name="MonitorsRefreshInterval" type="Int32" isRequired="false" defaultValue="2000" ignoreLocalValue="true" description="Interval (in ms) to refresh monitor data" />
+    <Setting name="EventsRefreshInterval" type="Int32" isRequired="false"  defaultValue="2000" ignoreLocalValue="true" description="Interval (in ms) to refresh event data" />
+  </Settings>
+</Package>
