@@ -1,7 +1,7 @@
 ﻿/*
  *	 ZoneMinder package for Constellation
  *	 Web site: http://www.myConstellation.io
- *	 Copyright (C) 2016 - Sebastien Warin <http://sebastien.warin.fr>	   	  
+ *	 Copyright (C) 2016-2019 - Sebastien Warin <http://sebastien.warin.fr>	   	  
  *	
  *	 Licensed to Constellation under one or more contributor
  *	 license agreements. Constellation licenses this file to you under
@@ -22,205 +22,78 @@
 namespace ZoneMinder
 {
     using Constellation.Package;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
-    using System.Globalization;
-    using System.Net;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using ZoneMinder.Interfaces;
 
+    /// <summary>
+    /// ZoneMinder package for Constellation
+    /// </summary>
+    /// <seealso cref="Constellation.Package.PackageBase" />
     public class Program : PackageBase
     {
-        private CookieContainer cookieContainer = new CookieContainer();
-        private int systemRefreshInterval, monitorsRefreshInterval, eventsRefreshInterval;
-
-        private string rootUri = string.Empty;
-        private string authentificationHash = string.Empty;
-        private DateTime authentificationDate = DateTime.MinValue;
+        private ZoneMinderBase zoneMinder = null;
 
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
         }
 
+        /// <summary>
+        /// Called when the package is started.
+        /// </summary>
         public override void OnStart()
         {
-            this.rootUri = PackageHost.GetSettingValue("RootUri");
-            this.systemRefreshInterval = PackageHost.GetSettingValue<int>("SystemRefreshInterval");
-            this.monitorsRefreshInterval = PackageHost.GetSettingValue<int>("MonitorsRefreshInterval");
-            this.eventsRefreshInterval = PackageHost.GetSettingValue<int>("EventsRefreshInterval");
-
-            try
+            // Create the ZM interface
+            if (PackageHost.GetSettingValue<bool>("UseLoginAPI"))
             {
-                this.Authentificate();
+                this.zoneMinder = new ZoneMinder132(PackageHost.GetSettingValue("RootUri"));
             }
-            catch (Exception ex)
+            else
             {
-                PackageHost.WriteError("Unable to connect to ZoneMinder on '{0}' : {1}", this.rootUri, ex.Message);
-                return;
+                this.zoneMinder = new ZoneMinder129(PackageHost.GetSettingValue("RootUri"));
+            }
+            PackageHost.WriteInfo($"Using {this.zoneMinder.GetType().Name} interface to connect to {this.zoneMinder.RootUri}");
+
+            // Authentification
+            if (!this.zoneMinder.Authentificate())
+            {
+                throw new Exception($"Unable to authentificate !");
             }
 
-            Task.Factory.StartNew(() =>
-            {
-                while (PackageHost.IsRunning)
+            // When ZoneMinder event changed
+            this.zoneMinder.EventStarted += ZoneMinder_OnEventChanged;
+            this.zoneMinder.EventTerminated += ZoneMinder_OnEventChanged;
+
+            // Query ZM host task
+            this.AddBackgroundTask(
+                () => PackageHost.PushStateObject<Host>("Host", this.zoneMinder.Host, lifetime: (PackageHost.GetSettingValue<int>("SystemRefreshInterval") / 500) + 5),
+                "SystemRefreshInterval",
+                (ex) => PackageHost.WriteError("Error to query ZoneMinder : {0}", ex.ToString()));
+
+            // Query ZM monitors task
+            this.AddBackgroundTask(
+                () =>
                 {
-                    try
+                    foreach (var monitor in this.zoneMinder.Monitors)
                     {
-                        this.Authentificate();
-
-                        dynamic getDiskPercent = this.GetJson("api/host/getDiskPercent.json");
-                        dynamic getVersion = getDiskPercent == null ? null : this.GetJson("api/host/getVersion.json");
-                        dynamic daemonCheck = getVersion == null ? null : this.GetJson("api/host/daemonCheck.json");
-                        dynamic getLoad = daemonCheck == null ? null : this.GetJson("api/host/getLoad.json");
-                        if (getLoad != null)
-                        {
-                            PackageHost.PushStateObject<Host>("Host", new Host()
-                            {
-                                URI = this.rootUri,
-                                Version = getVersion.version.Value,
-                                APIVersion = getVersion.apiversion.Value,
-                                DaemonStarted = daemonCheck.result == "1",
-                                LoadAverageLastMinute = (double)getLoad.load[0].Value,
-                                LoadAverageLastFiveMinutes = (double)getLoad.load[1].Value,
-                                LoadAverageLastFifteenMinutes = (double)getLoad.load[2].Value,
-                                SpaceUsed = Math.Round(decimal.Parse(getDiskPercent.usage.Total.space.Value, System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture))
-                            });
-                        }
+                        PackageHost.PushStateObject(monitor.Name, monitor, lifetime: (PackageHost.GetSettingValue<int>("MonitorsRefreshInterval") / 500) + 5);
                     }
-                    catch (Exception ex)
-                    {
-                        PackageHost.WriteError("Error to query ZoneMinder : {0}", ex.ToString());
-                    }
+                },
+                "MonitorsRefreshInterval",
+                (ex) => PackageHost.WriteError("Error to query ZoneMinder's monitors : {0}", ex.ToString()));
 
-                    Thread.Sleep(this.systemRefreshInterval);
-                }
-            });
+            // Query ZM events task
+            this.AddBackgroundTask(
+                () => this.zoneMinder.PoolEvents(),
+                "EventsRefreshInterval",
+                (ex) => PackageHost.WriteError("Error to query ZoneMinder's events : {0}", ex.ToString()));
 
-            Task.Factory.StartNew(() =>
-            {
-                while (PackageHost.IsRunning)
-                {
-                    try
-                    {
-                        dynamic getDiskPercent = this.GetJson("api/host/getDiskPercent.json");
-                        dynamic datas = getDiskPercent == null ? null : this.GetJson("api/monitors.json");
-                        if (datas != null)
-                        {
-                            foreach (dynamic m in datas.monitors)
-                            {
-                                int id = int.Parse(m.Monitor.Id.Value);
-                                dynamic status = this.GetJson("index.php?view=request&request=status&entity=monitor&id=" + id.ToString());
-                                if (status != null)
-                                {
-                                    PackageHost.PushStateObject<Monitor>(m.Monitor.Name.Value, new Monitor()
-                                    {
-                                        Id = id,
-                                        Name = m.Monitor.Name.Value,
-                                        Type = m.Monitor.Type.Value,
-                                        Enabled = m.Monitor.Enabled.Value == "1",
-                                        Function = (MonitorFunction)Enum.Parse(typeof(MonitorFunction), m.Monitor.Function.Value),
-                                        StreamPath = this.GetStreamPath(id),
-                                        Width = int.Parse(m.Monitor.Width.Value),
-                                        Height = int.Parse(m.Monitor.Height.Value),
-                                        MaxFPS = decimal.Parse(m.Monitor.MaxFPS.Value, CultureInfo.InvariantCulture),
-                                        SpaceUsed = Math.Round(decimal.Parse(((dynamic)((getDiskPercent.usage as JObject).Property(m.Monitor.Name.Value).Value)).space.Value, System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture)),
-                                        State = (AlarmState)int.Parse(status.monitor.Status.Value),
-                                        FrameRate = decimal.Parse(status.monitor.FrameRate.Value, CultureInfo.InvariantCulture),
-                                        MinEventId = status.monitor.MinEventId.Value != null ? int.Parse(status.monitor.MinEventId.Value) : -1,
-                                        MaxEventId = status.monitor.MaxEventId.Value != null ? int.Parse(status.monitor.MaxEventId.Value) : -1,
-                                        TotalEvents = int.Parse(status.monitor.TotalEvents.Value),
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        PackageHost.WriteError("Error to query ZoneMinder's monitor : {0}", ex.ToString());
-                    }
-
-                    Thread.Sleep(this.systemRefreshInterval);
-                }
-            });
-
-            Task.Factory.StartNew(() =>
-            {
-                int lastEventId = -1;
-                int lastPage = 1;
-                while (PackageHost.IsRunning)
-                {
-                    try
-                    {
-                        if (lastEventId < 0)
-                        {
-                            dynamic events = this.GetJson("api/events.json?page=" + lastPage.ToString());
-                            if ((int)events.pagination.pageCount > lastPage)
-                            {
-                                lastPage = (int)events.pagination.pageCount;
-                                events = this.GetJson("api/events.json?page=" + ((int)events.pagination.pageCount).ToString());
-                            }
-                            var eventLists = events.events as JArray;
-                            lastEventId = (eventLists.Count == 0) ? 0 : int.Parse(((dynamic)eventLists.Last).Event.Id.Value);
-                            PackageHost.WriteInfo("Last event found #{0}", lastEventId);
-                        }
-                        else
-                        {
-                            dynamic events = null;
-                            try
-                            {
-                                events = this.GetJson("api/events.json?page=" + lastPage.ToString(), rethow: true);
-                            }
-                            catch (WebException ex)
-                            {
-                                if (ex.Status == WebExceptionStatus.ProtocolError && ((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotFound)
-                                {
-                                    lastEventId = -1;
-                                    lastPage = 1;
-                                    continue;
-                                }
-                            }
-                            catch { }
-                            for (int i = lastPage; i <= (int)events.pagination.pageCount; i++)
-                            {
-                                if (i > lastPage)
-                                {
-                                    events = this.GetJson("api/events.json?page=" + lastPage.ToString());
-                                    lastPage = i;
-                                }
-                                foreach (var e in events.events)
-                                {
-                                    var id = int.Parse(e.Event.Id.Value);
-                                    if (id > lastEventId)
-                                    {
-                                        lastEventId = id;
-                                        PackageHost.WriteWarn("New event #{0} detected ({1}) on monitor #{2} (Note: {3})", id, e.Event.Cause.Value, e.Event.MonitorId.Value, e.Event.Notes.Value);
-                                        PackageHost.CreateMessageProxy(Constellation.MessageScope.ScopeType.Group, "Motion").Alarm(new
-                                        {
-                                            Id = id,
-                                            Name = e.Event.Name.Value,
-                                            MonitorId = int.Parse(e.Event.MonitorId.Value),
-                                            Cause = e.Event.Cause.Value,
-                                            StartTime = DateTime.ParseExact((string)e.Event.StartTime.Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.GetCultureInfo("en-us")),
-                                            EndTime = string.IsNullOrEmpty((string)e.Event.EndTime.Value) ? DateTime.MinValue : DateTime.ParseExact((string)e.Event.EndTime.Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.GetCultureInfo("en-us")),
-                                            Length = decimal.Parse(e.Event.Length.Value, CultureInfo.InvariantCulture),
-                                            Notes = e.Event.Notes.Value,
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        PackageHost.WriteError("Error to query ZoneMinder's events : {0}", ex.ToString());
-                    }
-
-                    Thread.Sleep(this.eventsRefreshInterval);
-                }
-            });
-
-            PackageHost.WriteInfo("ZoneMinder '{0}' started", this.rootUri);
+            // Package started !
+            PackageHost.WriteInfo("Connected to ZoneMinder '{0}'", this.zoneMinder.RootUri);
         }
 
         /// <summary>
@@ -228,9 +101,10 @@ namespace ZoneMinder
         /// </summary>
         /// <param name="state">The new state.</param>
         [MessageCallback]
-        public void ChangeState(string state)
+        public void ChangeState(State state)
         {
-            this.Try(() => this.PostHttp("api/states/change/" + state + ".json"));
+            PackageHost.WriteInfo($"Setting state to {state} ...");
+            this.zoneMinder.ChangeState(state);
         }
 
         /// <summary>
@@ -239,7 +113,8 @@ namespace ZoneMinder
         [MessageCallback]
         public void Restart()
         {
-            this.ChangeState("restart");
+            PackageHost.WriteWarn($"Restarting ZoneMinder host ...");
+            this.ChangeState(State.Restart);
         }
 
         /// <summary>
@@ -249,7 +124,8 @@ namespace ZoneMinder
         [MessageCallback]
         public void ForceAlarm(int monitorId)
         {
-            this.Try(() => this.GetHttp("/index.php?view=request&request=alarm&id=" + monitorId.ToString() + "&command=forceAlarm"));
+            PackageHost.WriteInfo($"Forcing alarm for monitor #{monitorId}");
+            this.zoneMinder.ForceAlarm(monitorId);
         }
 
         /// <summary>
@@ -259,7 +135,8 @@ namespace ZoneMinder
         [MessageCallback]
         public void CancelForcedAlarm(int monitorId)
         {
-            this.Try(() => this.GetHttp("/index.php?view=request&request=alarm&id=" + monitorId.ToString() + "&command=cancelForcedAlarm"));
+            PackageHost.WriteInfo($"Cancelling alarm for monitor #{monitorId}");
+            this.zoneMinder.CancelForcedAlarm(monitorId);
         }
 
         /// <summary>
@@ -267,83 +144,138 @@ namespace ZoneMinder
         /// </summary>
         /// <param name="monitorId">The monitor identifier.</param>
         /// <param name="function">The function.</param>
+        /// <param name="enabled"><c>true</c> to enabled, otherwise the monitor is disabled.</param>
         [MessageCallback]
-        public void SetMonitorFunction(int monitorId, MonitorFunction function)
+        public void SetMonitorFunction(int monitorId, MonitorFunction function, bool enabled = true)
         {
-            this.Try(() => this.PostHttp("api/monitors/" + monitorId.ToString() + ".json", "Monitor[Function]=" + function.ToString()));
+            PackageHost.WriteInfo($"Setting monitor #{monitorId} to {function} (enabled:{enabled})");
+            this.zoneMinder.SetMonitorFunction(monitorId, function, enabled);
         }
 
-        private dynamic GetJson(string path, int tries = 3, bool rethow = false)
+        /// <summary>
+        /// Generates the streaming URI.
+        /// </summary>
+        /// <param name="id">The identifier (monitorId if source=live or eventId if source=event).</param>
+        /// <param name="source">The streaming source (live or event).</param>
+        /// <param name="mode">The streaming mode (video or snapshot).</param>
+        /// <param name="options">The streaming options.</param>
+        /// <returns>The URI to the specified stream</returns>
+        [MessageCallback]
+        public string GenerateStreamingURI(int id, StreamingOptions.Source source = StreamingOptions.Source.Live, StreamingOptions.Mode mode = StreamingOptions.Mode.MJPEG, StreamingOptions options = null)
         {
-            dynamic result = null;
-            try
+            return this.zoneMinder.GenerateStreamingURI(id, source, mode, options);
+        }
+
+        /// <summary>
+        /// Searches events with one criteria.
+        /// </summary>
+        /// <param name="criteria">The criteria.</param>
+        [MessageCallback]
+        public List<Event> SearchEvents(EventSearchCriterias criteria)
+        {
+            return this.zoneMinder.SearchEvents(criteria);
+        }
+
+        /// <summary>
+        /// Searches events with criterias.
+        /// </summary>
+        /// <param name="criterias">The array of criterias.</param>
+        [MessageCallback]
+        public List<Event> SearchEventsWithMultiCriterias(EventSearchCriterias[] criterias)
+        {
+            return this.zoneMinder.SearchEvents(criterias);
+        }
+
+        /// <summary>
+        /// Gets event by ID.
+        /// </summary>
+        /// <param name="eventId">The event identifier.</param>
+        [MessageCallback]
+        public Event GetEvent(int eventId)
+        {
+            return this.zoneMinder.SearchEvents(new EventSearchCriterias()
             {
-                this.Try(() => { result = JsonConvert.DeserializeObject(Utils.StripTagsCharArray(GetHttp(path)).Trim()); });
+                Condition = EventSearchCriterias.ConditionOperator.Equal,
+                Field = EventSearchCriterias.Criteria.EventId,
+                Value = eventId.ToString()
+            })?.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Updates the event.
+        /// </summary>
+        /// <param name="eventId">The event identifier.</param>
+        /// <param name="request">The update request.</param>
+        [MessageCallback]
+        public void UpdateEvent(int eventId, UpdateEventRequest request)
+        {
+            var props = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(request.Name))
+            {
+                props[nameof(request.Name)] = request.Name;
             }
-            catch (Exception ex)
+            if (!string.IsNullOrEmpty(request.Cause))
             {
-                PackageHost.WriteError("Unable to get response : '{0}' : {1}", path, ex.Message);
-                if (rethow)
+                props[nameof(request.Cause)] = request.Cause;
+            }
+            if (!string.IsNullOrEmpty(request.Notes))
+            {
+                props[nameof(request.Notes)] = request.Notes;
+            }
+            if (props.Count > 0)
+            {
+                PackageHost.WriteInfo($"Updating {string.Join(",", props.Keys)} for event #{eventId}");
+                this.zoneMinder.EditEvent(eventId, props);
+            }
+        }
+
+        /// <summary>
+        /// Deletes the event.
+        /// </summary>
+        /// <param name="eventId">The event identifier.</param>
+        [MessageCallback]
+        public void DeleteEvent(int eventId)
+        {
+            PackageHost.WriteWarn($"Deleteing the event #{eventId}");
+            this.zoneMinder.DeleteEvent(eventId);
+        }
+
+        private void ZoneMinder_OnEventChanged(object sender, ZoneMinderBase.ZoneMinderEvent e)
+        {
+            if (!e.Event.Terminated)
+            {
+                PackageHost.WriteWarn($"New event #{e.Event.EventId} ({e.Event.Cause}) on monitor #{e.Event.MonitorId} detected ({e.Event.Notes})");
+            }
+            else
+            {
+                PackageHost.WriteInfo($"Event #{e.Event.EventId} ({e.Event.Cause}) on monitor #{e.Event.MonitorId} is terminated (Lenght:{e.Event.Length}sec - {e.Event.Notes})");
+            }
+            // Forward ZM event to Constellation group
+            PackageHost.CreateMessageProxy(Constellation.MessageScope.ScopeType.Group, PackageHost.GetSettingValue("EventsGroupName")).OnZoneMinderEvent(e.Event);
+        }
+
+        private void AddBackgroundTask(Action action, string intervalSettingName, Action<Exception> onError = null)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                var lastExecution = DateTime.MinValue;
+                while (PackageHost.IsRunning)
                 {
-                    throw ex;
+                    try
+                    {
+                        if (DateTime.Now.Subtract(lastExecution).TotalMilliseconds >= PackageHost.GetSettingValue<int>(intervalSettingName))
+                        {
+                            action();
+                            lastExecution = DateTime.Now;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        onError?.Invoke(ex);
+                    }
+                    Thread.Sleep(1000);
                 }
-            }
-            return result;
-        }
-
-        private void Try(Action action, int tries = 3)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                if (--tries == 0)
-                {
-                    throw ex;
-                }
-                else
-                {
-                    this.Try(action, tries);
-                }
-            }
-        }
-
-        private void Authentificate()
-        {
-            if (DateTime.Now.Subtract(this.authentificationDate).TotalMinutes > 90)
-            {
-                this.GetHttp("index.php?auth=" + this.GenerateHash());
-            }
-        }
-
-        private string GetStreamPath(int monitor, int scale = 0, int maxfps = 0)
-        {
-            return string.Format("/cgi-bin/nph-zms?mode=jpeg&monitor={0}&auth={1}&rand={2}{3}{4}", monitor, this.GenerateHash(), DateTime.Now.Ticks, scale > 0 ? scale.ToString() : "", maxfps > 0 ? maxfps.ToString() : "");
-        }
-
-        private string GenerateHash()
-        {
-            this.authentificationDate = DateTime.Now;
-            return Utils.CalculateMD5Hash(
-                PackageHost.GetSettingValue<string>("SecretHash") +
-                PackageHost.GetSettingValue<string>("Username") +
-                PackageHost.GetSettingValue<string>("PasswordHash") +
-                this.authentificationDate.Hour.ToString() +
-                this.authentificationDate.Day.ToString() +
-                (this.authentificationDate.Month - 1).ToString() +
-                (this.authentificationDate.Year - 1900).ToString());
-        }
-
-        private string GetHttp(string path)
-        {
-            return Utils.DoRequest(Utils.FormatUri(this.rootUri, path), cookieContainer: this.cookieContainer);
-        }
-
-        private string PostHttp(string path, string postdata = "")
-        {
-            return Utils.DoRequest(Utils.FormatUri(this.rootUri, path), "POST", postdata, this.cookieContainer);
+            });
         }
     }
 }

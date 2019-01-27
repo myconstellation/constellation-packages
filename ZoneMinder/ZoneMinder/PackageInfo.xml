@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="ZoneMinder"
-         Version="1.0.7"
+         Version="2.0"
          Icon="icon.png"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
@@ -11,11 +11,14 @@
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
   <Settings>
     <Setting name="RootUri" type="String" isRequired="true" description="ZoneMinder root URI" />
+    <Setting name="UseLoginAPI" type="Boolean" isRequired="true" defaultValue="Use the login API for ZM >= 1.32" />
     <Setting name="Username" type="String" isRequired="true" description="ZoneMinder username" />
-    <Setting name="PasswordHash" type="String" isRequired="true" description="ZoneMinder password hash" />
-    <Setting name="SecretHash" type="String" isRequired="true" description="ZoneMinder secret hash" />
-    <Setting name="SystemRefreshInterval" type="Int32" isRequired="false" defaultValue="5000" ignoreLocalValue="true" description="Interval (in ms) to refresh system data" />
-    <Setting name="MonitorsRefreshInterval" type="Int32" isRequired="false" defaultValue="2000" ignoreLocalValue="true" description="Interval (in ms) to refresh monitor data" />
-    <Setting name="EventsRefreshInterval" type="Int32" isRequired="false"  defaultValue="2000" ignoreLocalValue="true" description="Interval (in ms) to refresh event data" />
+    <Setting name="Password" type="JsonObject" isRequired="false" description="ZoneMinder password (required if UseLoginAPI is enabled)" />
+    <Setting name="PasswordHash" type="String" isRequired="false" description="ZoneMinder password hash (required if UseLoginAPI is disabled)" />
+    <Setting name="SecretHash" type="String" isRequired="false" description="ZoneMinder secret hash (required if UseLoginAPI is disabled)" />
+    <Setting name="EventsGroupName" type="String" isRequired="false" defaultValue="ZoneMinder" description="The name of the Constellation group where send the OnZoneMinderEvent message" />
+    <Setting name="SystemRefreshInterval" type="Int32" isRequired="false" defaultValue="5000" ignoreLocalValue="true" description="Interval (in ms) to refresh host data" />
+    <Setting name="MonitorsRefreshInterval" type="Int32" isRequired="false" defaultValue="2000" ignoreLocalValue="true" description="Interval (in ms) to refresh monitors data" />
+    <Setting name="EventsRefreshInterval" type="Int32" isRequired="false"  defaultValue="2000" ignoreLocalValue="true" description="Interval (in ms) to refresh events data" />
   </Settings>
 </Package>

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ZoneMinder")]
-[assembly: AssemblyDescription("Connect your ZoneMinder (>= 1.29) video security system to Constellation.")]
+[assembly: AssemblyDescription("Connect your ZoneMinder (>= 1.29) video security system to Constellation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ZoneMinder")]
-[assembly: AssemblyCopyright("Copyright © Sebastien.warin.fr 2016")]
+[assembly: AssemblyCopyright("Copyright © Sebastien.warin.fr 2016-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

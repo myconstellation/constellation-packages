@@ -1,7 +1,7 @@
 ﻿/*
  *	 ZoneMinder package for Constellation
  *	 Web site: http://www.myConstellation.io
- *	 Copyright (C) 2016 - Sebastien Warin <http://sebastien.warin.fr>	   	  
+ *	 Copyright (C) 2016-2019 - Sebastien Warin <http://sebastien.warin.fr>
  *	
  *	 Licensed to Constellation under one or more contributor
  *	 license agreements. Constellation licenses this file to you under
@@ -18,8 +18,8 @@
  *	 specific language governing permissions and limitations
  *	 under the License.
  */
- 
- namespace ZoneMinder
+
+namespace ZoneMinder
 {
     /// <summary>
     /// Defines what the monitor is doing.
@@ -50,24 +50,5 @@
         /// No DEteCTtion. This is a special mode designed to be used with external triggers. In Nodect no motion detection takes place but events are recorded if external triggers require it.
         /// </summary>
         Nodect
-    }
-
-    /// <summary>
-    /// Alarm state
-    /// </summary>
-    public enum AlarmState
-    {
-        /// <summary>
-        /// Idle state
-        /// </summary>
-        Idle = 0,
-        /// <summary>
-        /// Alarm state
-        /// </summary>
-        Alarm = 2,
-        /// <summary>
-        /// Alert state
-        /// </summary>
-        Alert = 3
     }
 }

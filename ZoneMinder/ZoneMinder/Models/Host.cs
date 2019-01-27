@@ -1,7 +1,7 @@
 ﻿/*
  *	 ZoneMinder package for Constellation
  *	 Web site: http://www.myConstellation.io
- *	 Copyright (C) 2016 - Sebastien Warin <http://sebastien.warin.fr>	   	  
+ *	 Copyright (C) 2016-2019 - Sebastien Warin <http://sebastien.warin.fr>	  
  *	
  *	 Licensed to Constellation under one or more contributor
  *	 license agreements. Constellation licenses this file to you under
@@ -23,36 +23,47 @@ namespace ZoneMinder
 {
     using Constellation.Package;
 
-    [StateObject]
-    public class Monitor
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public MonitorFunction Function { get; set; }
-        public bool Enabled { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public decimal MaxFPS { get; set; }
-        public string StreamPath { get; set; }
-        public decimal SpaceUsed { get; set; }
-        public AlarmState State { get; set; }
-        public decimal FrameRate { get; set; }
-        public int MinEventId { get; set; }
-        public int MaxEventId { get; set; }
-        public int TotalEvents { get; set; }
-    }
-
+    /// <summary>
+    /// ZoneMinder host
+    /// </summary>
     [StateObject]
     public class Host
     {
+        /// <summary>
+        /// ZoneMinder root URI
+        /// </summary>
         public string URI { get; set; }
+        /// <summary>
+        /// Current authentification token
+        /// </summary>
+        public string AuthentificationToken { get; set; }
+        /// <summary>
+        /// ZoneMinder version
+        /// </summary>
         public string Version { get; set; }
+        /// <summary>
+        /// ZoneMinder API version
+        /// </summary>
         public string APIVersion { get; set; }
+        /// <summary>
+        /// ZoneMinder CPU load average for the last minute
+        /// </summary>
         public double LoadAverageLastMinute { get; set; }
+        /// <summary>
+        /// ZoneMinder CPU load average for the last 5 minutes
+        /// </summary>
         public double LoadAverageLastFiveMinutes { get; set; }
+        /// <summary>
+        /// ZoneMinder CPU load average for the last 15 minutes
+        /// </summary>
         public double LoadAverageLastFifteenMinutes { get; set; }
+        /// <summary>
+        /// Is the ZM daemon started
+        /// </summary>
         public bool DaemonStarted { get; set; }
+        /// <summary>
+        /// Total space used by all events recorded
+        /// </summary>
         public decimal SpaceUsed { get; set; }
     }
 }
