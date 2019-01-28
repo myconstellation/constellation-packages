@@ -251,7 +251,10 @@ namespace ZoneMinder
                 PackageHost.WriteInfo($"Event #{e.Event.EventId} ({e.Event.Cause}) on monitor #{e.Event.MonitorId} is terminated (Lenght:{e.Event.Length}sec - {e.Event.Notes})");
             }
             // Forward ZM event to Constellation group
-            PackageHost.CreateMessageProxy(Constellation.MessageScope.ScopeType.Group, PackageHost.GetSettingValue("EventsGroupName")).OnZoneMinderEvent(e.Event);
+            if (PackageHost.GetSettingValue<bool>("ForwardEvents"))
+            {
+                PackageHost.CreateMessageProxy(Constellation.MessageScope.ScopeType.Group, PackageHost.GetSettingValue("EventsGroupName")).OnZoneMinderEvent(e.Event);
+            }
         }
 
         private void AddBackgroundTask(Action action, string intervalSettingName, Action<Exception> onError = null)
