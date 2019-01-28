@@ -62,7 +62,7 @@ namespace ZoneMinder.Interfaces
                             Width = int.Parse(m.Monitor.Width.Value),
                             Height = int.Parse(m.Monitor.Height.Value),
                             MaxFPS = decimal.Parse(m.Monitor.MaxFPS.Value, CultureInfo.InvariantCulture),
-                            SpaceUsed = long.Parse(m.Monitor.TotalEventDiskSpace.Value),
+                            SpaceUsed = m.Monitor.TotalEventDiskSpace == null ? -1 : long.Parse(m.Monitor.TotalEventDiskSpace.Value),
                             State = m.Monitor_Status.Status.Value,
                             AlarmState = alarmState == null ? AlarmState.Unknown : (AlarmState)int.Parse(alarmState.status.Value),
                             FrameRate = decimal.Parse(m.Monitor_Status.CaptureFPS.Value, CultureInfo.InvariantCulture),

@@ -319,7 +319,7 @@ namespace ZoneMinder.Interfaces
                 dynamic events = null;
                 try
                 {
-                    events = this.GetJson($"api/events.json?page={this.lastKnownEventPageId}");
+                    events = this.GetJson($"api/events.json?page={this.lastKnownEventPageId}", rethow: true);
                     if (events == null || events.events == null || events.pagination == null)
                     {
                         return;
@@ -331,8 +331,12 @@ namespace ZoneMinder.Interfaces
                     {
                         this.lastKnownEventId = -1;
                         this.lastKnownEventPageId = 1;
-                        return;
                     }
+                    else
+                    {
+                        PackageHost.WriteError($"Invalid HTTP response ({ex.Status}) from API for the event page #{this.lastKnownEventPageId} : {ex.Message}");
+                    }
+                    return;
                 }
                 for (int i = this.lastKnownEventPageId; i <= (int)events.pagination.pageCount; i++)
                 {
@@ -420,7 +424,14 @@ namespace ZoneMinder.Interfaces
             }
             catch (WebException ex)
             {
-                PackageHost.WriteError($"Invalid HTTP response ({ex.Status}) from API for the request '{path}' : {ex.Message}");
+                if (rethow)
+                {
+                    throw ex;
+                }
+                else
+                {
+                    PackageHost.WriteError($"Invalid HTTP response ({ex.Status}) from API for the request '{path}' : {ex.Message}");
+                }
             }
             catch (Exception ex)
             {
