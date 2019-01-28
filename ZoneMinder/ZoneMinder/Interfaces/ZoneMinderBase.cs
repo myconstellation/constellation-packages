@@ -372,7 +372,9 @@ namespace ZoneMinder.Interfaces
                         else if (this.eventsInProgress.ContainsKey(arg.Event.EventId) && arg.Event.Terminated) // Event terminated
                         {
                             this.eventsInProgress.Remove(arg.Event.EventId);
-                            this.EventTerminated?.Invoke(this, arg);
+                            // Get all data about this event
+                            var eventDatas = this.GetJson("api/events/" + arg.Event.EventId + ".json")?.@event;
+                            this.EventTerminated?.Invoke(this, eventDatas != null ? new ZoneMinderEvent { Event = Event.CreateFromJSON(eventDatas) } : arg);
                         }
                     }
                 }
