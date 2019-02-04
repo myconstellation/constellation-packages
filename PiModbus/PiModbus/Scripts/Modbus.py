@@ -4,7 +4,7 @@ import os, subprocess, time, stat, json
 from threading import RLock
 
 # Const
-EXECUTABLE_FILENAME = "modbus"
+EXECUTABLE_FILENAME = "libmodbus/modbus"
 
 # Sync lock object
 syncLock = RLock()
