@@ -3,11 +3,14 @@
 This package connects a Paradox security system to Constellation by using the PRT3 interface module.
 
 ### StateObjects
+
+The package publishes different StateObjects in real time :
+
 * A StateObject for each area loaded (type of [AreaInfo](Paradox/Models/AreaInfo.cs))
-* A StateObject for each user loaded (type of [AreaInfo](Paradox/Models/UserInfo.cs))
-* A StateObject for each zone loaded (type of [AreaInfo](Paradox/Models/ZoneInfo.cs))
-* Status1 : the current Status1 of the system (type of [Status1EventType](Paradox.Core/System Events/Enums/Status1EventType.cs))
-* Status2 : the current Status2 of the system (type of [Status2EventType](Paradox.Core/System Events/Enums/Status2EventType.cs))
+* A StateObject for each user loaded (type of [UserInfo](Paradox/Models/UserInfo.cs))
+* A StateObject for each zone loaded (type of [ZoneInfo](Paradox/Models/ZoneInfo.cs))
+* Status1 : the current Status1 of the system (type of [Status1EventType](Paradox.Core/System%20Events/Enums/Status1EventType.cs))
+* Status2 : the current Status2 of the system (type of [Status2EventType](Paradox.Core/System%20Events/Enums/Status2EventType.cs))
 
 ### MessageCallbacks
 
@@ -15,12 +18,12 @@ The package expose four MessageCallbacks to allow you to arm and disarm the syst
 
 *  bool AreaArm([ArmingRequestData](Paradox/Models/ArmingRequestData.cs) request) : Arms the area and return the boolean result.
 *  bool AreaDisarm([ArmingRequestData](Paradox/Models/ArmingRequestData.cs) request) : Arms the area and return the boolean result.
-*  void RefreshArea([Area](Paradox.Core/Base Events/Enums/Area.cs) request) : Force to refresh the specified area status.
+*  void RefreshArea([Area](Paradox.Core/Base%20Events/Enums/Area.cs) request) : Force to refresh the specified area status.
 *  void RefreshAll() : Force to refresh all items.
 
-Also the package sends messages named "AlarmEvent" to each event of the system. These messages are sent in the group with the name of your package instance (Paradox by default)
+Also the package sends messages called "AlarmEvent" for each systeme event. These messages are sent in the group named with name of your package instance (Paradox by default)
 
-Each "AlarmEvent" message contains at least a "Type" property which is the following:
+Each "AlarmEvent" message contains at least a "Type" property and others properties depending to the event type :
 
 | Type                    | Others properties                                              | Description   |
 | ------------------------| -------------------------------------------------------------- |---------------|
@@ -40,7 +43,7 @@ Each "AlarmEvent" message contains at least a "Type" property which is the follo
 | ZoneAlarmRestored       | Date (DateTime), Text (string), Zone (ZoneInfo)                | When a zone in alarm is restored   |
 | ZoneChanged             | Date (DateTime), Text (string), Zone (ZoneInfo)                | When a zone status changed |
 
-So as example, if you want to receive in real time all the Paradox events in a web page y using the Constellation Javascript API, just type :
+For example, if you want to receive in real time all the Paradox events in a web page by using the Constellation Javascript API, just type :
 ```
 constellation.registerMessageCallback("AlarmEvent", function (msg) {
     console.log("Paradox event : ", msg.Data);
