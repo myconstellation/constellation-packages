@@ -76,7 +76,9 @@
     <Content Include="PackageInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="paradox.png" />
+    <Content Include="paradox.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -85,7 +87,7 @@
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishMethod="ConstellationServer" PublishServer="http://skynet-server.ajsinfo.loc:8888/constellation" />
+      <UserProperties PublishServer="http://skynet-server.ajsinfo.loc:8888/constellation" PublishMethod="ConstellationServer" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
