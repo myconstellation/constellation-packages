@@ -1,14 +1,18 @@
-﻿using Constellation.Package;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Timers;
+using Constellation.Package;
+using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
 
 namespace Pollen
 {
+    /// <summary>
+    /// https://www.pollens.fr/
+    /// https://www.polleninfo.org/FR/fr/aktuelle-belastung/allergierisiko.html?tx_scload_dailyload%5B__referrer%5D%5B%40extension%5D=ScLoad&tx_scload_dailyload%5B__referrer%5D%5B%40vendor%5D=Screencode&tx_scload_dailyload%5B__referrer%5D%5B%40controller%5D=Load&tx_scload_dailyload%5B__referrer%5D%5B%40action%5D=dailyload&tx_scload_dailyload%5B__referrer%5D%5Barguments%5D=YTowOnt931f91268ac9faaadcce4fa5ba74b5e8759ba6f42&tx_scload_dailyload%5B__referrer%5D%5B%40request%5D=a%3A4%3A%7Bs%3A10%3A%22%40extension%22%3Bs%3A6%3A%22ScLoad%22%3Bs%3A11%3A%22%40controller%22%3Bs%3A4%3A%22Load%22%3Bs%3A7%3A%22%40action%22%3Bs%3A9%3A%22dailyload%22%3Bs%3A7%3A%22%40vendor%22%3Bs%3A10%3A%22Screencode%22%3B%7D32f5a7fd4e25cbc93511ddade72f9e6e1b7e0980&tx_scload_dailyload%5B__trustedProperties%5D=a%3A2%3A%7Bs%3A7%3A%22country%22%3Bi%3A1%3Bs%3A3%3A%22zip%22%3Bi%3A1%3B%7D2b0ebfc1842648d7e112553e4e592b09a1aadc87&tx_scload_dailyload%5Bcountry%5D=FR&tx_scload_dailyload%5Bzip%5D=62136#breadcrumb
+    /// </summary>
     public class Program : PackageBase
     {
         /// <summary>
@@ -35,23 +39,6 @@ namespace Pollen
             get { return PackageHost.GetSettingValue<bool>("Log"); }
         }
 
-        /// <summary>
-        /// Source d'information
-        /// </summary>
-        static string UrlSource
-        {
-            get { return $"http://internationalragweedsociety.org/vigilance/d%20{DepNum}.gif"; }
-        }
-
-        /// <summary>
-        /// Nom du fichier
-        /// </summary>
-        static private string FileName
-        {
-            get { return $"d{DepNum}.gif"; }
-        }
-
-
         static void Main(string[] args)
         {
             PackageHost.Start<Program>(args);
@@ -72,68 +59,56 @@ namespace Pollen
 
         private static void SetPollen()
         {
-            // Suppression du fichier s'il existe
-            if (File.Exists(FileName))
-            {
-                if (Log) PackageHost.WriteInfo("Fichier existant : on le supprime");
-                File.Delete(FileName);
-            }
-
-            // Telechargement du fichier
-            WebClient client = new WebClient();
-            Uri uri = new Uri(UrlSource);
-            client.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadFileCallback);
-            client.DownloadFileAsync(uri, FileName);
-        }
-
-        /// <summary>
-        /// Lecture de l'image et ajout des infos dans un state object
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void DownloadFileCallback(object sender, AsyncCompletedEventArgs e)
-        {
             if (Log) PackageHost.WriteInfo("Mise à jours des données sur les risques du pollen");
 
-            List<Vegetal> vegetaux = new List<Vegetal>(19);
+            // Récupération contenu page
+            WebRequest request = WebRequest.Create("https://www.pollens.fr/");
+            request.Method = "GET";
+            WebResponse response = request.GetResponse();
+            Stream stream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(stream);
+            string content = reader.ReadToEnd();
+            reader.Close();
+            response.Close();
 
-            int x = 126;
-            int y = 46;
-            decimal i = 19;
+            // Extraction data
+            string vigilanceMapCounties = "var vigilanceMapCounties = ";
+            int start = content.IndexOf(vigilanceMapCounties) + vigilanceMapCounties.Length;
+            var res = content.Substring(start, content.IndexOf("var franceMap = ") - start);//content.IndexOf("}}") - start
+            var data = JObject.Parse(res).SelectToken(DepNum.ToString()).SelectToken("riskSummary");
 
-            Bitmap img = new Bitmap(FileName);
+            // Traitement HTML
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(data.ToString());
 
-            var imageWidth = img.Width;
-            if (imageWidth < 150)
+            // Récup couleurs
+            HtmlNodeCollection couleurCollec = document.DocumentNode.SelectNodes("//g[rect]/rect");
+            // Récup nom
+            HtmlNodeCollection nomCollec = document.DocumentNode.SelectNodes("//tspan[@text-anchor='end']/text()");
+
+            // Construction données
+            List<Vegetal> vegetaux = new List<Vegetal>(couleurCollec.Count);
+            for (int i = 0; i < couleurCollec.Count; i++)
             {
-                x = 80;
-                y = 30;
-                i = 12.5M;
+                // TODO : gerer la correspondance, via Y ? (couleurCollec[i].Attributes)
+                vegetaux.Add(new Vegetal(((HtmlTextNode)nomCollec[i]).Text.Trim(), GetColor(couleurCollec[i].Attributes["style"].Value)));
             }
 
-            vegetaux.Add(new Vegetal("Cupressacees", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Noisetier", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Aulne", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Peuplier", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Saule", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Frene", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Charme", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Bouleau", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Platane", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Chene", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Oliver", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Tilleul", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Chataignier", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Rumex", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Graminees", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Plantain", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Articacees", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Armoises", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-            vegetaux.Add(new Vegetal("Ambroisie", img.GetPixel(x, (int)Math.Ceiling(y + i * vegetaux.Count)).Name.Remove(0, 2)));
-
-            img.Dispose();
-
             PackageHost.PushStateObject("Pollens", vegetaux, metadatas: new Dictionary<string, object> { ["Departement"] = DepNum }, lifetime: RefreshInterval * 2);
+        }
+
+        public static string GetColor(string css)
+        {
+            var color = string.Empty;
+            css.Split(';').ToList().ForEach(attr =>
+            {
+                if (attr.Contains("fill"))
+                {
+                    color = attr.Split(':')[1].Trim();
+                }
+            });
+
+            return color;
         }
     }
 }
