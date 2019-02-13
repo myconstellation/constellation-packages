@@ -79,7 +79,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishPath="D:\_Personnel\DOMOTIQUE\constellation-packages\Pollen" PublishMethod="LocalFile" />
+      <UserProperties PublishServer="http://109.20.177.209:8088" PublishMethod="ConstellationServer" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Pollen
+﻿namespace Pollen
 {
+    public struct Risque
+    {
+        public int id;
+        public string couleur;
+    }
+
     /// <summary>
     /// Classe représentant un vegetal
     /// </summary>
@@ -31,38 +31,12 @@ namespace Pollen
         /// </summary>
         /// <param name="nom">Nom</param>
         /// <param name="couleur">Couleur</param>
-        public Vegetal(string nom, string couleur)
+        /// <param name="niveau">Niveau</param>
+        public Vegetal(string nom, string couleur, int niveau)
         {
             Nom = nom;
             Couleur = couleur;
-            switch (couleur.ToUpper())
-            {
-                default:
-                case "FFFFFF":
-                    Niveau = 0;
-                    break;
-
-                case "00FF00":
-                    Niveau = 1;
-                    break;
-
-                case "00B050":
-                    Niveau = 2;
-                    break;
-
-                case "FFFF00":
-                    Niveau = 3;
-                    break;
-
-                case "F79646":
-                    Niveau = 4;
-                    break;
-
-                // TODO CONFIRMER LA COULEUR
-                case "FF0000":
-                    Niveau = 5;
-                    break;
-            }
+            Niveau = niveau;
         }
 
         /// <summary>
