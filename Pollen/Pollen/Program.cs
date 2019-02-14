@@ -63,7 +63,8 @@ namespace Pollen
             // Execution maintenant
             SetPollen();
             // puis a frequence régulière
-            Timer syncTimer = new Timer(RefreshInterval);
+            if (Log) PackageHost.WriteInfo($"Mise à jours des données toutes les {RefreshInterval} secondes");
+            Timer syncTimer = new Timer(RefreshInterval * 1000);
             syncTimer.Elapsed += (source, e) =>
             {
                 SetPollen();
