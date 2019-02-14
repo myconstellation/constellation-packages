@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="PoolCop"
+         Version="1.0"
+         Author="Sebastien Warin"
+         URL="http://poolcop.fr/"
+         Icon="logo.jpg"
+         Description="Connect your pools to Constellation with PoolCop">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="PoolCopilotAPISecretKey" type="String" description="The PoolCopilot API secret key" isRequired="true" />
+    <Setting name="PoolCopLocalIP" type="String" description="The PoolCop local IP (used if PoolCopilot API down)" isRequired="false" />
+    <Setting name="Interval" type="Int32" description="Polling interval in second" defaultValue="30" />
+  </Settings>
+</Package>
