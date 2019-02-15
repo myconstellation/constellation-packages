@@ -47,7 +47,10 @@ namespace PoolCop
         public override void OnStart()
         {
             // Create the PoolCop interface
-            this.poolcop = new PoolCopInterface(PackageHost.GetSettingValue("PoolCopilotAPISecretKey"), PackageHost.GetSettingValue("PoolCopLocalIP"));
+            this.poolcop = new PoolCopInterface(PackageHost.GetSettingValue("PoolCopilotAPISecretKey"), PackageHost.GetSettingValue("PoolCopLocalIP"))
+            {
+                APILanguage = PackageHost.GetSettingValue("PoolCopilotAPILanguage")
+            };
 
             // On status changed, Push StateObject
             this.poolcop.APIStatusChanged += (s, e) => PackageHost.PushStateObject("API", this.poolcop.Status.API, lifetime: (int)this.poolcop.Status.API.ExpirationDate.Subtract(DateTime.UtcNow).TotalSeconds + 30);

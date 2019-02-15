@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="PoolCop"
-         Version="1.1"
+         Version="1.2"
          Author="Sebastien Warin"
          URL="http://poolcop.fr/"
          Icon="logo.jpg"
@@ -14,6 +14,7 @@
   </Compatibility>
   <Settings>
     <Setting name="PoolCopilotAPISecretKey" type="String" description="The PoolCopilot API secret key" isRequired="true" />
+    <Setting name="PoolCopilotAPILanguage" type="String" description="The PoolCopilot API language (can be 'en', 'fr' or 'es')" isRequired="false" defaultValue="en" />
     <Setting name="PoolCopLocalIP" type="String" description="The PoolCop local IP (used if PoolCopilot API down)" isRequired="false" />
     <Setting name="Interval" type="Int32" description="Polling interval in second" defaultValue="30" />
   </Settings>

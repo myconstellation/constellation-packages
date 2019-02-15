@@ -36,6 +36,10 @@ namespace PoolCop
     public class PoolCopInterface
     {
         /// <summary>
+        /// The poolcop API default language
+        /// </summary>
+        private const string POOLCOP_API_DEFAULT_LANGUAGE = "en";
+        /// <summary>
         /// The poolcop API root URI
         /// </summary>
         private const string POOLCOP_API_ROOT_URI = "https://poolcopilot.com/api/v1";
@@ -63,6 +67,10 @@ namespace PoolCop
         /// Gets the API secret key.
         /// </summary>
         public string APIKey { get; private set; }
+        /// <summary>
+        /// Gets or sets the API language (en, fr or es).
+        /// </summary>
+        public string APILanguage { get; set; } = POOLCOP_API_DEFAULT_LANGUAGE;
         /// <summary>
         /// Gets the current PoolCop status.
         /// </summary>
@@ -145,7 +153,8 @@ namespace PoolCop
             var token = await this.GetAuthentificationToken();
             var strReponse = await HttpUtils.GetWebResponseAsync(new Uri($"{POOLCOP_API_ROOT_URI}/command/{command}"), method: "POST", headers: new Dictionary<string, string>()
             {
-                ["PoolCop-Token"] = token
+                ["PoolCop-Token"] = token,
+                ["X-PoolCopilot-Lang"] = this.APILanguage
             });
             var commandResult = CommandResult.FromJson(strReponse);
             this.Status.API = commandResult.API;
@@ -185,7 +194,8 @@ namespace PoolCop
             var token = await this.GetAuthentificationToken();
             var statusResponse = await HttpUtils.GetWebResponseAsync(new Uri(POOLCOP_API_ROOT_URI + "/status"), headers: new Dictionary<string, string>()
             {
-                ["PoolCop-Token"] = token
+                ["PoolCop-Token"] = token,
+                ["X-PoolCopilot-Lang"] = this.APILanguage
             });
             return PoolCopStatus.FromJson(statusResponse);
         }
