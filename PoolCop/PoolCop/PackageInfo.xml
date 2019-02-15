@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="PoolCop"
-         Version="1.2"
+         Version="1.2.1"
          Author="Sebastien Warin"
          URL="http://poolcop.fr/"
          Icon="logo.jpg"

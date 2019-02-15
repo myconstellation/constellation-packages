@@ -36,7 +36,7 @@ namespace PoolCop.Models
         public Temperature Temperature { get; set; }
 
         /// <summary>
-        /// The pump pressure (in mbar)
+        /// The pump pressure (in kPa)
         /// </summary>
         [PoolCopilotProperty("pressure")]
         public int Pressure { get; set; }
