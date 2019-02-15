@@ -105,7 +105,7 @@ namespace PoolCop.Models
         /// PoolCop Alerts
         /// </summary>
         [PoolCopilotProperty("alerts")]
-        public List<object> Alerts { get; set; }
+        public List<Alert> Alerts { get; set; }
 
         /// <summary>
         /// PoolCop History
@@ -465,7 +465,31 @@ namespace PoolCop.Models
         /// The Air temperature.
         /// </summary>
         [PoolCopilotProperty("air")]
-        public long Air { get; set; }
+        public double Air { get; set; }
+    }
+
+    /// <summary>
+    /// PoolCop alert.
+    /// </summary>
+    public partial class Alert
+    {
+        /// <summary>
+        /// The Alert code ID
+        /// </summary>
+        [PoolCopilotProperty("id")]
+        public int Code { get; set; }
+
+        /// <summary>
+        /// The Alert description
+        /// </summary>
+        [PoolCopilotProperty("name")]
+        public string Description { get; set; }
+        
+        /// <summary>
+        /// The Alert date 
+        /// </summary>
+        [PoolCopilotProperty("date")]
+        public DateTimeOffset Date { get; set; }
     }
 
     /// <summary>
