@@ -13,11 +13,6 @@ namespace XiaomiSmartHome
     public class Program : PackageBase
     {
         /// <summary>
-        /// State of the alarm
-        /// </summary>
-        private bool AlarmState = false;
-
-        /// <summary>
         /// Gateway listener
         /// </summary>
         public MulticastUdpClient udpClientWrapper;
@@ -106,16 +101,6 @@ namespace XiaomiSmartHome
         }
 
         #region MESSAGE CALLBACK
-
-        /// <summary>
-        /// Turn on or off the alarm.
-        /// </summary>
-        [MessageCallback]
-        void ToggleAlarme()
-        {
-            this.AlarmState = !this.AlarmState;
-            PackageHost.PushStateObject<bool>(Constants.ALARM_SO_NAME, this.AlarmState);
-        }
 
         /// <summary>
         /// Turn the gateway light on
@@ -218,6 +203,16 @@ namespace XiaomiSmartHome
         void LongClickRelease(string sid)
         {
             equipementController.LongClickRelease(sid);
+        }
+
+        /// <summary>
+        /// Call read on the sid to refresh data
+        /// </summary>
+        /// <param name="sid">Equipement SID</param>
+        [MessageCallback]
+        void Read(string sid)
+        {
+            equipementManager.ReadEquipement(sid);
         }
 
         #endregion

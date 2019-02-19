@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
 using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
@@ -24,15 +25,6 @@ namespace XiaomiSmartHome.Equipement
             equipementManager = eqManager;
         }
         #endregion
-
-        /// <summary>
-        /// Send Read cmd to refresh data
-        /// </summary>
-        /// <param name="sid">Equipement SID</param>
-        public void Read(string sid)
-        {
-            equipementManager.SendCommand(CommandType.Write, sid, null);
-        }
 
         #region GATEWAY
 
@@ -127,7 +119,7 @@ namespace XiaomiSmartHome.Equipement
             };
 
             equipementManager.SendCommand(CommandType.Write, sid, lParam);
-            Read(sid);
+            Task.Delay(2000).ContinueWith(t => equipementManager.ReadEquipement(sid));
         }
 
         /// <summary>
@@ -142,7 +134,7 @@ namespace XiaomiSmartHome.Equipement
             };
 
             equipementManager.SendCommand(CommandType.Write, sid, lParam);
-            Read(sid);
+            Task.Delay(2000).ContinueWith(t => equipementManager.ReadEquipement(sid));
         }
 
         #endregion

@@ -132,7 +132,7 @@ namespace XiaomiSmartHome.Equipement
                         // Set gateway data
                         this.Gateway.Sid = reponse.Sid;
                         this.Gateway.Token = reponse.Token;
-                        PackageHost.PushStateObject<Gateway>(EquipmentType.Gateway.GetRealName(), Gateway);
+                        PackageHost.PushStateObject<Gateway>(EquipmentType.Gateway.GetRealName(), Gateway, lifetime: 20);
 
                         // Init other equipements
                         foreach (string equipementSid in JsonConvert.DeserializeObject<string[]>(reponse.Data))
@@ -148,7 +148,7 @@ namespace XiaomiSmartHome.Equipement
                         {
                             dynamic model = JsonConvert.DeserializeObject(resp, type);
                             model.Update(JsonConvert.DeserializeObject(reponse.Data, type), reponse.Cmd.ToString());
-                            lEquipements.Add(model);
+                            if (!lEquipements.Any(cur => cur.Sid.Equals(model.Sid))) lEquipements.Add(model);
                             this.PushStateObject(reponse.Sid, model);
                         }
                         break;
@@ -228,7 +228,7 @@ namespace XiaomiSmartHome.Equipement
                 name = Program.GetCustomSoName(sid);
             }
 
-            PackageHost.PushStateObject<dynamic>(name, model);
+            PackageHost.PushStateObject<dynamic>(name, model, lifetime: 3600);
         }
 
         /// <summary>
