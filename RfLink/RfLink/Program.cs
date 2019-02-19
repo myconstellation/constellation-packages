@@ -8,7 +8,7 @@ namespace RfLink
 {
     public class Program : PackageBase
     {
-        private Dictionary<string, string> soCustomNames = new Dictionary<string, string>();
+        private new Dictionary<string, Tuple<string, int>> soCustomNames = new Dictionary<string, Tuple<string, int>>();
         RFLinkClient rfLinkClient = null;
 
         static void Main(string[] args)
@@ -24,10 +24,10 @@ namespace RfLink
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
 
             // Get the custom names
-            this.soCustomNames = PackageHost.GetSettingAsJsonObject<Dictionary<string, string>>("soCustomNames");
+            this.soCustomNames = PackageHost.GetSettingAsJsonObject<Dictionary<string, Tuple<string, int>>>("soCustomNames");
             PackageHost.SettingsUpdated += (s, e) =>
             {
-                this.soCustomNames = PackageHost.GetSettingAsJsonObject<Dictionary<string, string>>("soCustomNames");
+                this.soCustomNames = PackageHost.GetSettingAsJsonObject<Dictionary<string, Tuple<string, int>>>("soCustomNames");
             };
 
             // Connect to rflink
@@ -122,7 +122,8 @@ namespace RfLink
             // Push state object
             if (rf.Fields.ContainsKey("ID"))
             {
-                PackageHost.PushStateObject(this.GetCustomSoName(rf.Fields["ID"]), rf.Fields);
+                var param = this.GetCustomSoParams(rf.Fields["ID"]);
+                PackageHost.PushStateObject(param.Item1, rf.Fields, lifetime: param.Item2);
             }
         }
 
@@ -139,7 +140,8 @@ namespace RfLink
                 RFData rf = ProtocolParser.ProcessData(message);
                 if (rf.Fields.ContainsKey("ID"))
                 {
-                    PackageHost.PushStateObject(this.GetCustomSoName(rf.Fields["ID"]), rf.Fields);
+                    var param = this.GetCustomSoParams(rf.Fields["ID"]);
+                    PackageHost.PushStateObject(param.Item1, rf.Fields, lifetime: param.Item2);
                 }
             }
             catch (Exception ex)
@@ -153,9 +155,9 @@ namespace RfLink
         /// </summary>
         /// <param name="deviceId">Device id.</param>
         /// <returns>The so name</returns>
-        private string GetCustomSoName(string deviceId)
+        private Tuple<string, int> GetCustomSoParams(string deviceId)
         {
-            return (this.soCustomNames != null && this.soCustomNames.ContainsKey(deviceId)) ? this.soCustomNames[deviceId] : deviceId;
+            return (this.soCustomNames != null && this.soCustomNames.ContainsKey(deviceId)) ? this.soCustomNames[deviceId] : new Tuple<string, int>(deviceId, 3600);
         }
     }
 }
