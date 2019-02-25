@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="RfLink"
-         Version="1.1"
-         Author="swilhelm"
+         Version="1.2"
+         Author="swil"
 		 Icon="rflink.png"
-         Description="RfLink Copyright ©  2018"
+         Description="Envoyer et recevoir des données via le rflink."
          EnableControlHub="false">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
     <Platforms>
