@@ -119,7 +119,7 @@ namespace XiaomiSmartHome.Equipement
             };
 
             equipementManager.SendCommand(CommandType.Write, sid, lParam);
-            Task.Delay(2000).ContinueWith(t => equipementManager.ReadEquipement(sid));
+            Task.Delay(5000).ContinueWith(t => equipementManager.ReadEquipement(sid));
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace XiaomiSmartHome.Equipement
             };
 
             equipementManager.SendCommand(CommandType.Write, sid, lParam);
-            Task.Delay(2000).ContinueWith(t => equipementManager.ReadEquipement(sid));
+            Task.Delay(5000).ContinueWith(t => equipementManager.ReadEquipement(sid));
         }
 
         #endregion
