@@ -78,7 +78,7 @@ namespace Pollen
             if (Log) PackageHost.WriteInfo("Mise à jours des données sur les risques du pollen");
 
             // Récupération contenu page
-            WebRequest request = WebRequest.Create("https://www.pollens.fr/");
+            WebRequest request = WebRequest.Create("https://pollens.fr/load_vigilance_map");
             request.Method = "GET";
             WebResponse response = request.GetResponse();
             Stream stream = response.GetResponseStream();
@@ -88,14 +88,8 @@ namespace Pollen
             response.Close();
 
             // Extraction data
-            string startTag = "var vigilanceMapCounties = ";
-            int start = content.IndexOf(startTag) + startTag.Length;
-
-            string endTag = "}}";
-            int end = content.IndexOf(endTag) + endTag.Length - start;
-
-            var data = JObject.Parse(content.Substring(start, end)).SelectToken(DepNum.ToString());
-
+            var data = JObject.Parse(JObject.Parse(content).SelectToken("vigilanceMapCounties").ToString()).SelectToken(DepNum.ToString());
+            
             // Récup risque global
             int.TryParse(((JValue)data.SelectToken("riskLevel")).Value.ToString(), out int riskLevel);
 
