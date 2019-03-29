@@ -89,28 +89,35 @@ namespace Pollen
 
             // Extraction data
             var data = JObject.Parse(JObject.Parse(content).SelectToken("vigilanceMapCounties").ToString()).SelectToken(DepNum.ToString());
-            
+
             // Récup risque global
             int.TryParse(((JValue)data.SelectToken("riskLevel")).Value.ToString(), out int riskLevel);
 
-            // Traitement HTML
-            HtmlDocument document = new HtmlDocument();
-            document.LoadHtml(data.SelectToken("riskSummary").ToString());
-
-            // Récup couleurs
-            HtmlNodeCollection couleurCollec = document.DocumentNode.SelectNodes("//g[rect]/rect");
-            // Récup nom
-            HtmlNodeCollection nomCollec = document.DocumentNode.SelectNodes("//tspan[@text-anchor='end']/text()");
-
-            // Construction données
-            string couleur;
-            List<Vegetal> vegetaux = new List<Vegetal>(couleurCollec.Count);
-            for (int i = 0; i < couleurCollec.Count; i++)
+            // Detail
+            List<Vegetal> vegetaux = new List<Vegetal>();
+            foreach (var item in (JArray)data.SelectToken("risks"))
             {
-                // TODO : gerer la correspondance, via Y ? (couleurCollec[i].Attributes)
-                couleur = GetColor(couleurCollec[i].Attributes["style"].Value);
-                vegetaux.Add(new Vegetal(((HtmlTextNode)nomCollec[i]).Text.Trim(), couleur, Risques.Single(r => r.couleur.Equals(couleur)).id));
+                vegetaux.Add(new Vegetal(item["pollenName"].ToString(), Risques.Single(r => r.id.Equals((int)item["level"])).couleur, (int)item["level"]));
             }
+
+            //// Traitement HTML
+            //HtmlDocument document = new HtmlDocument();
+            //document.LoadHtml(data.SelectToken("riskSummary").ToString());
+
+            //// Récup couleurs
+            //HtmlNodeCollection couleurCollec = document.DocumentNode.SelectNodes("//g[rect]/rect");
+            //// Récup nom
+            //HtmlNodeCollection nomCollec = document.DocumentNode.SelectNodes("//tspan[@text-anchor='end']/text()");
+
+            //// Construction données
+            //string couleur;
+            //List<Vegetal> vegetaux = new List<Vegetal>(couleurCollec.Count);
+            //for (int i = 0; i < couleurCollec.Count; i++)
+            //{
+            //    // TODO : gerer la correspondance, via Y ? (couleurCollec[i].Attributes)
+            //    couleur = GetColor(couleurCollec[i].Attributes["style"].Value);
+            //    vegetaux.Add(new Vegetal(((HtmlTextNode)nomCollec[i]).Text.Trim(), couleur, Risques.Single(r => r.couleur.Equals(couleur)).id));
+            //}
 
             PackageHost.PushStateObject("Pollens", vegetaux, metadatas: new Dictionary<string, object> { ["Departement"] = DepNum }, lifetime: RefreshInterval * 2);
 
