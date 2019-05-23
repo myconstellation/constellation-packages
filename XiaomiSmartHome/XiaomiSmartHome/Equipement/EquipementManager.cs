@@ -120,7 +120,7 @@ namespace XiaomiSmartHome.Equipement
                     PackageHost.WriteInfo("{0}", resp);
                 }
 
-                if (reponse.Cmd.Equals(CommandType.Report) || reponse.Cmd.Equals(CommandType.ReadAck) && PackageHost.GetSettingValue<bool>(Constants.REPORT_LOG))
+                if (reponse.Cmd.Equals(CommandType.Report) && PackageHost.GetSettingValue<bool>(Constants.REPORT_LOG))
                 {
                     PackageHost.WriteInfo("{0}", resp);
                 }
