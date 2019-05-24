@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="XiaomiSmartHome"
-         Version="2.4"
-         Author="Hydro, Swil"
+         Version="2.5"
+         Author="Swil, Hydro"
          Icon="XiaomiSmartHome.png"
          URL="http://www.myconstellation.io"
          Description="Package to control Xiaomi Smart Home devices"

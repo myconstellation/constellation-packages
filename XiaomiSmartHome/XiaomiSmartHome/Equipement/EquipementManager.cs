@@ -31,7 +31,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Equipment list connected to gateway
         /// </summary>
-        public List<Equipment> lEquipements = new List<Equipment>();
+        public static List<Equipment> lEquipements = new List<Equipment>();
 
         /// <summary>
         /// Get the gateway in equipement list
@@ -146,6 +146,13 @@ namespace XiaomiSmartHome.Equipement
                         Type type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(cur => cur.Name.ToLower().Equals(reponse.Model.ToString().ToLower()));
                         if (type != null)
                         {
+                            // En cas de refresh via un read, on essaie de récup l’item dans la liste.
+                            if(lEquipements.Any(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid)))
+                            {
+                                goto case CommandType.Report;
+                            }
+
+                            // Sinon on l’ajoute
                             dynamic model = JsonConvert.DeserializeObject(resp, type);
                             model.Update(JsonConvert.DeserializeObject(reponse.Data, type), reponse.Cmd.ToString());
                             if (!lEquipements.Any(cur => cur.Sid.Equals(model.Sid))) lEquipements.Add(model);
@@ -227,7 +234,7 @@ namespace XiaomiSmartHome.Equipement
             {
                 name = Program.GetCustomSoName(sid);
             }
-
+            
             PackageHost.PushStateObject<dynamic>(name, model, lifetime: 3600);
         }
 
