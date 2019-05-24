@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pollution", "Pollution.csproj", "{5DA41837-EF54-4C4B-8CEE-3CDBA09A527C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pollution", "Pollution\Pollution.csproj", "{5DA41837-EF54-4C4B-8CEE-3CDBA09A527C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
