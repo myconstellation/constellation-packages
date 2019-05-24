@@ -168,6 +168,18 @@ namespace XiaomiSmartHome
             /// </summary>
             [EnumMember(Value = "86sw1")]
             WallSwitchOneButon = 9,
+
+            /// <summary>
+            /// Equipement type magic cube
+            /// </summary>
+            [EnumMember(Value = "sensor_cube.aqgl01")]
+            Cube = 10,
+            
+            /// <summary>
+            /// Equipement type switch v2
+            /// </summary>
+            [EnumMember(Value = "sensor_switch.aq2")]
+            SwitchAq2 = 11,
         }
 
         /// <summary>

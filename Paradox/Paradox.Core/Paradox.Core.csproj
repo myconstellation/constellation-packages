@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4451F0EA-90A7-4AD2-9020-C2223CF36D77}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Paradox</RootNamespace>
+    <AssemblyName>Paradox.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Base Events\Events\UserLabelEventArgs.cs" />
+    <Compile Include="Base Events\Events\AreaLabelEventArgs.cs" />
+    <Compile Include="Base Events\Events\ZoneLabelEventArgs.cs" />
+    <Compile Include="Base Events\ParadoxBaseEventArgs.cs" />
+    <Compile Include="Base Events\Events\ZoneStatusEventArgs.cs" />
+    <Compile Include="Base Events\Events\AreaStatusEventArgs.cs" />
+    <Compile Include="Base Events\Events\AreaArmingEventArgs.cs" />
+    <Compile Include="Base Events\Enums\EventGroup.cs" />
+    <Compile Include="Base Events\ParadoxMessageEventArgs.cs" />
+    <Compile Include="System Events\Enums\NonReportableEventType.cs" />
+    <Compile Include="Base Events\Enums\Area.cs" />
+    <Compile Include="Base Events\Enums\ZoneStatus.cs" />
+    <Compile Include="Base Events\Enums\AreaStatus.cs" />
+    <Compile Include="Base Events\Enums\ArmingMode.cs" />
+    <Compile Include="System Events\Enums\TroubleType.cs" />
+    <Compile Include="System Events\Enums\ModuleTroubleType.cs" />
+    <Compile Include="System Events\Enums\SpecialEventType.cs" />
+    <Compile Include="System Events\Enums\Status3EventType.cs" />
+    <Compile Include="System Events\Enums\SpecialArmingType.cs" />
+    <Compile Include="System Events\Enums\SpecialAlarmType.cs" />
+    <Compile Include="System Events\Enums\SpecialDisarmEventType.cs" />
+    <Compile Include="System Events\Enums\Status2EventType.cs" />
+    <Compile Include="System Events\Enums\Status1EventType.cs" />
+    <Compile Include="Base Events\Enums\Zone.cs" />
+    <Compile Include="System Events\Event Args\NonReportableEventArgs.cs" />
+    <Compile Include="System Events\Event Args\SpecialDesarmingEventArgs.cs" />
+    <Compile Include="System Events\Event Args\SpecialAlarmEventArgs.cs" />
+    <Compile Include="System Events\Event Args\SpecialArmingEventArgs.cs" />
+    <Compile Include="System Events\Event Args\SpecialEventArgs.cs" />
+    <Compile Include="System Events\Event Args\ModuleTroubleEventArgs.cs" />
+    <Compile Include="System Events\Event Args\TroubleEventArgs.cs" />
+    <Compile Include="System Events\Event Args\ZoneEventArgs.cs" />
+    <Compile Include="System Events\Event Args\UserEventArgs.cs" />
+    <Compile Include="System Events\Event Args\ModuleEventArgs.cs" />
+    <Compile Include="System Events\Event Args\AreaEventArgs.cs" />
+    <Compile Include="System Events\Event Args\StatusEventArgs.cs" />
+    <Compile Include="Base Events\Events\ParadoxSystemEventArgs.cs" />
+    <Compile Include="ParadoxManager.cs" />
+    <Compile Include="ParadoxModuleInterface.cs" />
+    <Compile Include="System Events\ParadoxSystemEventManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

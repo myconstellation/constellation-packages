@@ -1,18 +1,24 @@
-# DayInfo Package for Constellation
+---
+Package: DayInfo
+Tags: Sun, Soleil, Fete
+---
+# DayInfo : heures de lever/coucher du soleil et fête du jour
 
-Get the name day (in French) and sunset/sunrise informations.
+Le package DayInfo vous permet de connaitre la fête du jour ainsi que les heures du lever et coucher du soleil pour une position GPS donnée.
 
-### StateObjects
-  - NameDay : the name day for the current day
-  - SunInfo : sunset/sunrise informations for the current day
+## Installation
+Depuis le “Online Package Repository” de votre Console Constellation, installez et déployez le package sur la sentinelle de votre choix (compatible Windows et Linux).
 
-### StateObjects
-  - GetNameDay : Gets the name day for the given day
-  - GetSunInfo : Calculate the Universal Coordinated Time (UTC) of sunset and sunrise for the given day at the given location on earth
+Sur la page de Settings, vous devez obligatoirement définir une position GPS (latitude et longitude) ainsi que le “timezone”.
 
-### Installation
+Par exemple pour Paris:
+* Timezone : 1
+* Latitude : 48.866667
+* Longitude : 2.333333
 
-Declare the package in a Sentinel with the following configuration :
+Pour avoir un calcul des horaires du soleil plus précis, entrez votre position GPS exacte. Pour connaitre la position GPS précise pour une adresse donnée : http://www.coordonnees-gps.fr/
+
+Vous pouvez également déployer ce package manuellement dans la configuration de votre Constellation :
 ```xml
 <package name="DayInfo>
   <settings>
@@ -22,6 +28,35 @@ Declare the package in a Sentinel with the following configuration :
   </settings>
 </package>
 ```
+
+## Settings
+
+| Nom | Type | Requis ? | Description du Setting |
+| --- | ---- | -------- | ---------------------  |
+| TimeZone | Int32 | OUI | Timezone de votre position (ex: 1 pour la France) |
+| Latitude | Double | OUI | Latitude GPS de votre position |
+| Longitude | Double | OUI | Longitude GPS de votre position |
+
+## StateObjects
+Vous retrouverez 2 StateObjects publiés chaque jour par le package :
+
+| Nom | Type | Description |
+| --- | ---- | ----------- |
+| NameDay | String | La fête du jour |
+| SunInfo | Objet SunInfo | Information sur les horaires du soleil pour votre position GPS |
+
+## MessageCallbacks
+Le package expose 2 MessageCallbacks :
+
+| Signature | Réponse (saga) | Description |
+| --------- | -------------- | ----------- |
+| GetNameDay(Date date) | String | La fête pour le jour spécifié |
+| GetSunInfo(Date date, int timezone, double latitude, double longitude) | Objet SunInfo | Information sur les horaires du soleil pour le jour spécifié |
+  
+## Quelques exemples
+* Exploiter les horaires du soleil dans vos algorithmes C# pour gérer les volets ou les éclairages
+* Afficher la fête jour dans vos Dashboards HTML ou WPF
+  
 License
 ----
 

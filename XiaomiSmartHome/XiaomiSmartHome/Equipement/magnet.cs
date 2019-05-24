@@ -10,7 +10,7 @@ namespace XiaomiSmartHome.Equipement
     /// </summary>
     [StateObject]
     public class Magnet : Equipment
-    {        
+    {
         /// <summary>
         /// Time since door / window is open
         /// </summary>
@@ -28,16 +28,11 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
-            Magnet curData = data as Magnet;
-            if (curData.Voltage != default(int))
-            {
-                this.Voltage = curData.Voltage;
-                this.BatteryLevel = base.ParseVoltage(curData.Voltage);
-            }
+            base.Update(data, cmdType);
 
-            this.Status = curData.Status;
+            Magnet curData = data as Magnet;
             this.NoClose = curData.NoClose;
         }
     }

@@ -1,9 +1,7 @@
 ﻿'''
  Constellation Python proxy
- Version: 1.8.4.17332 (28 Nov 2017)
  Web site: http://www.myConstellation.io
- Copyright (C) 2014-2017 - Sebastien Warin <http://sebastien.warin.fr>	   	  
- 
+ Copyright (C) 2014-2019 - Sebastien Warin <http://sebastien.warin.fr> 
  Licensed to Constellation under one or more contributor
  license agreements. Constellation licenses this file to you under
  the Apache License, Version 2.0 (the "License"); you may
@@ -20,13 +18,19 @@
  under the License.
 '''
 
-import inspect, json, sys, datetime, time, uuid, re, zmq
+__version__ = '1.8.6.19032' # Last update: 4 Feb 2019
+__author__ = 'Sebastien Warin <http://sebastien.warin.fr>'
+
+import inspect, json, sys, os, time, uuid, re, zmq
 from collections import namedtuple
 from enum import Enum
 from threading import Thread
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
+print("Starting '{}' with the Constellation Python proxy {} on Python {} (platform {}) from '{}'".format(os.path.relpath(sys.argv[0], os.getcwd()), __version__, sys.version, sys.platform, sys.executable))
+
+if(sys.version_info.major < 3):
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 
 class MessageScope(Enum):
     none = 0
@@ -39,6 +43,7 @@ class MessageScope(Enum):
 global IsRunning
 global Settings
 global OnExitCallback
+global OnSettingsUpdated
 global OnConnectionChanged
 global OnLastStateObjectsReceived
 global HasControlManager
@@ -55,6 +60,7 @@ global LastStateObjects
 IsRunning = False
 Settings = None
 OnExitCallback = None
+OnSettingsUpdated = None
 OnConnectionChanged = None
 OnLastStateObjectsReceived = None
 HasControlManager = None
@@ -84,10 +90,10 @@ _socket.send_string("Init")
 
 def ConvertJsonToObject(data, tupleName = 'X', onTupleCreated = None):
     def _json_object_hook(d):
-        tuple = namedtuple(tupleName, d.keys())
+        tuple = namedtuple(tupleName, list(d.keys()))
         if onTupleCreated:
             onTupleCreated(tuple)
-        return tuple(*d.values()) 
+        return tuple(*list(d.values())) 
     return json.loads(json.dumps(data) if isinstance(data, dict) else data, object_hook=_json_object_hook)
 
 def MessageCallback(key = None, isHidden = False):
@@ -112,7 +118,7 @@ def WriteError(msg):
     WriteLog('Error', msg)
 
 def WriteLog(level, msg):
-    _socket.send_json({ 'Function' : 'WriteLog', 'Level' : level, 'Message' : str(msg).encode() })
+    _socket.send_json({ 'Function' : 'WriteLog', 'Level' : level, 'Message' : str(msg) })
 
 def PushStateObject(name, value, soType = None, metadatas = {}, lifetime = 0):
     _socket.send_json({ 'Function' : 'PushStateObject', 'Name': str(name), 'Value': value, 'Type': str(soType) if soType else type(value).__name__, 'Metadatas' : metadatas, 'Lifetime' : lifetime })
@@ -125,14 +131,14 @@ def SendMessageWithSaga(callback, to, key, value, scope = MessageScope.package):
     def _msgCallback(k, context, data):
         if(k == "__Response" and context.SagaId == sagaId):
             if not data:
-                callback(context) if (callback.func_code.co_argcount > 0 and callback.func_code.co_varnames[callback.func_code.co_argcount - 1] == 'context') else callback()
+                callback(context) if (callback.__code__.co_argcount > 0 and callback.__code__.co_varnames[callback.__code__.co_argcount - 1] == 'context') else callback()
             else:
                 if isinstance(data, list):
-                    if (callback.func_code.co_argcount > 0 and callback.func_code.co_varnames[callback.func_code.co_argcount - 1] == 'context'):
+                    if (callback.__code__.co_argcount > 0 and callback.__code__.co_varnames[callback.__code__.co_argcount - 1] == 'context'):
                         data.append(context)
                     callback(*data)
                 else:
-                    callback(data, context) if (callback.func_code.co_argcount > 0 and callback.func_code.co_varnames[callback.func_code.co_argcount - 1] == 'context') else callback(data)
+                    callback(data, context) if (callback.__code__.co_argcount > 0 and callback.__code__.co_varnames[callback.__code__.co_argcount - 1] == 'context') else callback(data)
             _messageCallbacks.remove(_msgCallback)
     _messageCallbacks.append(_msgCallback)
     _socket.send_json({ 'Function' : 'SendMessage', 'Scope':  scope.value, 'To' : str(to), 'Key': str(key), 'Value' : value, 'SagaId' : sagaId })
@@ -146,13 +152,13 @@ def UnSubscribeMessages(group):
 def RefreshSettings():    
     _socket.send_json({ 'Function' : 'GetSettings' })
 
-def RequestStateObjects(sentinel = '*', package = '*', name = '*', type ='*'):    
+def RequestStateObjects(sentinel = '*', package = '*', name = '*', type ='*'):
     _socket.send_json({ 'Function' : 'RequestStateObjects', 'Sentinel' : sentinel, 'Package' : package, 'Name' : name, 'Type' : type })
 
-def SubscribeStateObjects(sentinel = '*', package = '*', name = '*', type ='*'):    
+def SubscribeStateObjects(sentinel = '*', package = '*', name = '*', type ='*'):
     _socket.send_json({ 'Function' : 'SubscribeStateObjects', 'Sentinel' : sentinel, 'Package' : package, 'Name' : name, 'Type' : type })
 
-def PurgeStateObjects(name = '*', type ='*'):    
+def PurgeStateObjects(name = '*', type ='*'):
     _socket.send_json({ 'Function' : 'PurgeStateObjects', 'Name' : name, 'Type' : type })
 
 def RegisterStateObjectLinks():
@@ -171,6 +177,7 @@ def RegisterStateObjectCallback(func, sentinel = '*', package = '*', name = '*',
         SubscribeStateObjects(sentinel, package, name, type)
 
 def GetSetting(key):
+    _getSettingSync()
     if key in Settings:
         return Settings[key]
     else:
@@ -187,15 +194,15 @@ def RegisterMessageCallback(key, func, declareCallback = False, description = ''
         if(k == key):
             returnValue = None
             if not data:
-                returnValue = func(context) if (func.func_code.co_argcount > 0 and func.func_code.co_varnames[func.func_code.co_argcount - 1] == 'context') else func()
+                returnValue = func(context) if (func.__code__.co_argcount > 0 and func.__code__.co_varnames[func.__code__.co_argcount - 1] == 'context') else func()
             else:
                 if isinstance(data, list):
-                    if (func.func_code.co_argcount > 0 and func.func_code.co_varnames[func.func_code.co_argcount - 1] == 'context'):
+                    if (func.__code__.co_argcount > 0 and func.__code__.co_varnames[func.__code__.co_argcount - 1] == 'context'):
                         data.append(context)
                     returnValue = func(*data)
                 else:
-                    returnValue = func(data, context) if (func.func_code.co_argcount > 0 and func.func_code.co_varnames[func.func_code.co_argcount - 1] == 'context') else func(data)
-            if context.IsSaga and returnValue <> None:
+                    returnValue = func(data, context) if (func.__code__.co_argcount > 0 and func.__code__.co_varnames[func.__code__.co_argcount - 1] == 'context') else func(data)
+            if context.IsSaga and returnValue != None:
                 SendResponse(context, returnValue)
     # Generate the MC Descriptor
     mcDescriptor = { 'Description': '', 'Arguments': {} }
@@ -226,7 +233,7 @@ def RegisterMessageCallback(key, func, declareCallback = False, description = ''
                         elif line_type == 'rtype' and 'ReturnType' in mcDescriptor:
                              mcDescriptor['ReturnType']['Type'] = line_data.group(4).strip()
                 else:
-                    mcDescriptor['Description'] =  mcDescriptor['Description'] + ('\n' if mcDescriptor['Description'] <> '' else '') + line
+                    mcDescriptor['Description'] =  mcDescriptor['Description'] + ('\n' if mcDescriptor['Description'] != '' else '') + line
     # Register the MC to the host
     _socket.send_json({ 'Function' : 'RegisterMessageCallback', 'Key' : str(key), "DeclareCallback": bool(declareCallback), 'Descriptor' : mcDescriptor })
     _messageCallbacks.append(_msgCallback)
@@ -255,14 +262,14 @@ def _onReceiveMessage(key, context, data):
     try:
         for mc in _messageCallbacks:
             mc(key, context, data)
-    except Exception, e:
+    except Exception as e:
         WriteError("Error while dispatching message '%s': %s" % (key, str(e)))
 
 def _onStateObjectUpdated(stateObject):
     try:
         for callback in _stateObjectCallbacks:
             callback(stateObject)
-    except Exception, e:
+    except Exception as e:
         WriteError("Error while dispatching StateObject : %s" % str(e))
 
 def _exit(exitCode = 0):
@@ -282,6 +289,33 @@ def _exit(exitCode = 0):
         IsRunning = False
         sys.exit(exitCode)
 
+def _getSettingSync():
+    global Settings
+    if(Settings is None):
+        ts = _getCPUtime()
+        RefreshSettings()
+        while Settings is None and (_getCPUtime() - ts) < 30:
+            try:
+                socks = dict(_poller.poll(1000))
+                if socks:
+                    message = _socket.recv_json()
+                    if message['Type'] == "SETTINGS":
+                        Settings = message['Settings']
+                        return
+            except Exception as e:
+                WriteError("Unable to get setting : %s" % str(e))
+            time.sleep(0.1)
+
+def _getCPUtime():
+    if(sys.version_info.major >= 3 and sys.version_info.minor >= 3):
+        return time.process_time() 
+    else:
+        return time.clock()
+
+def _runAsync(targetFunction, args = None):
+    t1 = Thread(target = targetFunction, args = args)
+    t1.start()
+
 def _dispatcherMessage():
     global Settings
     global HasControlManager
@@ -294,18 +328,19 @@ def _dispatcherMessage():
     global PackageAssemblyVersion
     global ConstellationClientVersion
     global LastStateObjects
-    lastPing = datetime.datetime.now()
+    lastPing = _getCPUtime()
     while IsRunning:
         try:
             socks = dict(_poller.poll(1000))
-            if ((datetime.datetime.now() > lastPing) and (datetime.datetime.now() - lastPing).seconds >= 30):
-                WriteError("No ping from the Package Host since %s seconds" % (datetime.datetime.now() - lastPing).seconds)
-                _exit(2)                
+            now = _getCPUtime()
+            if ((now - lastPing) >= 30):
+                WriteError("No ping from the Package Host since %s seconds" % int(now - lastPing))
+                _exit(2)
                 break
             if socks:
                 message = _socket.recv_json()
                 if message['Type'] == "PING":
-                    lastPing = datetime.datetime.now()
+                    lastPing = _getCPUtime()
                     _socket.send_string("PONG")
                 elif message['Type'] == "PACKAGESTATE":
                     HasControlManager = message['HasControlManager']
@@ -323,40 +358,47 @@ def _dispatcherMessage():
                         LastStateObjects.append(ConvertJsonToObject(so, 'StateObject'))
                     if OnLastStateObjectsReceived:
                         try:
-                            OnLastStateObjectsReceived()
-                        except Exception, e:
+                            _runAsync(OnLastStateObjectsReceived)
+                        except Exception as e:
                             WriteError("Error while invoking the OnLastStateObjectsReceived event handler : %s" % str(e))
                 elif message['Type'] == "CONNECTIONSTATE":
                     IsConnected = message['IsConnected']
                     if OnConnectionChanged:
                         try:
-                            OnConnectionChanged()
-                        except Exception, e:
+                            _runAsync(OnConnectionChanged)
+                        except Exception as e:
                             WriteError("Error while invoking the OnConnectionChanged event handler : %s" % str(e))
                 elif message['Type'] == "MSG":
                     def _addSendResponse(tuple):
                         tuple.SendResponse = lambda ctx, rsp: SendResponse(ctx, rsp)
                     context = ConvertJsonToObject(message['Context'], 'MessageContext', _addSendResponse)
+                    args = ()
                     if 'Data' in message:
                         try:
                             data = ConvertJsonToObject(message['Data'])
                         except:
                             data = message['Data']
-                        _onReceiveMessage(message['Key'], context,  data)
+                        args = (message['Key'], context,  data)
                     else:
-                        _onReceiveMessage(message['Key'], context, "")
+                        args = (message['Key'], context, "")
+                    _runAsync(_onReceiveMessage, args)
                 elif message['Type'] == "SETTINGS":
                     Settings = message['Settings']
+                    if OnSettingsUpdated:
+                        try:
+                            _runAsync(OnSettingsUpdated)
+                        except Exception as e:
+                            WriteError("Error while invoking the OnSettingsUpdated event handler : %s" % str(e))
                 elif message['Type'] == "STATEOBJECT":
-                    try:                        
+                    try:
                         so = ConvertJsonToObject(message['StateObject'], 'StateObject')
-                    except:
-                        WriteError("Unable to deserialize the StateObject")
-                    _onStateObjectUpdated(so)
+                    except Exception as e:
+                        WriteError("Unable to deserialize the StateObject : %s" % str(e))
+                    _runAsync(_onStateObjectUpdated, [so])
                 elif message['Type'] == "EXIT":
                     _exit(0)
                     break
-        except Exception, e:
+        except Exception as e:
             WriteError("Internal loop error : %s" % str(e))
 
 def Start(onStart = None):
@@ -367,7 +409,7 @@ def Start(onStart = None):
         msgCb = len(_messageCallbacks)
         try:
             onStart()
-        except Exception, e:
+        except Exception as e:
             WriteError("Fatal error: %s" % str(e))
             _exit(1)
         if len(_messageCallbacks) > msgCb:

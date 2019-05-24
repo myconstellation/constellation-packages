@@ -3,7 +3,7 @@
          Name="Pollution"
          Version="1.0"
          Author="swilhelm"
-		 Icon="pollution.png"
+		     Icon="pollution.png"
          Description="Récupération des données sur la pollution autours de vous, ou ailleur !"
          EnableControlHub="false">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net461">

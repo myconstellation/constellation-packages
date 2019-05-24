@@ -1,5 +1,6 @@
 ﻿using Constellation;
 using Constellation.Package;
+using static XiaomiSmartHome.Enums;
 
 namespace XiaomiSmartHome.Equipement
 {
@@ -12,9 +13,9 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Update equipment with last data
         /// </summary>
-        public override void Update(object data)
+        public override void Update(object data, string cmdType)
         {
-            base.Update(data);
+            base.Update(data, cmdType);
         }
     }
 }

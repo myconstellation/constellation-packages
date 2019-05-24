@@ -53,10 +53,11 @@ namespace HuaweiMobileRouter
                 PackageHost.WriteInfo($"Connecting to {PackageHost.GetSettingValue("Host")} ...");
                 NetworkCredential routerCredential = PackageHost.ContainsSetting("Username") && PackageHost.ContainsSetting("Password") ? new NetworkCredential(PackageHost.GetSettingValue("Username"), PackageHost.GetSettingValue("Password")) : null;
                 this.router = new Router(PackageHost.GetSettingValue("Host"), routerCredential);
+                PackageHost.WriteInfo($"Connected!");
             }
             catch (RouterErrorException ex)
             {
-                PackageHost.WriteError(ex.Message);
+                PackageHost.WriteError("Huawei error code#" + ex.Message);
                 throw;
             }
             catch (TimeoutException)
@@ -70,15 +71,19 @@ namespace HuaweiMobileRouter
                 throw;
             }
 
-            // Publish StateObject
+            // Publish StateObjects
+            PackageHost.WriteInfo($"Getting device informations ...");
             this.Update();
             this.PushStateObject<DeviceInformation>(() => this.router.DeviceInformation, false);
-            PackageHost.WriteInfo($"Connected!");
 
             // Starting the loop
+            PackageHost.WriteInfo($"Starting polling task ...");
             this.timer = new Timer(PackageHost.GetSettingValue<int>("RefreshInterval")) { AutoReset = true, Enabled = true };
             this.timer.Elapsed += (s, e) => this.Update();
             this.timer.Start();
+
+            // Done
+            PackageHost.WriteInfo($"Ready!");
         }
 
         /// <summary>
@@ -86,7 +91,7 @@ namespace HuaweiMobileRouter
         /// </summary>
         public override void OnShutdown()
         {
-            this.timer.Stop();
+            this.timer?.Stop();
         }
 
         /// <summary>
@@ -98,7 +103,16 @@ namespace HuaweiMobileRouter
         [MessageCallback]
         public bool SendSMS(string phoneNumber, string content)
         {
-            return this.router.SendSMS(content, phoneNumber.Split(','));
+            try
+            {
+                PackageHost.WriteInfo($"Sending SMS to {phoneNumber} ...");
+                return this.router.SendSMS(content, phoneNumber.Split(','));
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError($"Unable to send SMS : {ex.Message}");
+                return false;
+            }
         }
 
         /// <summary>
@@ -109,7 +123,16 @@ namespace HuaweiMobileRouter
         [MessageCallback]
         public bool SetSMSRead(int smsIndex)
         {
-            return this.router.SetSMSRead(smsIndex);
+            try
+            {
+                PackageHost.WriteInfo($"Setting SMS #{smsIndex} as read ...");
+                return this.router.SetSMSRead(smsIndex);
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError($"Unable to set SMS read : {ex.Message}");
+                return false;
+            }
         }
 
         /// <summary>
@@ -120,43 +143,106 @@ namespace HuaweiMobileRouter
         [MessageCallback]
         public bool DeleteSMS(int smsIndex)
         {
-            return this.router.DeleteSMS(smsIndex);
+            try
+            {
+                PackageHost.WriteInfo($"Deleting SMS #{smsIndex} ...");
+                return this.router.DeleteSMS(smsIndex);
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError($"Unable to delete SMS : {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Reboots the router.
+        /// </summary>
+        /// <returns></returns>
+        [MessageCallback]
+        public bool Reboot()
+        {
+            try
+            {
+                PackageHost.WriteWarn($"Rebooting the router ...");
+                return this.router.Reboot();
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError($"Unable to reboot the router : {ex.Message}");
+                return false;
+            }
         }
 
         private void Update()
         {
-            // Forward incoming SMS ?
-            if (PackageHost.ContainsSetting("ForwardIncomingSMSTo") && !string.IsNullOrEmpty(PackageHost.GetSettingValue("ForwardIncomingSMSTo")) && this.router.Notification.UnreadMessage > 0)
+            try
             {
-                foreach (Message sms in this.router.SMS.List.Messages)
+                // Stop the timer
+                this.timer?.Stop();
+
+                // Check login state
+                if (this.router.Credential != null && this.router.LoginState.State < 0)
                 {
-                    if (sms.Status == Message.Smstat.Unread)
+                    PackageHost.WriteWarn("Renewing authentification ...");
+                    if (this.router.Login())
                     {
-                        PackageHost.WriteInfo($"Forwarding incoming SMS from {sms.Phone}");
-                        MessageScope.Create(MessageScope.ScopeType.Group, PackageHost.GetSettingValue("ForwardIncomingSMSTo"))
-                            .GetProxy()
-                            .IncomingSMS(new { Number = sms.Phone, Text = sms.Content, sms.Date, sms.Priority });
-                        if (PackageHost.GetSettingValue<bool>("KeepSMSCopy"))
+                        PackageHost.WriteInfo("Authentification done!");
+                    }
+                }
+
+                // Forward incoming SMS ?
+                if (PackageHost.ContainsSetting("ForwardIncomingSMSTo") && !string.IsNullOrEmpty(PackageHost.GetSettingValue("ForwardIncomingSMSTo")) && this.router.Notification.UnreadMessage > 0)
+                {
+                    foreach (Message sms in this.router.SMS.List.Messages)
+                    {
+                        if (sms.Status == Message.Smstat.Unread)
                         {
-                            this.router.SetSMSRead(sms.Index);
-                        }
-                        else
-                        {
-                            this.router.DeleteSMS(sms.Index);
+                            PackageHost.WriteInfo($"Forwarding incoming SMS from {sms.Phone}");
+                            MessageScope.Create(MessageScope.ScopeType.Group, PackageHost.GetSettingValue("ForwardIncomingSMSTo"))
+                                .GetProxy()
+                                .IncomingSMS(new { Number = sms.Phone, Text = sms.Content, sms.Date, sms.Priority });
+                            if (PackageHost.GetSettingValue<bool>("KeepSMSCopy"))
+                            {
+                                this.router.SetSMSRead(sms.Index);
+                            }
+                            else
+                            {
+                                this.router.DeleteSMS(sms.Index);
+                            }
                         }
                     }
                 }
+
+                // Update StateObjects
+                this.PushStateObject<DeviceSignal>(() => this.router.DeviceSignal);
+                this.PushStateObject<MonitoringStatus>(() => this.router.MonitoringStatus);
+                this.PushStateObject<MonthlyStatistics>(() => this.router.MonthlyStatistics);
+                this.PushStateObject<PinStatus>(() => this.router.PinStatus);
+                this.PushStateObject<PLMNInformations>(() => this.router.PLMNInformations);
+                this.PushStateObject<TrafficStatistics>(() => this.router.TrafficStatistics);
+                this.PushStateObject<WlanBasicSettings>(() => this.router.WlanBasicSettings);
+                this.PushStateObject<Notification>(() => this.router.Notification);
+                this.PushStateObject<SMSList>(() => this.router.SMS);
+
             }
-            // Update StateObjects
-            this.PushStateObject<DeviceSignal>(() => this.router.DeviceSignal);
-            this.PushStateObject<MonitoringStatus>(() => this.router.MonitoringStatus);
-            this.PushStateObject<MonthlyStatistics>(() => this.router.MonthlyStatistics);
-            this.PushStateObject<PinStatus>(() => this.router.PinStatus);
-            this.PushStateObject<PLMNInformations>(() => this.router.PLMNInformations);
-            this.PushStateObject<TrafficStatistics>(() => this.router.TrafficStatistics);
-            this.PushStateObject<WlanBasicSettings>(() => this.router.WlanBasicSettings);
-            this.PushStateObject<Notification>(() => this.router.Notification);
-            this.PushStateObject<SMSList>(() => this.router.SMS);
+            catch (TimeoutException)
+            {
+                PackageHost.WriteError("Connection timeout");
+            }
+            catch (RouterErrorException ex)
+            {
+                PackageHost.WriteError($"Error during the polling. Code#{ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError($"Error during the polling : {ex}");
+            }
+            finally
+            {
+                // Restart the timer
+                this.timer?.Start();
+            }
         }
 
         private void PushStateObject<TObject>(Func<TObject> func, bool withLifetime = true)
@@ -165,7 +251,10 @@ namespace HuaweiMobileRouter
             {
                 PackageHost.PushStateObject(typeof(TObject).Name, func(), lifetime: withLifetime ? (PackageHost.GetSettingValue<int>("RefreshInterval") / 1000) * 2 : 0);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                PackageHost.WriteDebug($"Unable to push {typeof(TObject).FullName} : {ex}");
+            }
         }
     }
 }

@@ -35,7 +35,7 @@
       <HintPath>..\packages\Constellation.1.8.3.17258\lib\net40\Constellation.Common.dll</HintPath>
     </Reference>
     <Reference Include="Constellation.PythonProxy, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Constellation.PythonProxy.1.8.4.17332\lib\net40\Constellation.PythonProxy.dll</HintPath>
+      <HintPath>..\packages\Constellation.PythonProxy.1.8.6.19032\lib\net40\Constellation.PythonProxy.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.2\lib\net40\Microsoft.AspNet.SignalR.Client.dll</HintPath>
@@ -67,10 +67,13 @@
     <Content Include="Scripts\Constellation.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\modbus">
+    <Content Include="libmodbus\modbus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
+    <None Include="PythonConfigurationSection.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\Modbus.py">
@@ -79,7 +82,7 @@
     <Content Include="PackageInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sources\modbus.c" />
+    <Content Include="libmodbus\modbus.c" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

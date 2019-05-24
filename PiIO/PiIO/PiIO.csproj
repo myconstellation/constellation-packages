@@ -35,7 +35,7 @@
       <HintPath>..\packages\Constellation.1.8.3.17258\lib\net40\Constellation.Common.dll</HintPath>
     </Reference>
     <Reference Include="Constellation.PythonProxy, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Constellation.PythonProxy.1.8.4.17332\lib\net40\Constellation.PythonProxy.dll</HintPath>
+      <HintPath>..\packages\Constellation.PythonProxy.1.8.6.19032\lib\net40\Constellation.PythonProxy.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.2\lib\net40\Microsoft.AspNet.SignalR.Client.dll</HintPath>
@@ -62,6 +62,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="PythonConfigurationSection.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="circuit.png">

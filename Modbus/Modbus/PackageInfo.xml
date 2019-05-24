@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Modbus"
-         Version="1.1"
+         Version="1.2"
          Icon="modbus.png"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
@@ -49,7 +49,7 @@
           {
             Name: "MCI.ContaxTri2M", Description:"MCI CONTAX S TRI 2M", Properties: [
               { Name: "Hz", RegisterType: "Holding", Address: "2", Length: 1, Ratio:0.01, Type:"Float", Description: "Frequency (Hz)" },
-              { Name: "Volt_L1", RegisterType: "Holding", Address: "1000", Length: 2, Ratio:0.01, Type:"Int", Description: "L1-N PhaseA Voltage (V)" },
+              { Name: "Volt_L1", RegisterType: "Holding", Address: "1000", Length: 2, Ratio:0.01, Type:"Float", Description: "L1-N PhaseA Voltage (V)" },
               { Name: "Volt_L2", RegisterType: "Holding", Address: "1002", Length: 2, Ratio:0.01, Type:"Float", Description: "L2-N PhaseB Voltage (V)" },
               { Name: "Volt_L3", RegisterType: "Holding", Address: "1004", Length: 2, Ratio:0.01, Type:"Float", Description: "L3-N PhaseC Voltage (V)" },
               { Name: "Ampere_L1", RegisterType: "Holding", Address: "100C", Length: 2, Ratio:0.001, Type:"Float", Description: "PhaseA current" },

@@ -24,10 +24,10 @@ def Start():
     lastSend = 0
     currentValue = 0
     count = 0
-    if(bool(Constellation.GetSetting("EnablePhotoResistor"))):
+    if(bool(Constellation.GetSetting("EnablePhotoResistor") == 'true')):
         Constellation.WriteInfo("LightSensor is ready !")
     while Constellation.IsRunning:
-        if(bool(Constellation.GetSetting("EnablePhotoResistor"))):
+        if(bool(Constellation.GetSetting("EnablePhotoResistor") == 'true')):
             currentValue = currentValue + RCtime(int(Constellation.GetSetting("PhotoResistorPin")))
             count = count + 1
             ts = int(round(time.time()))

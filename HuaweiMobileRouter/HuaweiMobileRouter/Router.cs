@@ -23,11 +23,11 @@ namespace HuaweiMobileRouter
 {
     using HuaweiMobileRouter.Models;
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml.Serialization;
@@ -39,6 +39,7 @@ namespace HuaweiMobileRouter
     {
         private const int DEFAULT_TIMEOUT = 10000; //ms
 
+        private Queue<string> requestVerificationTokens = new Queue<string>();
         private SessionInformations sessionInfo = null;
         private CookieContainer cookieContainer = new CookieContainer();
 
@@ -112,13 +113,17 @@ namespace HuaweiMobileRouter
         public PinStatus PinStatus => this.GetDatas<PinStatus>("pin/status");
 
         /// <summary>
+        /// Gets the login's state.
+        /// </summary>
+        public LoginState LoginState => this.GetDatas<LoginState>("user/state-login");
+
+        /// <summary>
         /// Gets the SMS.
         /// </summary>
         public SMSList SMS
         {
             get
             {
-                this.RenewToken();
                 var task = this.ExecuteWebRequestAsync(new Uri($"http://{this.Host}/api/sms/sms-list"), postData:
                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><request>" +
                                  "<PageIndex>1</PageIndex>" +
@@ -161,20 +166,17 @@ namespace HuaweiMobileRouter
         {
             this.Host = host;
             this.Credential = credential;
-            this.RenewToken();
-            if (this.Credential != null)
+            if (this.ExecuteWebRequestAsync(new Uri($"http://{this.Host}/")).Wait(DEFAULT_TIMEOUT))
             {
-                this.Login();
+                if (this.Credential != null && !this.Login())
+                {
+                    throw new Exception("Unable to login !");
+                }
             }
-        }
-
-        /// <summary>
-        /// Renews the token.
-        /// </summary>
-        public void RenewToken()
-        {
-            this.sessionInfo = this.GetDatas<SessionInformations>("webserver/SesTokInfo");
-            this.cookieContainer.SetCookies(new Uri($"http://{this.Host}/"), this.sessionInfo.SessionId);
+            else
+            {
+                throw new TimeoutException();
+            }
         }
 
         /// <summary>
@@ -186,11 +188,30 @@ namespace HuaweiMobileRouter
         {
             if (this.Credential != null)
             {
-                var hashedPassword = ToBase64Encode(SHA256HexHashString(this.Credential.UserName + ToBase64Encode(SHA256HexHashString(this.Credential.Password)) + this.sessionInfo.TokenId));
-                return this.PostRequest("user/login",
-                        $"<Username>{this.Credential.UserName}</Username>" +
-                        $"<Password>{hashedPassword}</Password>" +
-                        "<password_type>4</password_type>");
+                this.RenewToken();
+                if (this.LoginState.ExternPasswordType == 1) // scarm login
+                {
+                    var clientNounce = Guid.NewGuid().ToString("n") + Guid.NewGuid().ToString("n");
+                    var challenge = this.PostDatas<ChallengeResponse>("user/challenge_login",
+                         $"<username>{this.Credential.UserName}</username>" +
+                         $"<firstnonce>{clientNounce}</firstnonce>" +
+                         "<mode>1</mode>");
+
+                    var clientProof = CryptoUtils.ComputeClientProof(clientNounce, challenge.ServerNonce, this.Credential.Password, challenge.Salt, challenge.Iterations);
+                    var authen = this.PostDatas<AuthentificationResponse>("user/authentication_login",
+                         $"<clientproof>{clientProof}</clientproof>" +
+                         $"<finalnonce>{challenge.ServerNonce}</finalnonce>");
+
+                    return authen?.ServerSignature != null;
+                }
+                else // legacy login
+                {
+                    var hashedPassword = CryptoUtils.StringToBase64String(CryptoUtils.ComputeSHA256Hash(this.Credential.UserName + CryptoUtils.StringToBase64String(CryptoUtils.ComputeSHA256Hash(this.Credential.Password)) + this.sessionInfo.TokenId));
+                    return this.PostRequest("user/login",
+                            $"<Username>{this.Credential.UserName}</Username>" +
+                            $"<Password>{hashedPassword}</Password>" +
+                            "<password_type>4</password_type>");
+                }
             }
             else
             {
@@ -206,7 +227,6 @@ namespace HuaweiMobileRouter
         /// <returns></returns>
         public bool SendSMS(string content, params string[] phones)
         {
-            this.RenewToken();
             return this.PostRequest("sms/send-sms",
                 "<Index>-1</Index>" +
                 "<Phones>" + string.Join("", phones.Select(p => $"<Phone>{p}</Phone>")) + "</Phones>" +
@@ -214,7 +234,7 @@ namespace HuaweiMobileRouter
                 $"<Content>{content}</Content>" +
                 $"<Length>{content.Length}</Length>" +
                 "<Reserved>1</Reserved>" +
-                $"<Date>{DateTime.Now.ToString()}</Date>");
+                $"<Date>{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}</Date>");
         }
 
         /// <summary>
@@ -224,7 +244,6 @@ namespace HuaweiMobileRouter
         /// <returns></returns>
         public bool SetSMSRead(int smsIndex)
         {
-            this.RenewToken();
             return this.PostRequest("sms/set-read",
                 $"<Index>{smsIndex}</Index>");
         }
@@ -236,9 +255,40 @@ namespace HuaweiMobileRouter
         /// <returns></returns>
         public bool DeleteSMS(int smsIndex)
         {
-            this.RenewToken();
             return this.PostRequest("sms/delete-sms",
                 $"<Index>{smsIndex}</Index>");
+        }
+
+        /// <summary>
+        /// Reboots the router.
+        /// </summary>
+        /// <returns></returns>
+        public bool Reboot()
+        {
+            return this.PostRequest("device/control",
+                "<Control>1</Control>");
+        }
+
+        private void RenewToken()
+        {
+            if (this.ExecuteWebRequestAsync(new Uri($"http://{this.Host}/")).Wait(DEFAULT_TIMEOUT))
+            {
+                this.requestVerificationTokens.Clear();
+                if (this.LoginState.ExternPasswordType == 1) // scarm login
+                {
+                    var tokenInfo = this.GetDatas<TokenInformations>("webserver/token");
+                    this.sessionInfo = new SessionInformations() { TokenId = tokenInfo.TokenId.Substring(32) };
+                }
+                else // legacy login
+                {
+                    this.sessionInfo = this.GetDatas<SessionInformations>("webserver/SesTokInfo");
+                    this.cookieContainer.SetCookies(new Uri($"http://{this.Host}/"), this.sessionInfo.SessionId);
+                }
+            }
+            else
+            {
+                throw new TimeoutException();
+            }
         }
 
         private TResponse GetDatas<TResponse>(string path)
@@ -246,17 +296,38 @@ namespace HuaweiMobileRouter
             return this.ParseResponse<TResponse>(this.ExecuteWebRequestAsync(new Uri($"http://{this.Host}/api/{path}")));
         }
 
+        private TResponse PostDatas<TResponse>(string path, string requestContent)
+        {
+            return this.ParseResponse<TResponse>(this.ExecuteWebRequestAsync(new Uri($"http://{this.Host}/api/{path}"),
+                postData: $"<?xml version=\"1.0\" encoding=\"UTF-8\"?><request>{requestContent}</request>"));
+        }
+
         private bool PostRequest(string path, string requestContent)
         {
-            var task = this.ExecuteWebRequestAsync(new Uri($"http://{this.Host}/api/{path}"),
-                postData: $"<?xml version=\"1.0\" encoding=\"UTF-8\"?><request>{requestContent}</request>");
-            if (task.Wait(this.RequestTimeout))
+            return this.PostDatas<string>(path, requestContent).Contains("<response>OK</response>");
+        }
+
+        private TResponse ParseResponse<TResponse>(Task<string> task)
+        {
+            if (!task.Wait(this.RequestTimeout))
             {
-                return task.Result.Contains("<response>OK</response>");
+                throw new TimeoutException();
+            }
+            else if (typeof(TResponse) != typeof(Error) && task.Result.Contains("<error>"))
+            {
+                throw new RouterErrorException(this.ParseResponse<Error>(task));
+            }
+            else if (typeof(TResponse) == typeof(string))
+            {
+                return (TResponse)(object)task.Result;
             }
             else
             {
-                throw new TimeoutException();
+                var serializer = new XmlSerializer(typeof(TResponse));
+                using (TextReader reader = new StringReader(task.Result))
+                {
+                    return (TResponse)serializer.Deserialize(reader);
+                }
             }
         }
 
@@ -268,9 +339,17 @@ namespace HuaweiMobileRouter
                 HttpWebRequest request = HttpWebRequest.Create(uri) as HttpWebRequest;
                 request.CookieContainer = this.cookieContainer;
                 // Add the verification token
+                request.Headers.Add("_ResponseSource", "Broswer");
                 if (this.sessionInfo != null)
                 {
-                    request.Headers.Add("__RequestVerificationToken", this.sessionInfo.TokenId);
+                    if (requestVerificationTokens.Count > 0 && !string.IsNullOrEmpty(postData))
+                    {
+                        request.Headers.Add("__RequestVerificationToken", requestVerificationTokens.Dequeue());
+                    }
+                    else
+                    {
+                        request.Headers.Add("__RequestVerificationToken", this.sessionInfo.TokenId);
+                    }
                 }
                 // POST data
                 if (!string.IsNullOrEmpty(postData))
@@ -278,6 +357,7 @@ namespace HuaweiMobileRouter
                     var data = Encoding.UTF8.GetBytes(postData);
                     request.Method = WebRequestMethods.Http.Post;
                     request.ContentLength = data.Length;
+                    request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
                     using (var stream = request.GetRequestStream())
                     {
                         stream.Write(data, 0, data.Length);
@@ -286,6 +366,31 @@ namespace HuaweiMobileRouter
                 // Get the response
                 Debug.WriteLine(request.RequestUri);
                 WebResponse response = await request.GetResponseAsync();
+                // Update tokens
+                if (!string.IsNullOrEmpty(postData))
+                {
+                    if (uri.AbsolutePath == "/api/user/challenge_login" ||
+                        uri.AbsolutePath == "/api/user/authentication_login" ||
+                        uri.AbsolutePath == "/api/user/password_scram" ||
+                        uri.AbsolutePath == "/api/user/login")
+                    {
+                        requestVerificationTokens.Clear();
+                    }
+                    bool hasTwoTokens = false;
+                    for (int i = 0; i < response.Headers.Count; i++)
+                    {
+                        if (response.Headers.GetKey(i).Equals("__RequestVerificationTokenone", StringComparison.OrdinalIgnoreCase) ||
+                            response.Headers.GetKey(i).Equals("__RequestVerificationTokentwo", StringComparison.OrdinalIgnoreCase))
+                        {
+                            hasTwoTokens = true;
+                            requestVerificationTokens.Enqueue(response.Headers[i].Substring(0, 32));
+                        }
+                        else if (response.Headers.GetKey(i).Equals("__RequestVerificationToken", StringComparison.OrdinalIgnoreCase) && !hasTwoTokens)
+                        {
+                            requestVerificationTokens.Enqueue(response.Headers[i].Substring(0, 32));
+                        }
+                    }
+                }
                 // Read and return the content
                 string content = await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
                 Debug.WriteLine(content);
@@ -299,49 +404,6 @@ namespace HuaweiMobileRouter
                 }
                 return string.Empty;
             }
-        }
-
-        private TResponse ParseResponse<TResponse>(Task<string> task)
-        {
-            if (!task.Wait(this.RequestTimeout))
-            {
-                throw new TimeoutException();
-            }
-            else if (typeof(TResponse) != typeof(Error) && task.Result.Contains("<error>"))
-            {
-                throw new RouterErrorException(this.ParseResponse<Error>(task));
-            }
-            else
-            {
-                var serializer = new XmlSerializer(typeof(TResponse));
-                using (TextReader reader = new StringReader(task.Result))
-                {
-                    return (TResponse)serializer.Deserialize(reader);
-                }
-            }
-        }
-
-        private static string ToBase64Encode(string plainText)
-        {
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(plainText));
-        }
-
-        private static string SHA256HexHashString(string input)
-        {
-            using (var sha256 = SHA256Managed.Create())
-            {
-                return ToHex(sha256.ComputeHash(Encoding.Default.GetBytes(input)));
-            }
-        }
-
-        private static string ToHex(byte[] bytes, bool upperCase = false)
-        {
-            var result = new StringBuilder(bytes.Length * 2);
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                result.Append(bytes[i].ToString(upperCase ? "X2" : "x2"));
-            }
-            return result.ToString();
         }
     }
 }

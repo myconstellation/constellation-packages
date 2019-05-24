@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="HuaweiMobileRouter"
-         Version="1.0"
+         Version="2.0"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Icon="logo.png"
@@ -17,7 +17,7 @@
     <Setting name="Username" type="String" description="Administrator username" isRequired="false" />
     <Setting name="Password" type="String" description="Administrator password" isRequired="false" />
     <Setting name="RefreshInterval" type="Int32" description="Refresh interval in millisecond" isRequired="false" defaultValue="5000" />
-    <Setting name="ForwardIncomingSMSTo" type="String" description="Forward the incoming SMS to the specifed group" isRequired="false" />
-    <Setting name="KeepSMSCopy" type="Boolean" description="Keep SMS on the SIM or delete after forwarding" isRequired="false" defaultValue="true" />
+    <Setting name="ForwardIncomingSMSTo" type="String" description="Forward the incoming SMS to the specifed group" isRequired="false" ignoreLocalValue="true" />
+    <Setting name="KeepSMSCopy" type="Boolean" description="Keep SMS on the SIM or delete after forwarding" isRequired="false" defaultValue="true" ignoreLocalValue="true" />
   </Settings>
 </Package>

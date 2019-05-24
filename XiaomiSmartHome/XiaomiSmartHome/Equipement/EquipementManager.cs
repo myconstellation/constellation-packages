@@ -21,7 +21,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Chemin des logs
         /// </summary>
-        string logPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\log.txt";
+        private string logPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\log.txt";
 
         /// <summary>
         /// Wrapper to communicate with gateway
@@ -31,7 +31,7 @@ namespace XiaomiSmartHome.Equipement
         /// <summary>
         /// Equipment list connected to gateway
         /// </summary>
-        public List<Equipment> lEquipements = new List<Equipment>();
+        public static List<Equipment> lEquipements = new List<Equipment>();
 
         /// <summary>
         /// Get the gateway in equipement list
@@ -132,7 +132,7 @@ namespace XiaomiSmartHome.Equipement
                         // Set gateway data
                         this.Gateway.Sid = reponse.Sid;
                         this.Gateway.Token = reponse.Token;
-                        PackageHost.PushStateObject<Gateway>(EquipmentType.Gateway.GetRealName(), Gateway);
+                        PackageHost.PushStateObject<Gateway>(EquipmentType.Gateway.GetRealName(), Gateway, lifetime: 20);
 
                         // Init other equipements
                         foreach (string equipementSid in JsonConvert.DeserializeObject<string[]>(reponse.Data))
@@ -146,9 +146,16 @@ namespace XiaomiSmartHome.Equipement
                         Type type = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(cur => cur.Name.ToLower().Equals(reponse.Model.ToString().ToLower()));
                         if (type != null)
                         {
+                            // En cas de refresh via un read, on essaie de récup l’item dans la liste.
+                            if(lEquipements.Any(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid)))
+                            {
+                                goto case CommandType.Report;
+                            }
+
+                            // Sinon on l’ajoute
                             dynamic model = JsonConvert.DeserializeObject(resp, type);
-                            model.Update(JsonConvert.DeserializeObject(reponse.Data, type));
-                            lEquipements.Add(model);
+                            model.Update(JsonConvert.DeserializeObject(reponse.Data, type), reponse.Cmd.ToString());
+                            if (!lEquipements.Any(cur => cur.Sid.Equals(model.Sid))) lEquipements.Add(model);
                             this.PushStateObject(reponse.Sid, model);
                         }
                         break;
@@ -165,13 +172,14 @@ namespace XiaomiSmartHome.Equipement
                         else
                         {
                             Equipment equipment = lEquipements.SingleOrDefault(cur => cur.Sid != null && cur.Sid.Equals(reponse.Sid));
+
                             // Update gateway token
                             if (equipment.Model.Equals(EquipmentType.Gateway) && reponse.Cmd.Equals(CommandType.Heartbeat))
                             {
                                 (equipment as Gateway).Token = reponse.Token;
                             }
 
-                            equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()));
+                            equipment.Update(JsonConvert.DeserializeObject(reponse.Data, equipment.GetType()), reponse.Cmd.ToString());
                             this.PushStateObject(reponse.Sid, equipment);
                         }
                         break;
@@ -222,13 +230,12 @@ namespace XiaomiSmartHome.Equipement
             {
                 name = EquipmentType.Gateway.GetRealName();
             }
-            //// Get personal name based on user setting
-            else if (!PackageHost.TryGetSettingValue<string>(sid, out name))
+            else
             {
-                name = sid;
+                name = Program.GetCustomSoName(sid);
             }
-
-            PackageHost.PushStateObject<dynamic>(name, model);
+            
+            PackageHost.PushStateObject<dynamic>(name, model, lifetime: 3600);
         }
 
         /// <summary>

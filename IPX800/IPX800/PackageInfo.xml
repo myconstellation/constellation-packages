@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="IPX800"
-         Version="1.0.4"
+         Version="1.0.5"
          Icon="gce.png"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
+         RequestLastStateObjectsOnStart="true"
          Description="Connect your GCE Electronics IPX800 v4 to Constellation">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
     <Platforms>

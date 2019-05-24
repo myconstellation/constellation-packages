@@ -38,11 +38,11 @@ def Start():
     ])
     Constellation.DeclarePackageDescriptor()
     # Main loop
-    if(bool(Constellation.GetSetting("EnableTSL2561"))):
+    if(bool(Constellation.GetSetting("EnableTSL2561") == 'true')):
         Constellation.WriteInfo("LuxSensor is ready !")
     lastSend = 0
     while Constellation.IsRunning:
-        if(bool(Constellation.GetSetting("EnableTSL2561"))):
+        if(bool(Constellation.GetSetting("EnableTSL2561") == 'true')):
             ts = int(round(time.time()))
             if ts - lastSend >= int(Constellation.GetSetting("Interval")):
                 DoMeasure()

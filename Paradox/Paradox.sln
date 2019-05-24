@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paradox.Core", "Paradox.Core\Paradox.Core.csproj", "{4451F0EA-90A7-4AD2-9020-C2223CF36D77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paradox", "Paradox\Paradox.csproj", "{E957FE3D-4198-47CE-8928-1690FC1368D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0FE1632A-8BE4-4BA1-AE60-8191CFA47A22}"
+	ProjectSection(SolutionItems) = preProject
+		DIGIPLEX-ASCII-EP02-eng.pdf = DIGIPLEX-ASCII-EP02-eng.pdf
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4451F0EA-90A7-4AD2-9020-C2223CF36D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4451F0EA-90A7-4AD2-9020-C2223CF36D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4451F0EA-90A7-4AD2-9020-C2223CF36D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4451F0EA-90A7-4AD2-9020-C2223CF36D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E957FE3D-4198-47CE-8928-1690FC1368D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E957FE3D-4198-47CE-8928-1690FC1368D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E957FE3D-4198-47CE-8928-1690FC1368D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E957FE3D-4198-47CE-8928-1690FC1368D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E0965581-7202-4821-A2C7-D5EF08462D98}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Logging.6.0.1304.0\lib\NET45
+	EndGlobalSection
+EndGlobal
