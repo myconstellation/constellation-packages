@@ -3,15 +3,15 @@ Package: TPLinkSmartHome
 Tags: TPLink, Plug
 ---
 
-# TPLinkSmartHome : Prises et autres pÈriphÈriques connectÈs
+# TPLinkSmartHome : Prises et autres p√©riph√©riques connect√©s
 
-Le package TPLinkSmartHome vous permet de contrÙler et monitorer les pÈriphÈriques TPLink Smart Home (kasa smarthome).
+Le package TPLinkSmartHome vous permet de contr√¥ler et monitorer les p√©riph√©riques TPLink Smart Home (kasa smarthome).
 **ATTENTION, pour le moment seules les prises HS100 et HS110 sont prises en charge par ce package.**
 
 ## Installation
-Depuis le ìOnline Package Repositoryî de votre Console Constellation, installez et dÈployez le package sur la sentinelle de votre choix (compatible Windows et Linux).
+Depuis le ‚ÄúOnline Package Repository‚Äù de votre Console Constellation, installez et d√©ployez le package sur la sentinelle de votre choix (compatible Windows et Linux).
 
-Sur la page de Settings, vous devez obligatoirement dÈfinir un ou plusieurs pÈriphÈriques.
+Sur la page de Settings, vous devez obligatoirement d√©finir un ou plusieurs p√©riph√©riques.
 
 Par exemple : 
 ```json
@@ -24,7 +24,7 @@ Par exemple :
     }]
 ```
 
-Vous pouvez Ègalement dÈployer ce package manuellement dans la configuration de votre Constellation :
+Vous pouvez √©galement d√©ployer ce package manuellement dans la configuration de votre Constellation :
 ```xml
 <package name="TPLinkSmartHome">
 	<settings>
@@ -46,28 +46,28 @@ Vous pouvez Ègalement dÈployer ce package manuellement dans la configuration de 
 
 | Nom | Type | Requis ? | Description du Setting |
 | --- | ---- | -------- | ---------------------  |
-| devices | JsonObject | OUI | liste de pÈriphÈriques |
-| poolingInterval | int | NON | interval en millisecondes entre deux rÈcupÈration de l'Ètat des pÈriphÈriques (dÈfaut : 2000ms) |
+| devices | JsonObject | OUI | liste de p√©riph√©riques |
+| poolingInterval | int | NON | interval en millisecondes entre deux r√©cup√©ration de l'√©tat des p√©riph√©riques (d√©faut : 2000ms) |
 
 ## StateObjects
-Vous retrouverez 1 StateObject publiÈs par pÈriphÈrique par le package :
+Vous retrouverez 1 StateObject publi√©s par p√©riph√©rique par le package :
 
 | Nom | Type | Description |
 | --- | ---- | ----------- |
-| TPLink-<<Hostname>> | JsonObject | les informations d'un pÈriphÈrique |
+| TPLink-##Hostname## | JsonObject | les informations d'un p√©riph√©rique |
 
 ## MessageCallbacks
 Le package expose 3 MessageCallbacks :
 
-| Signature | RÈponse (saga) | Description |
+| Signature | R√©ponse (saga) | Description |
 | --------- | -------------- | ----------- |
-| GetDailyStat(string hostname, int? year = null, int? month = null) | JsonObject | Les statistiques d'utilisation quotidiennes pour une annÈe et un mois donnÈ (Pour les prises HS110 uniquement) |
-| GetMonthStat(string hostname, int? year = null) | JsonObject | Les statistiques d'utilisation mensuelles pour une annÈe donnÈe (Pour les prises HS110 uniquement) |
-| SetOutputState(string hostname, bool state) : change l'Ètat du relais (on/off) | Objet SunInfo | Change l'Ètat d'une prise (Pour les prises HS100 et HS110 uniquement) |
+| GetDailyStat(string hostname, int? year = null, int? month = null) | JsonObject | Les statistiques d'utilisation quotidiennes pour une ann√©e et un mois donn√© (Pour les prises HS110 uniquement) |
+| GetMonthStat(string hostname, int? year = null) | JsonObject | Les statistiques d'utilisation mensuelles pour une ann√©e donn√©e (Pour les prises HS110 uniquement) |
+| SetOutputState(string hostname, bool state) : change l'√©tat du relais (on/off) | Objet SunInfo | Change l'√©tat d'une prise (Pour les prises HS100 et HS110 uniquement) |
   
 ## Quelques exemples
-* Surveiller la consommation d'une prise connectÈe
-* ContrÙler ‡ distance une prise connectÈe, Èteindre la nuit certaines prises etc.
+* Surveiller la consommation d'une prise connect√©e
+* Contr√¥ler √† distance une prise connect√©e, √©teindre la nuit certaines prises etc.
   
 License
 ----
