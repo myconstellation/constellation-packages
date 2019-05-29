@@ -1,11 +1,8 @@
-﻿using Constellation;
-using Constellation.Package;
+﻿using Constellation.Package;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using TPLinkSmartHome.Models;
 
 namespace TPLinkSmartHome
 {
@@ -20,46 +17,106 @@ namespace TPLinkSmartHome
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
 
-            IEnumerable<TPLinkConfig> configs = PackageHost.GetSettingAsJsonObject<IEnumerable<TPLinkConfig>>("setting");
-
-
-            Task.Factory.StartNew(() =>
+            if (PackageHost.TryGetSettingAsJsonObject<IEnumerable<TPLinkConfig>>("devices", out IEnumerable<TPLinkConfig> configs))
             {
-                while (PackageHost.IsRunning)
+                Task.Factory.StartNew(async () =>
                 {
-                    try
+                    //pool to get devices informations
+                    while (PackageHost.IsRunning)
                     {
-                        foreach (TPLinkConfig config in configs)
+                        try
                         {
-                            if (config.Type == TPLink.SmartHome.SystemType.PlugWithEnergyMeter)
-                            {
-                                TPLink.SmartHome.PlugWithEnergyMeterClient plug = new TPLink.SmartHome.PlugWithEnergyMeterClient(config.HostName);
-                                TPLink.SmartHome.ConsumptionInfo consumption = plug.GetConsumption();
+                            int soLifeTime = Math.Max(PackageHost.GetSettingValue<int>("poolingInterval") * 2, 30000) / 1000;
 
-                                PackageHost.PushStateObject($"consumption-{config.HostName}", consumption);
+                            foreach (TPLinkConfig config in configs)
+                            {
+                                if (config.Type == TPLink.SmartHome.SystemType.PlugWithEnergyMeter)
+                                {
+                                    TPLink.SmartHome.PlugWithEnergyMeterClient plug = new TPLink.SmartHome.PlugWithEnergyMeterClient(config.HostName);
+                                    TPLink.SmartHome.ConsumptionInfo consumption = await plug.GetConsumptionAsync();
+                                    TPLink.SmartHome.SystemInfo systemInfos = await plug.GetSystemInfoAsync();
+                                    TPLink.SmartHome.OutputState state = await plug.GetOutputAsync();
+
+                                    PlugWithEnergyMeterInformations plugInfos = PlugWithEnergyMeterInformations.CreateFromSystemInfosAndOutputStateAndConsumption(systemInfos, state, consumption);                                    
+
+                                    PackageHost.PushStateObject($"TPLink-{config.HostName}", plugInfos, lifetime: soLifeTime);
+                                }
+                                else if (config.Type == TPLink.SmartHome.SystemType.Plug)
+                                {
+                                    TPLink.SmartHome.PlugClient plug = new TPLink.SmartHome.PlugClient(config.HostName);
+                                    TPLink.SmartHome.SystemInfo systemInfos = await plug.GetSystemInfoAsync();
+                                    TPLink.SmartHome.OutputState state = await plug.GetOutputAsync();
+
+                                    PlugInformations plugInfos = PlugInformations.CreateFromSystemInfosAndOutputState(systemInfos, state);
+
+                                    PackageHost.PushStateObject($"TPLink-{config.HostName}", plugInfos, lifetime: soLifeTime);
+                                }
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            PackageHost.WriteError(ex);
+                        }
+                        finally
+                        {
+                            await Task.Delay(PackageHost.GetSettingValue<int>("poolingInterval"));
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        PackageHost.WriteError(ex);
-                    }
-                    finally
-                    {
-                        Thread.Sleep(10000);
-                    }
-                }
-            }, TaskCreationOptions.LongRunning);
 
+                }, TaskCreationOptions.LongRunning);
 
+            }
         }
 
-    }
+        /// <summary>
+        /// Gets the daily conumption stats of a PlugWithEnergyMeter        
+        /// </summary>
+        /// <param name="hostname">hostname</param>
+        /// <param name="year">year (default : current year)</param>
+        /// <param name="month">month (default : current month)</param>
+        /// <returns></returns>
+        [MessageCallback]
+        public dynamic GetDailyStat(string hostname, int? year = null, int? month = null)
+        {
+            if (!year.HasValue) year = DateTime.Now.Year;
+            if (!month.HasValue) month = DateTime.Now.Month;
 
-    public class TPLinkConfig
-    {
-        public string HostName { get; set; }
-        public TPLink.SmartHome.SystemType Type { get; set; }
+            return new TPLink.SmartHome.PlugWithEnergyMeterClient(hostname).ExecuteAsync(
+                        "emeter",
+                        "get_daystat",
+                        new Newtonsoft.Json.Linq.JProperty("year", year),
+                        new Newtonsoft.Json.Linq.JProperty("month", month)
+                    ).Result;
+        }
+
+        /// <summary>
+        /// Gets the monthly conumption stats of a PlugWithEnergyMeter
+        /// </summary>
+        /// <param name="hostname">hostname</param>
+        /// <param name="year">year (default : current year)</param>
+        /// <returns></returns>
+        [MessageCallback]
+        public dynamic GetMonthStat(string hostname, int? year = null)
+        {
+            if (!year.HasValue) year = DateTime.Now.Year;
+
+            return new TPLink.SmartHome.PlugWithEnergyMeterClient(hostname).ExecuteAsync(
+                        "emeter",
+                        "get_monthstat",
+                        new Newtonsoft.Json.Linq.JProperty("year", year)
+                    ).Result;
+        }
+
+        /// <summary>
+        /// Sets the output state of a Plug (turns on or turns off)
+        /// </summary>
+        /// <param name="hostname">hostname</param>
+        /// <param name="state">true to turn on, false otherwise</param>
+        [MessageCallback]
+        public void SetOutputState(string hostname, bool state)
+        {
+            new TPLink.SmartHome.PlugClient(hostname).SetOutput(state ? TPLink.SmartHome.OutputState.On : TPLink.SmartHome.OutputState.Off);
+        }
 
     }
 }

@@ -2,9 +2,10 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="TPLinkSmartHome"
          Version="1.0"
-         Author="roddone"
-         URL="http://www.mywebsite.com"
+         Author="Romain ODDONE"
+         URL="https://github.com/roddone"
          Description="TPLinkSmartHome Copyright ©  2018"
+         Icon="kasasmart.jpg"
          EnableControlHub="false">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
     <Platforms>
@@ -14,8 +15,18 @@
   </Compatibility>
   <Settings>
     <!-- Add your package's settings here -->
-    <Setting name="setting" type="JsonObject">
-
+    <Setting name="poolingInterval" type="Int32" defaultValue="5000" isRequired="false"></Setting>
+    <Setting name="devices" type="JsonObject" isRequired="true">
+      <defaultContent>       
+      [{
+        "HostName": "192.168.0.123",
+        "Type": "PlugWithEnergyMeter"
+        }, {
+        "HostName": "192.168.0.234",
+        "Type": "PlugWithEnergyMeter"
+        }]
+      
+      </defaultContent>
     </Setting>
   </Settings>
 </Package>

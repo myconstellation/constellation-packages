@@ -55,8 +55,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\PlugInformations.cs" />
+    <Compile Include="Models\PlugWithEnergyMeterInformations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\PublicSystemInfo.cs" />
+    <Compile Include="TPLinkConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -70,7 +74,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties PublishServer="https://constellation.roddone.ovh" PublishMethod="ConstellationServer" />
+      <UserProperties PublishMethod="ConstellationServer" PublishServer="https://constellation.roddone.ovh" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
