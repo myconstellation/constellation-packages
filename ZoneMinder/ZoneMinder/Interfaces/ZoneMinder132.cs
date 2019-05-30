@@ -74,13 +74,13 @@ namespace ZoneMinder.Interfaces
                             CaptureOptions = m.Monitor.Options.Value,
                             CapturePath = m.Monitor.Path.Value,
                             Controllable = m.Monitor.Controllable.Value == "1",
-                            DayEvents = int.Parse(m.Monitor.DayEvents.Value),
-                            HourEvents = int.Parse(m.Monitor.HourEvents.Value),
-                            MonthEvents = int.Parse(m.Monitor.MonthEvents.Value),
-                            WeekEvents = int.Parse(m.Monitor.WeekEvents.Value),
-                            ZoneCount = int.Parse(m.Monitor.ZoneCount.Value),
-                            ServerID = int.Parse(m.Monitor.ServerId.Value),
-                            StorageID = int.Parse(m.Monitor.StorageId.Value)
+                            DayEvents = int.Parse(m.Monitor.DayEvents.Value ?? "0"),
+                            HourEvents = int.Parse(m.Monitor.HourEvents.Value ?? "0"),
+                            MonthEvents = int.Parse(m.Monitor.MonthEvents.Value ?? "0"),
+                            WeekEvents = int.Parse(m.Monitor.WeekEvents.Value ?? "0"),
+                            ZoneCount = int.Parse(m.Monitor.ZoneCount.Value ?? "0"),
+                            ServerID = int.Parse(m.Monitor.ServerId.Value ?? "0"),
+                            StorageID = int.Parse(m.Monitor.StorageId.Value ?? "0")
                         });
                     }
                 }
