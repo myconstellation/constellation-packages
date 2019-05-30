@@ -25,7 +25,7 @@ namespace Mikrotik
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Threading;
+    using System.Threading.Tasks;
     using tik4net;
     using tik4net.Objects;
     using tik4net.Objects.CapsMan;
@@ -68,12 +68,11 @@ namespace Mikrotik
         /// </summary>
         public override void OnStart()
         {
-            DateTime lastQuery = DateTime.MinValue;
-            Thread thQuery = new Thread(new ThreadStart(() =>
+            Task.Factory.StartNew(async () =>
             {
                 while (PackageHost.IsRunning)
                 {
-                    if (DateTime.Now.Subtract(lastQuery).TotalMilliseconds >= PackageHost.GetSettingValue<int>("QueryInterval"))
+                    try
                     {
                         if (this.connection == null || !this.connection.IsOpened)
                         {
@@ -108,12 +107,15 @@ namespace Mikrotik
                                 this.connection = null;
                             }
                         }
-                        lastQuery = DateTime.Now;
+                        await Task.Delay(Math.Min(1000, PackageHost.GetSettingValue<int>("QueryInterval")));
                     }
-                    Thread.Sleep(100);
+                    catch (Exception ex)
+                    {
+                        PackageHost.WriteError($"Fatal error in the main loop : {ex}");
+                        await Task.Delay(5000);
+                    }
                 }
-            }));
-            thQuery.Start();
+            }, TaskCreationOptions.LongRunning);
             PackageHost.WriteInfo("Package started !");
         }
 
@@ -145,7 +147,7 @@ namespace Mikrotik
                         {
                             ["Host"] = PackageHost.GetSettingValue("Host")
                         },
-                        lifetime: PackageHost.GetSettingValue<int>("QueryInterval") * 2);
+                        lifetime: Math.Min(10, (PackageHost.GetSettingValue<int>("QueryInterval") / 1000) * 2));
                 }
                 catch (TikCommandException ex) when (ex.Code == "0" || ex.Message.StartsWith("no such command"))
                 {
