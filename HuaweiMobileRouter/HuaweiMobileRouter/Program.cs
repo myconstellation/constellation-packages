@@ -182,7 +182,19 @@ namespace HuaweiMobileRouter
                 this.timer?.Stop();
 
                 // Check login state
-                if (this.router.Credential != null && this.router.LoginState.State < 0)
+                LoginState loginState = null;
+                try
+                {
+                    loginState = this.router.LoginState;
+                }
+                catch (RouterErrorException exception) when
+                    (exception.Error.Code == Error.ErrorCode.ERROR_WRONG_SESSION ||
+                     exception.Error.Code == Error.ErrorCode.ERROR_WRONG_SESSION_TOKEN  ||
+                     exception.Error.Code == Error.ErrorCode.ERROR_WRONG_TOKEN)
+                {
+                    // Do not thrown exception when session expired (so loginState remains null)
+                }
+                if (this.router.Credential != null && (loginState == null || loginState.State < 0))
                 {
                     PackageHost.WriteWarn("Renewing authentification ...");
                     if (this.router.Login())
