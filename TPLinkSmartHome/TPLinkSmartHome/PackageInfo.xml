@@ -4,7 +4,7 @@
          Version="1.0"
          Author="Romain ODDONE"
          URL="https://github.com/roddone"
-         Description="TPLinkSmartHome : contrôler et monitorer ses équipements TPLink SmartHome ©  2019"
+         Description="Control and monitor TPLink SmartHome devices"
          Icon="kasasmart.jpg"
          EnableControlHub="false">
   <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
@@ -14,7 +14,6 @@
     </Platforms>
   </Compatibility>
   <Settings>
-    <!-- Add your package's settings here -->
     <Setting name="poolingInterval" type="Int32" defaultValue="5000" isRequired="false"></Setting>
     <Setting name="devices" type="JsonObject" isRequired="true">
       <defaultContent>       
