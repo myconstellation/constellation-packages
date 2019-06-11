@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="TPLinkSmartHome"
-         Version="1.0.1"
+         Version="1.0.2"
          Author="Romain ODDONE"
          URL="https://github.com/roddone"
          Description="Control and monitor TPLink SmartHome devices"
