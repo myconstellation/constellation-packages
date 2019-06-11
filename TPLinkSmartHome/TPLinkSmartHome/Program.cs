@@ -6,6 +6,9 @@ using TPLinkSmartHome.Models;
 
 namespace TPLinkSmartHome
 {
+    /// <summary>
+    /// TPLinkSmartHome Package
+    /// </summary>
     public class Program : PackageBase
     {
         static void Main(string[] args)
@@ -13,6 +16,9 @@ namespace TPLinkSmartHome
             PackageHost.Start<Program>(args);
         }
 
+        /// <summary>
+        /// OnStart
+        /// </summary>
         public override void OnStart()
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
@@ -24,11 +30,11 @@ namespace TPLinkSmartHome
                     //pool to get devices informations
                     while (PackageHost.IsRunning)
                     {
-                        try
-                        {
-                            int soLifeTime = Math.Max(PackageHost.GetSettingValue<int>("poolingInterval") * 2, 30000) / 1000;
+                        int soLifeTime = Math.Max(PackageHost.GetSettingValue<int>("poolingInterval") * 2, 30000) / 1000;
 
-                            foreach (TPLinkConfig config in configs)
+                        foreach (TPLinkConfig config in configs)
+                        {
+                            try
                             {
                                 if (config.Type == TPLink.SmartHome.SystemType.PlugWithEnergyMeter)
                                 {
@@ -37,7 +43,7 @@ namespace TPLinkSmartHome
                                     TPLink.SmartHome.SystemInfo systemInfos = await plug.GetSystemInfoAsync();
                                     TPLink.SmartHome.OutputState state = await plug.GetOutputAsync();
 
-                                    PlugWithEnergyMeterInformations plugInfos = PlugWithEnergyMeterInformations.CreateFromSystemInfosAndOutputStateAndConsumption(systemInfos, state, consumption);                                    
+                                    PlugWithEnergyMeterInformations plugInfos = PlugWithEnergyMeterInformations.CreateFromSystemInfosAndOutputStateAndConsumption(systemInfos, state, consumption);
 
                                     PackageHost.PushStateObject($"TPLink-{config.HostName}", plugInfos, lifetime: soLifeTime);
                                 }
@@ -52,15 +58,17 @@ namespace TPLinkSmartHome
                                     PackageHost.PushStateObject($"TPLink-{config.HostName}", plugInfos, lifetime: soLifeTime);
                                 }
                             }
+                            catch (TimeoutException ex)
+                            {
+                                PackageHost.WriteError($"Connection timeout for TPLink device '{config?.HostName}' : {ex.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                PackageHost.WriteError($"An unknown error has occurred for TPLink device '{config?.HostName}' : {ex}");
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            PackageHost.WriteError(ex);
-                        }
-                        finally
-                        {
-                            await Task.Delay(PackageHost.GetSettingValue<int>("poolingInterval"));
-                        }
+
+                        await Task.Delay(PackageHost.GetSettingValue<int>("poolingInterval"));
                     }
 
                 }, TaskCreationOptions.LongRunning);
