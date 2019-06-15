@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="S-Sound"
          Icon="ssound.png"
-         Version="1.5.1"
+         Version="1.5.2"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="A multi-room audio system for Constellation"

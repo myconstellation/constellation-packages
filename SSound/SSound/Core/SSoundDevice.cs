@@ -23,6 +23,7 @@ namespace SSound.Core
 {
     using NAudio.CoreAudioApi;
     using NAudio.Wave;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Represent a S-Sound In/Out device
@@ -53,7 +54,14 @@ namespace SSound.Core
         public SSoundDevice(MMDevice device)
         {
             this.ID = device.ID;
-            this.FriendlyName = device.FriendlyName;
+            try
+            {
+                this.FriendlyName = device.FriendlyName;
+            }
+            catch (COMException comEx) when ((uint)comEx.HResult == 0xE000020B)
+            {
+                this.FriendlyName = device.ID;
+            }
             this.State = device.State.ToString();
             if (device.State == DeviceState.Active)
             {
