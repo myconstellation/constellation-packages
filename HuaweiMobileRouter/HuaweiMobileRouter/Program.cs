@@ -187,9 +187,10 @@ namespace HuaweiMobileRouter
                 {
                     loginState = this.router.LoginState;
                 }
+                catch (TimeoutException) { }
                 catch (RouterErrorException exception) when
                     (exception.Error.Code == Error.ErrorCode.ERROR_WRONG_SESSION ||
-                     exception.Error.Code == Error.ErrorCode.ERROR_WRONG_SESSION_TOKEN  ||
+                     exception.Error.Code == Error.ErrorCode.ERROR_WRONG_SESSION_TOKEN ||
                      exception.Error.Code == Error.ErrorCode.ERROR_WRONG_TOKEN)
                 {
                     // Do not thrown exception when session expired (so loginState remains null)
