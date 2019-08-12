@@ -122,7 +122,7 @@ namespace PoolCop
         /// <returns></returns>
         public Task<CommandResult> SwitchPumpState()
         {
-            return this.ExecuteCommand($"aux/pump");
+            return this.ExecuteCommand($"pump");
         }
 
         /// <summary>
