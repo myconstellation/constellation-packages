@@ -126,5 +126,19 @@ namespace TPLinkSmartHome
             new TPLink.SmartHome.PlugClient(hostname).SetOutput(state ? TPLink.SmartHome.OutputState.On : TPLink.SmartHome.OutputState.Off);
         }
 
+        /// <summary>
+        /// Sets the led state of a Plug (turns on or turns off)
+        /// </summary>
+        /// <param name="hostname">hostname</param>
+        /// <param name="isOff">true to turn off the led, false otherwise</param>
+        [MessageCallback]
+        public object SetLedOff(string hostname, bool isOff)
+        {
+            return new TPLink.SmartHome.PlugClient(hostname).ExecuteAsync(
+                "system", 
+                "set_led_off", 
+                new Newtonsoft.Json.Linq.JProperty("off", isOff ? 1 : 0)
+            ).Result;
+        }
     }
 }
