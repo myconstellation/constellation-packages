@@ -50,7 +50,7 @@ Vous pouvez également déployer ce package manuellement dans la configuration d
 | poolingInterval | int | NON | interval en millisecondes entre deux récupération de l'état des périphériques (défaut : 2000ms) |
 
 ## StateObjects
-Vous retrouverez 1 StateObject publiés par périphérique par le package :
+Vous retrouverez 1 StateObject publié par périphérique par le package :
 
 | Nom | Type | Description |
 | --- | ---- | ----------- |
@@ -63,7 +63,8 @@ Le package expose 3 MessageCallbacks :
 | --------- | -------------- | ----------- |
 | GetDailyStat(string hostname, int? year = null, int? month = null) | JsonObject | Les statistiques d'utilisation quotidiennes pour une année et un mois donné (Pour les prises HS110 uniquement) |
 | GetMonthStat(string hostname, int? year = null) | JsonObject | Les statistiques d'utilisation mensuelles pour une année donnée (Pour les prises HS110 uniquement) |
-| SetOutputState(string hostname, bool state) : change l'état du relais (on/off) | Objet SunInfo | Change l'état d'une prise (Pour les prises HS100 et HS110 uniquement) |
+| SetOutputState(string hostname, bool state) | void | Change l'état (ON/OFF) d'une prise (Pour les prises HS100 et HS110 uniquement) |
+| SetLedOff(string hostname, bool isOff) | Object | Change l'état (ON/OFF) de la LED d'une prise (Pour les prises HS100 et HS110 uniquement) |
   
 ## Quelques exemples
 * Surveiller la consommation d'une prise connectée
