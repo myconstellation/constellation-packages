@@ -64,15 +64,15 @@ namespace ZoneMinder.Interfaces
                                 Type = m.Monitor.Type.Value,
                                 Enabled = m.Monitor.Enabled.Value == "1",
                                 Function = (MonitorFunction)Enum.Parse(typeof(MonitorFunction), m.Monitor.Function.Value),
-                                Width = int.Parse(m.Monitor.Width.Value),
-                                Height = int.Parse(m.Monitor.Height.Value),
-                                MaxFPS = decimal.Parse(m.Monitor.MaxFPS.Value, CultureInfo.InvariantCulture),
-                                SpaceUsed = Math.Round(decimal.Parse(((dynamic)((getDiskPercent.usage as JObject).Property(m.Monitor.Name.Value).Value)).space.Value, System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture)),
-                                FrameRate = decimal.Parse(status.monitor.FrameRate.Value, CultureInfo.InvariantCulture),
+                                Width = int.Parse(m.Monitor.Width.Value ?? "0"),
+                                Height = int.Parse(m.Monitor.Height.Value ?? "0"),
+                                MaxFPS = decimal.Parse(m.Monitor.MaxFPS.Value ?? "0", CultureInfo.InvariantCulture),
+                                SpaceUsed = Math.Round(decimal.Parse(((dynamic)((getDiskPercent.usage as JObject)?.Property(m.Monitor.Name.Value)?.Value))?.space?.Value ?? "0", System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture)),
+                                FrameRate = decimal.Parse(status.monitor.FrameRate?.Value ?? "0", CultureInfo.InvariantCulture),
                                 AlarmState = status.monitor.Status == null ? AlarmState.Unknown : (AlarmState)int.Parse(status.monitor.Status.Value),
-                                MinEventId = status.monitor.MinEventId == null ? 0 : int.Parse(status.monitor.MinEventId.Value),
-                                MaxEventId = status.monitor.MaxEventId == null ? 0 : int.Parse(status.monitor.MaxEventId.Value),
-                                TotalEvents = status.monitor.TotalEvents == null ? 0 : int.Parse(status.monitor.TotalEvents.Value),
+                                MinEventId = int.Parse(status.monitor.MinEventId?.Value ?? "0"),
+                                MaxEventId = int.Parse(status.monitor.MaxEventId?.Value ?? "0"),
+                                TotalEvents = int.Parse(status.monitor.TotalEvents?.Value ?? "0"),
                             });
                         }
                     }
