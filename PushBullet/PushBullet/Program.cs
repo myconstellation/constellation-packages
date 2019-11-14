@@ -57,6 +57,7 @@ namespace PushBullet
 
             // Init the Realtime Event Stream
             this._webSocket = new WebSocket(WS_ROOT_URI + PackageHost.GetSettingValue("token"));
+            this._webSocket.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
             this._webSocket.OnOpen += (s, e) => PackageHost.WriteInfo("Connected to the realtime event stream");
             this._webSocket.OnClose += (s, e) => PackageHost.WriteWarn("Disconnected to the realtime event stream");
             this._webSocket.OnError += (s, e) => PackageHost.WriteWarn("Error on the realtime event stream : " + e.Message);
@@ -375,12 +376,15 @@ namespace PushBullet
                 PackageHost.WriteDebug("{0} {1}", request.Method, request.RequestUri.ToString());
 
                 WebResponse response = request.GetResponse();
-                PackageHost.PushStateObject("RateLimit", new
+                if (response.Headers.Contains("X-Ratelimit-Limit"))
                 {
-                    Limit = int.Parse(response.Headers["X-Ratelimit-Limit"]),
-                    Remaining = int.Parse(response.Headers["X-Ratelimit-Remaining"]),
-                    Reset = int.Parse(response.Headers["X-Ratelimit-Reset"])
-                }, "PushBullet.RateLimits");
+                    PackageHost.PushStateObject("RateLimit", new
+                    {
+                        Limit = int.Parse(response.Headers["X-Ratelimit-Limit"]),
+                        Remaining = int.Parse(response.Headers["X-Ratelimit-Remaining"]),
+                        Reset = int.Parse(response.Headers["X-Ratelimit-Reset"])
+                    }, "PushBullet.RateLimits");
+                }
 
                 using (Stream stream = response.GetResponseStream())
                 using (StreamReader reader = new StreamReader(stream))
