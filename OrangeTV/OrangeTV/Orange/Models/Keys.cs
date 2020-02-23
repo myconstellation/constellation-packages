@@ -64,7 +64,7 @@
         Down,
         [OrangeServiceId(105)]
         Left,
-        [OrangeServiceId(116)]
+        [OrangeServiceId(106)]
         Right,
         [OrangeServiceId(352)]
         OK,
