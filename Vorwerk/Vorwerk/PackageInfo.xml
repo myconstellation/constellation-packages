@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="Vorwerk"
+         Version="1.0"
+         Author="Sebastien Warin"
+         URL="http://sebastien.warin.fr/"
+         Icon="logo.jpg"
+         Description="Connect your Vorwerk Kobold / Neato Botvac to Constellation">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="Username" type="String" description="Your username" isRequired="true" />
+    <Setting name="Password" type="String" description="Your password" isRequired="true" />
+    <Setting name="Vendor" type="String" description="Vorwerk or Neato" isRequired="false" defaultValue="Vorwerk" />
+    <Setting name="RobotPollingInterval" type="Int32" description="Robot polling interval in second" defaultValue="10" />
+    <Setting name="DashboardPollingInterval" type="Int32" description="Dashboard polling interval in second" defaultValue="900" />
+  </Settings>
+</Package>
