@@ -49,7 +49,7 @@ namespace Vorwerk.Models
         public object Data { get; set; }
 
         [VorwerkProperty("alert")]
-        public string Alert { get; set; }
+        public AlertCode? Alert { get; set; }
 
         [VorwerkProperty("state")]
         public StateCode State { get; set; }
@@ -78,7 +78,7 @@ namespace Vorwerk.Models
         /// <param name="json">The json.</param>
         /// <returns></returns>
         public static RobotState FromJson(string json) => JsonConvert.DeserializeObject<RobotState>(json, VorwerkContractResolver.Settings);
-        
+
         [JsonConverter(typeof(StringEnumConverter))]
         public enum StateCode
         {
@@ -103,35 +103,61 @@ namespace Vorwerk.Models
             CopyLogs = 8,
             DeterminePosition = 9,
             IECTest = 10,
+            MapCleaning = 11,
+            ExploringMap = 12,
+            AcquiringPersistentMapIDs = 13,
+            CreatingMap = 14,
+            SuspendedExploration = 15
+        }
+
+        [JsonConverter(typeof(CustomEnumJsonConverter<AlertCode>))]
+        public enum AlertCode
+        {
+            Unknown,
+            [VorwerkIds("ui_alert_dust_bin_full", "dustbin_full")]
+            DustContainerFull,
+            [VorwerkIds("ui_alert_recovering_location")]
+            ReturningToStart,
+            [VorwerkIds("maint_brush_change")]
+            ChangeBrush,
+            [VorwerkIds("maint_filter_change")]
+            ChangeFilter,
+            [VorwerkIds("clean_completed_to_start")]
+            CleaningCompleted,
+            [VorwerkIds("nav_floorplan_not_created")]
+            FloorplanNotFound,
         }
 
         [JsonConverter(typeof(CustomEnumJsonConverter<ErrorCode>))]
         public enum ErrorCode
         {
-            [VorwerkProperty("ui_alert_invalid")]
+            Unknown,
+            [VorwerkIds("ui_alert_invalid")]
             NoMessage,
-            [VorwerkProperty("ui_alert_busy_charging")] 
+            [VorwerkIds("ui_alert_busy_charging")]
             BusyCharging,
-            [VorwerkProperty("ui_error_dust_bin_full")] // ui_alert_dust_bin_full
+            [VorwerkIds("ui_error_dust_bin_full")]
             DustContainerFull,
-            [VorwerkProperty("ui_error_brush_stuck")]
+            [VorwerkIds("ui_error_brush_stuck")]
             BrushStuck,
-            [VorwerkProperty("ui_error_bumper_stuck")]
+            [VorwerkIds("ui_error_bumper_stuck")]
             BumperStuck,
-            [VorwerkProperty("ui_error_picked_up")]
+            [VorwerkIds("ui_error_picked_up")]
             PickedUp,
-            [VorwerkProperty("ui_error_stuck")]
+            [VorwerkIds("ui_error_stuck")]
             Stuck,
-            [VorwerkProperty("ui_error_dust_bin_emptied")]
+            [VorwerkIds("ui_error_dust_bin_emptied")]
             DustContainerEmptied,
-            [VorwerkProperty("ui_error_dust_bin_missing")]
+            [VorwerkIds("ui_error_dust_bin_missing")]
             DustContainerMissing,
-            [VorwerkProperty("ui_error_navigation_falling")]
+            [VorwerkIds("ui_error_navigation_falling")]
             NavigationFalling,
-            [VorwerkProperty("ui_error_navigation_noprogress")]
+            [VorwerkIds("ui_error_navigation_noprogress")]
             NavigationNoProgress,
-            [VorwerkProperty("ui_error_navigation_nomotioncommands")]
+            [VorwerkIds("ui_error_navigation_nomotioncommands")]
             NavigationNoMotionCommands,
+            [VorwerkIds("ui_error_navigation_undockingfailed")]
+            NavigationUndockingFailed
         }
     }
 

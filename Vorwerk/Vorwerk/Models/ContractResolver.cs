@@ -101,6 +101,35 @@ namespace Vorwerk.Models
     }
 
     /// <summary>
+    /// Represents a list of JSON ID
+    /// </summary>
+    /// <seealso cref="System.Attribute" />
+    public class VorwerkIdsAttribute : Attribute
+    {
+        /// <summary>
+        /// Gets or sets the list of ID.
+        /// </summary>
+        /// <value>
+        /// The list of ID.
+        /// </value>
+        public List<string> IDs { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VorwerkIdsAttribute" /> class.
+        /// </summary>
+        /// <param name="id">The first ID.</param>
+        /// <param name="ids">The others IDs.</param>
+        public VorwerkIdsAttribute(string id, params string[] ids)
+        {
+            this.IDs = new List<string>() { id };
+            if (ids.Length > 0)
+            {
+                this.IDs.AddRange(ids);
+            }
+        }
+    }
+
+    /// <summary>
     /// JSON string converter
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
@@ -184,12 +213,13 @@ namespace Vorwerk.Models
                 foreach (var item in (TEnum[])Enum.GetValues(typeof(TEnum)))
                 {
                     var attr = item.GetType().GetTypeInfo().GetRuntimeField(item.ToString())
-                        .GetCustomAttribute<VorwerkPropertyAttribute>();
-                    if (attr != null && attr.PropertyName == reader.Value.ToString())
+                        .GetCustomAttribute<VorwerkIdsAttribute>();
+                    if (attr != null && attr.IDs.Contains(reader.Value.ToString()))
                     {
                         return item;
                     }
                 }
+                return default(TEnum);
             }
             return null;
         }
