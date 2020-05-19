@@ -24,6 +24,7 @@ namespace ForecastIO
     using Constellation.Package;
     using ForecastIO.Extensions;
     using System;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -45,6 +46,7 @@ namespace ForecastIO
         /// </summary>
         public override void OnStart()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             this.configuration = PackageHost.GetSettingAsConfigurationSection<ForecastIOConfigurationSection>("forecastIOConfigurationSection", true);
 
             int nbSeconde = 0;
