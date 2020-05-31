@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="GoogleCalendar"
+         Version="1.0"
+         Author="Hugo MROCZKOWSKI"
+         URL="https://twitter.com/hugo_mro"
+         Description="Google Calendar connector for Constellation"
+         Icon="calendar.png"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="false" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <Setting name="refresh" type="Int32" defaultValue="15000"/>
+    <Setting name="interval" type="Int32" defaultValue="12"/>
+    <Setting name="client_secret" type="String" isRequired="true"/>
+  </Settings>
+</Package>
