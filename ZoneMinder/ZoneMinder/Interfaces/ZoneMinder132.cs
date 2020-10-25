@@ -106,7 +106,7 @@ namespace ZoneMinder.Interfaces
         {
             try
             {
-                string strLoginResponse = this.DoZMRequest("api/host/login.json", postdata: $"user={PackageHost.GetSettingValue("Username")}&pass={PackageHost.GetSettingValue("Password")}", method: WebRequestMethods.Http.Post);
+                string strLoginResponse = this.DoZMRequest("api/host/login.json?stateful=1", postdata: $"user={PackageHost.GetSettingValue("Username")}&pass={PackageHost.GetSettingValue("Password")}", method: WebRequestMethods.Http.Post);
                 dynamic loginResponse = JsonConvert.DeserializeObject(strLoginResponse) as dynamic;
                 if (loginResponse.credentials != null)
                 {
