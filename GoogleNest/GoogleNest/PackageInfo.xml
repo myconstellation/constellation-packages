@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="GoogleNest"
+         Version="1.0"
+         Author="Lucas Dupuis"
+         Icon="nest.png"
+         Description="Connect Google Nest devices to Constellation"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45" />
+  <Settings>
+    <Setting name="RefreshToken" isRequired="true" type="String" ignoreLocalValue="true" description="Google API OAuth2 refresh token" />
+    <Setting name="ClientID" isRequired="true" type="String" ignoreLocalValue="true" description="Client ID OAuth 2.0 from GCP > APIs &amp; services > Credentials" />
+    <Setting name="ClientSecret" isRequired="true" type="String" ignoreLocalValue="true" description="Client secret OAuth 2.0 from GCP > APIs &amp; services > Credentials" />
+    <Setting name="ProjectId" isRequired="true" type="String" ignoreLocalValue="true" description="Device access project ID on nest console for google https://console.nest.google.com/" />
+    <Setting name="DeviceId" isRequired="true" type="String" ignoreLocalValue="true" description="Device ID on the device access console" />
+    <Setting name="RefreshInterval" isRequired="true" type="Int32" ignoreLocalValue="true" description="Interval between API requests (ms)" />
+  </Settings>
+</Package>
