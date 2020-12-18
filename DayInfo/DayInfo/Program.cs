@@ -103,13 +103,13 @@ namespace DayInfo
 
         private TimeSpan GetSunrise(double jdDate, double latitude, double longitude, int timezone, bool isDaylightSavingTime, TwilightOffset offset = TwilightOffset.None)
         {
-            double sunRise = NAAUtils.calcSunRiseUTC(jdDate, latitude, longitude);
+            double sunRise = NAAUtils.calcSunRiseUTC(jdDate, latitude, longitude, offset);
             return NAAUtils.getDateTime(sunRise, timezone, DateTime.Now, isDaylightSavingTime).Value.TimeOfDay;
         }
 
         private TimeSpan GetSunset(double jdDate, double latitude, double longitude, int timezone, bool isDaylightSavingTime, TwilightOffset offset = TwilightOffset.None)
         {
-            double sunRise = NAAUtils.calcSunSetUTC(jdDate, latitude, longitude);
+            double sunRise = NAAUtils.calcSunSetUTC(jdDate, latitude, longitude, offset);
             return NAAUtils.getDateTime(sunRise, timezone, DateTime.Now, isDaylightSavingTime).Value.TimeOfDay;
         }
     }
