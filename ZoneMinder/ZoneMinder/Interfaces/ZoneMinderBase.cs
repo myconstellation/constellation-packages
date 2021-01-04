@@ -159,6 +159,15 @@ namespace ZoneMinder.Interfaces
         }
 
         /// <summary>
+        /// Clears the Authentification token.
+        /// </summary>
+        public void ClearToken()
+        {
+            this.authentificationTokenDate = DateTime.MinValue;
+            this.authentificationToken = null;
+        }
+
+        /// <summary>
         /// Authentificate to ZoneMinder.
         /// </summary>
         /// <returns><c>true</c> if access granted</returns>
@@ -471,6 +480,11 @@ namespace ZoneMinder.Interfaces
             }
             catch (Exception ex)
             {
+                if (ex is WebException webException && webException.Status == WebExceptionStatus.ProtocolError && webException.Response is HttpWebResponse webResponse && webResponse.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    this.ClearToken();
+                }
+
                 if (--tries == 0)
                 {
                     throw ex;
