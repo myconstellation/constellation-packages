@@ -23,6 +23,14 @@ namespace DayInfo.Utils
 {
     using System;
 
+    public enum TwilightOffset
+    {
+        None = 0,
+        Civilian = 1,
+        Nautical = 2,
+        Astronomical = 3
+    }
+
     // Source : http://pointofint.blogspot.fr/2014/06/sunrise-and-sunset-in-c.html
     public class NAAUtils
     {
@@ -394,14 +402,29 @@ namespace DayInfo.Utils
         //* hour angle of sunrise in radians	
         //***********************************************************************/
 
-        static public double calcHourAngleSunrise(double lat, double solarDec)
+        static public double calcHourAngleSunrise(double lat, double solarDec, TwilightOffset twilightOffset = TwilightOffset.None)
         {
             double latRad = degToRad(lat);
             double sdRad = degToRad(solarDec);
+            double angle = 0;
+            switch (twilightOffset)
+            {
+                case TwilightOffset.None:
+                    angle = 90.833;
+                    break;
+                case TwilightOffset.Civilian:
+                    angle = 96;
+                    break;
+                case TwilightOffset.Nautical:
+                    angle = 102;
+                    break;
+                case TwilightOffset.Astronomical:
+                    angle = 108;
+                    break;
+            }
+            double HAarg = (Math.Cos(degToRad(angle)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad));
 
-            double HAarg = (Math.Cos(degToRad(90.833)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad));
-
-            double HA = (Math.Acos(Math.Cos(degToRad(90.833)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad)));
+            double HA = (Math.Acos(Math.Cos(degToRad(angle)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad)));
 
             return HA;	 // in radians
         }
@@ -418,16 +441,32 @@ namespace DayInfo.Utils
         //* hour angle of sunset in radians	
         //***********************************************************************/
 
-        static public double calcHourAngleSunset(double lat, double solarDec)
+        static public double calcHourAngleSunset(double lat, double solarDec, TwilightOffset twilightOffset = TwilightOffset.None)
         {
             double latRad = degToRad(lat);
             double sdRad = degToRad(solarDec);
+            double angle = 0;
+            switch (twilightOffset)
+            {
+                case TwilightOffset.None:
+                    angle = 90.833;
+                    break;
+                case TwilightOffset.Civilian:
+                    angle = 96;
+                    break;
+                case TwilightOffset.Nautical:
+                    angle = 102;
+                    break;
+                case TwilightOffset.Astronomical:
+                    angle = 108;
+                    break;
+            }
 
-            double HAarg = (Math.Cos(degToRad(90.833)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad));
+            double HAarg = (Math.Cos(degToRad(angle)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad));
 
-            double HA = (Math.Acos(Math.Cos(degToRad(90.833)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad)));
+            double HA = (Math.Acos(Math.Cos(degToRad(angle)) / (Math.Cos(latRad) * Math.Cos(sdRad)) - Math.Tan(latRad) * Math.Tan(sdRad)));
 
-            return -HA;	 // in radians
+            return -HA;  // in radians
         }
 
 
@@ -462,8 +501,8 @@ namespace DayInfo.Utils
             double hourAngle = calcHourAngleSunrise(latitude, solarDec);
 
             double delta = longitude - radToDeg(hourAngle);
-            double timeDiff = 4 * delta;	// in minutes of time
-            double timeUTC = 720 + timeDiff - eqTime;	// in minutes
+            double timeDiff = 4 * delta;    // in minutes of time
+            double timeUTC = 720 + timeDiff - eqTime;   // in minutes
 
             // alert("eqTime = " + eqTime + "\nsolarDec = " + solarDec + "\ntimeUTC = " + timeUTC);
 
@@ -523,26 +562,26 @@ namespace DayInfo.Utils
         //* time in minutes from zero Z	
         //***********************************************************************/
 
-        static public double calcSunSetUTC(double JD, double latitude, double longitude)
+        static public double calcSunSetUTC(double JD, double latitude, double longitude, TwilightOffset twilightOffset = TwilightOffset.None)
         {
             var t = calcTimeJulianCent(JD);
             var eqTime = calcEquationOfTime(t);
             var solarDec = calcSunDeclination(t);
-            var hourAngle = calcHourAngleSunrise(latitude, solarDec);
+            var hourAngle = calcHourAngleSunrise(latitude, solarDec, twilightOffset);
             hourAngle = -hourAngle;
             var delta = longitude + radToDeg(hourAngle);
-            var timeUTC = 720 - (4.0 * delta) - eqTime;	// in minutes
+            var timeUTC = 720 - (4.0 * delta) - eqTime; // in minutes
             return timeUTC;
         }
 
-        static public double calcSunRiseUTC(double JD, double latitude, double longitude)
+        static public double calcSunRiseUTC(double JD, double latitude, double longitude, TwilightOffset twilightOffset = TwilightOffset.None)
         {
             var t = calcTimeJulianCent(JD);
             var eqTime = calcEquationOfTime(t);
             var solarDec = calcSunDeclination(t);
-            var hourAngle = calcHourAngleSunrise(latitude, solarDec);
+            var hourAngle = calcHourAngleSunrise(latitude, solarDec, twilightOffset);
             var delta = longitude + radToDeg(hourAngle);
-            var timeUTC = 720 - (4.0 * delta) - eqTime;	// in minutes
+            var timeUTC = 720 - (4.0 * delta) - eqTime; // in minutes
             return timeUTC;
         }
 
