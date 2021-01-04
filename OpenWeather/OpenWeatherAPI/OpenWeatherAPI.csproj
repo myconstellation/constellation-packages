@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.2</TargetFramework>
+    <Copyright>Copyright © 2020</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes>Ported to .Net standard 2.0</PackageReleaseNotes>
+    <Version>1.0.2</Version>
+    <Authors>OpenWeatherAPI, swiftyspiffy, Atrejoe</Authors>
+    <Product>.Net client for OpenWeatherAPI</Product>
+    <PackageProjectUrl>https://github.com/swiftyspiffy/OpenWeatherMap-API-CSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/swiftyspiffy/OpenWeatherMap-API-CSharp</RepositoryUrl>
+    <PackageTags>OpenWeatherAPI weather</PackageTags>
+    <OutputType>Library</OutputType>
+    <Description>Inspired by OpenWeatherMap-API-CSharp project.</Description>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <NoWarn />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <NoWarn />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Query.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+</Project>
