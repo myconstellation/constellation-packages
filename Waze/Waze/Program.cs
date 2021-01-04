@@ -55,6 +55,8 @@ namespace Waze
                 webClient.Headers.Add("user-agent", "Mozilla/5.0");
                 //referer, required to avoid a 403 HTTP Respopnse from waze
                 webClient.Headers.Add("Referer", "https://www.waze.com");
+                //force encoding in order to avoid accents problems
+                webClient.Encoding = System.Text.Encoding.UTF8;
 
                 string result = webClient.DownloadString(addressUrl);
                 response = JsonConvert.DeserializeObject<RoutingRequestResponse>(result, this.jsonSerializerSettings);
