@@ -47,7 +47,7 @@ namespace PoolCop
         public override void OnStart()
         {
             // Create the PoolCop interface
-            this.poolcop = new PoolCopInterface(PackageHost.GetSettingValue("PoolCopilotAPISecretKey"), PackageHost.GetSettingValue("PoolCopLocalIP"))
+            this.poolcop = new PoolCopInterface(PackageHost.GetSettingValue("PoolCopilotAPISecretKey"))
             {
                 APILanguage = PackageHost.GetSettingValue("PoolCopilotAPILanguage")
             };
@@ -60,7 +60,7 @@ namespace PoolCop
                 var metadatas = new Dictionary<string, object>
                 {
                     ["Name"] = this.poolcop.Status.Pool.Nickname,
-                    ["LocalIP"] = this.poolcop.LocalAddress,
+                    ["LocalIP"] = this.poolcop.Status.PoolCop.Network.IP,
                 };
                 PackageHost.PushStateObject("Pool", this.poolcop.Status.Pool, metadatas: metadatas, lifetime: lifetime);
                 PackageHost.PushStateObject("PoolCop", this.poolcop.Status.PoolCop, metadatas: metadatas, lifetime: lifetime);

@@ -22,15 +22,13 @@ Declare the package in a Sentinel with the following configuration :
   <settings>
     <setting key="PoolCopilotAPISecretKey" value="xxxxxxxxxxxxxxxxx" />
     <setting key="PoolCopilotAPILanguage" value="fr" />
-    <setting key="PoolCopLocalIP" value="192.168.x.x" />
     <setting key="Interval" value="30" />
   </settings>
 </package>
 ```
 
 Only the "PoolCopilotAPISecretKey" setting is required, others are optional :
-* PoolCopilotAPILanguage : the language used for alerts and other message from the API (supported: 'en', 'fr' and 'es')
-* PoolCopLocalIP : the PoolCop local IP (used if the PoolCopilot API is down)
+* PoolCopilotAPILanguage : the language used for alerts and other message from the API (supported: 'en', 'fr', 'de' and 'es')
 * Interval : the Polling interval in second (30sec by default)
 
 License

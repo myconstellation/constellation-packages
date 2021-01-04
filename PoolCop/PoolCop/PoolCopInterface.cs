@@ -60,10 +60,6 @@ namespace PoolCop
         public event EventHandler APIStatusChanged;
 
         /// <summary>
-        /// Gets the PoolCop local address.
-        /// </summary>
-        public string LocalAddress { get; private set; }
-        /// <summary>
         /// Gets the API secret key.
         /// </summary>
         public string APIKey { get; private set; }
@@ -80,11 +76,9 @@ namespace PoolCop
         /// Initializes a new instance of the <see cref="PoolCopInterface"/> class.
         /// </summary>
         /// <param name="apiKey">The PoolCop API secret key.</param>
-        /// <param name="localAddress">The PoolCop local address.</param>
-        public PoolCopInterface(string apiKey, string localAddress)
+        public PoolCopInterface(string apiKey)
         {
             this.APIKey = apiKey;
-            this.LocalAddress = localAddress;
         }
 
         /// <summary>
@@ -131,14 +125,7 @@ namespace PoolCop
         /// <returns></returns>
         public async Task Query()
         {
-            try
-            {
-                this.Status = await this.RequestPoolCopilotStatus();                
-            }
-            catch when(!string.IsNullOrEmpty(this.LocalAddress))
-            {
-                this.Status = await this.RequestLocalStatus();
-            }
+            this.Status = await this.RequestPoolCopilotStatus();
             this.StatusChanged?.Invoke(this, EventArgs.Empty);
             this.APIStatusChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -198,61 +185,6 @@ namespace PoolCop
                 ["X-PoolCopilot-Lang"] = this.APILanguage
             });
             return PoolCopStatus.FromJson(statusResponse);
-        }
-
-        /// <summary>
-        /// Requests the PoolCop status from the local service.
-        /// </summary>
-        /// <returns></returns>
-        private async Task<PoolCopStatus> RequestLocalStatus()
-        {
-            // Query local API
-            var poolDataStr = await HttpUtils.GetWebResponseAsync(new Uri($"http://{LocalAddress}/ajax.htm?request=poolData"));
-            var auxDataStr = await HttpUtils.GetWebResponseAsync(new Uri($"http://{LocalAddress}/ajax.htm?request=auxData"));
-            var poolData = JsonConvert.DeserializeObject(poolDataStr) as JObject;
-            var auxData = JsonConvert.DeserializeObject(auxDataStr) as JObject;
-            // Return PoolCopStatus with local info
-            return new PoolCopStatus
-            {
-                API = null, // local mode
-                Pool = new Pool
-                {
-                    Nickname = "Local PoolCop",
-                    Poolcop = "Local PoolCop"
-                },
-                PoolCop = new Models.PoolCop
-                {
-                    Voltage = double.Parse(poolData["BattVolts"].Value<string>().Replace(" VDC", ""), nfi),
-                    Date = DateTime.Parse($"{poolData["Date"].Value<string>()} {poolData["Time"].Value<string>()}"),
-                    Orp = poolData["ORP"].Value<int>(),
-                    PH = poolData["pH"].Value<double>(),
-                    Pressure = (int)(double.Parse(poolData["Pressure"].Value<string>().Replace(" BAR", ""), nfi) * 10),
-                    Status = new Status
-                    {
-                        ValvePosition = (ValvePosition)poolData["FilterPos"].Value<int>(),
-                        Pump = poolData["PumpState"].Value<string>() == "On",
-                        Aux1 = auxData.Property("Aux1State").Value.ToString() == "On",
-                        Aux2 = auxData.Property("Aux2State").Value.ToString() == "On",
-                        Aux3 = auxData.Property("Aux3State").Value.ToString() == "On",
-                        Aux4 = auxData.Property("Aux4State").Value.ToString() == "On",
-                        Aux5 = auxData.Property("Aux5State").Value.ToString() == "On",
-                        Aux6 = auxData.Property("Aux6State").Value.ToString() == "On",
-                    },
-                    Temperature = new Temperature
-                    {
-                        Water = double.Parse(poolData["WaterTemp"].Value<string>().Replace(" C", ""), nfi),
-                    },
-                    Auxiliaries = auxData.Properties()
-                            .Where(p => p.Name.EndsWith("State"))
-                            .Select(p => new Auxiliary
-                            {
-                                Id = Convert.ToInt32(p.Name.Substring(3, 1)),
-                                Status = p.Value.ToString() == "On",
-                                Label = p.Name.Replace("State", "")
-                            })
-                            .ToList()
-                }
-            };
         }
     }
 }
