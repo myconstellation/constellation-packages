@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="ZoneMinder"
-         Version="2.0.10"
+         Version="2.1.0"
          Icon="icon.png"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"

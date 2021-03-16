@@ -206,6 +206,17 @@ namespace ZoneMinder.Interfaces
         }
 
         /// <summary>
+        /// Sets the monitor property.
+        /// </summary>
+        /// <param name="monitorId">The monitor identifier.</param>
+        /// <param name="property">The property.</param>
+        /// <param name="value">The value.</param>
+        public void SetMonitorProperty(int monitorId, string property, string value)
+        {
+            this.Try(() => this.DoZMRequest($"api/monitors/{monitorId}.json", postdata: $"Monitor[{property}]={value}", method: WebRequestMethods.Http.Put));
+        }
+
+        /// <summary>
         /// Generates the streaming URI for live or pre-recorded streams.
         /// </summary>
         /// <param name="id">The identifier (monitorId if source=live or eventId if source=event).</param>
@@ -513,7 +524,6 @@ namespace ZoneMinder.Interfaces
             if (!string.IsNullOrEmpty(postdata))
             {
                 webRequest.ContentType = "application/x-www-form-urlencoded";
-                webRequest.Method = "POST";
                 byte[] data = Encoding.ASCII.GetBytes(postdata);
                 webRequest.ContentLength = data.Length;
                 using (var newStream = webRequest.GetRequestStream())

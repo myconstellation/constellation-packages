@@ -153,6 +153,19 @@ namespace ZoneMinder
         }
 
         /// <summary>
+        /// Sets the monitor property.
+        /// </summary>
+        /// <param name="monitorId">The monitor identifier.</param>
+        /// <param name="property">The property.</param>
+        /// <param name="value">The value.</param>
+        [MessageCallback]
+        public void SetMonitorProperty(int monitorId, string property, string value)
+        {
+            PackageHost.WriteInfo($"Setting Monitor[{property}]={value} for monitor #{monitorId}");
+            this.zoneMinder.SetMonitorProperty(monitorId, property, value);
+        }
+
+        /// <summary>
         /// Generates the streaming URI.
         /// </summary>
         /// <param name="id">The identifier (monitorId if source=live or eventId if source=event).</param>
