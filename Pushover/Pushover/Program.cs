@@ -156,7 +156,7 @@ namespace Pushover
                 }
                 if (url != null && !string.IsNullOrEmpty(url.URL))
                 {
-                    parameters["url"] = url.URL;
+                    parameters["url"] = HttpUtility.UrlEncode(url.URL);
                     if (!string.IsNullOrEmpty(url.Title))
                     {
                         parameters["url_title"] = url.Title;
@@ -170,6 +170,81 @@ namespace Pushover
                 }
 
                 return response.Result;
+            }
+        }
+
+        private T DoRequest<T>(string path, Dictionary<string, string> parameters = null, string method = WebRequestMethods.Http.Post) where T : class
+        {
+            string strResponse = null;
+            try
+            {
+                HttpWebRequest request = WebRequest.CreateHttp(API_ROOT_URI + path);
+                request.Method = method;
+                if (method == WebRequestMethods.Http.Post)
+                {
+                    if (parameters == null)
+                    {
+                        parameters = new Dictionary<string, string>();
+                    }
+                    parameters["token"] = PackageHost.GetSettingValue("Token");
+                    byte[] payloadData = UTF8Encoding.UTF8.GetBytes(string.Join("&", parameters.Select(p => p.Key + "=" + HttpUtility.UrlEncode(p.Value)).ToArray()));
+                    request.ContentType = "application/x-www-form-urlencoded";
+                    request.ContentLength = payloadData.Length;
+                    using (Stream requestBody = request.GetRequestStream())
+                    {
+                        requestBody.Write(payloadData, 0, payloadData.Length);
+                        requestBody.Close();
+                    }
+                }
+                PackageHost.WriteDebug("{0} {1}", request.Method, request.RequestUri.ToString());
+
+                WebResponse response = request.GetResponse();
+                if (response.Headers.AllKeys.Contains("X-Limit-App-Limit"))
+                {
+                    PackageHost.PushStateObject("RateLimit", new
+                    {
+                        Limit = int.Parse(response.Headers["X-Limit-App-Limit"]),
+                        Remaining = int.Parse(response.Headers["X-Limit-App-Remaining"]),
+                        Reset = int.Parse(response.Headers["X-Limit-App-Reset"])
+                    }, "Pushover.RateLimit");
+                }
+
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    strResponse = reader.ReadToEnd();
+                }
+            }
+            catch (WebException ex)
+            {
+                try
+                {
+                    using (StreamReader reader = new StreamReader(ex.Response.GetResponseStream()))
+                    {
+                        strResponse = reader.ReadToEnd();
+                        PackageHost.WriteError("Response error: {0}", strResponse);
+                    }
+                }
+                catch
+                {
+                    PackageHost.WriteError("Response error: {0}", ex.ToString());
+                }
+            }
+            // Process response
+            if (string.IsNullOrEmpty(strResponse))
+            {
+                return default(T);
+            }
+            else
+            {
+                if (typeof(T) == typeof(string))
+                {
+                    return strResponse as T;
+                }
+                else
+                {
+                    return JsonConvert.DeserializeObject<T>(strResponse, PushoverContractResolver.Settings);
+                }
             }
         }
 
@@ -188,7 +263,7 @@ namespace Pushover
                     // Creating the form with the parameters.
                     foreach (var item in parameters.Where(p => p.Key != "imageurl"))
                     {
-                        form.Add(new StringContent(HttpUtility.UrlEncode(item.Value)), "\"" + item.Key + "\"");
+                        form.Add(new StringContent(item.Value), "\"" + item.Key + "\"");
                     }
 
 
