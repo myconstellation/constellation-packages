@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
+         Name="OpenWeather"
+         Version="0.1.0"
+         Author="Lucas"
+         Description="Weather service based on OpenWeatherMap for Constellation."
+         Icon="openweather_icon.jpg"
+         EnableControlHub="false">
+  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+    <Platforms>
+      <Platform id="Win32NT" isCompliant="true" />
+      <Platform id="Unix" isCompliant="true" />
+    </Platforms>
+  </Compatibility>
+  <Settings>
+    <!-- Add your package's settings here -->  
+    <Setting name="openWeatherSection" isRequired="true" type="ConfigurationSection" schemaXSD="OpenWeatherSection.csd.xsd">
+      <defaultContent>
+        <openWeatherSection xmlns="urn:OpenWeather" apiKey="xxxxxxxxxxxxxxxx" refreshInterval="00:15:00" language="fr">
+          <stations>
+            <station name="Paris" longitude="2.35" latitude="48.853" />
+            <station name="Lille" longitude="3.05" latitude="50.629" />
+            <station name="London" longitude="-0.14" latitude="51.557" />
+          </stations>
+        </openWeatherSection>
+      </defaultContent>
+    </Setting>
+  </Settings>
+</Package>
