@@ -1,8 +1,12 @@
-# Mikrotik Package for Constellation
+---
+Package: Mikrotik
+Tags: Network, Réseau, Routeur, Switch, AccessPoint, Wifi, RouterOS, Mikrotik
+---
+# Mikrotik : connectez vos équipements réseau sous RouterOS dans Constellation
 
 This package queries and pushes informations about your Mikrotik device to Constellation
 
-### StateObjects
+## StateObjects
   - All interfaces (Ethernet, Wireless, VLAN, etc ...)
   - System resource infos
   - IP v4 & v6 addresses
@@ -13,7 +17,7 @@ This package queries and pushes informations about your Mikrotik device to Const
   - IPv6 Neighbors
   - CapsMan Registration table (wireless clients connected to yours CAPs)
 
-### Installation
+## Installation
 
 Declare the package in a Sentinel with the following configuration :
 ```xml
