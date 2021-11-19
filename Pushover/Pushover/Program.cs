@@ -156,7 +156,7 @@ namespace Pushover
                 }
                 if (url != null && !string.IsNullOrEmpty(url.URL))
                 {
-                    parameters["url"] = HttpUtility.UrlEncode(url.URL);
+                    parameters["url"] = url.URL;
                     if (!string.IsNullOrEmpty(url.Title))
                     {
                         parameters["url_title"] = url.Title;
@@ -266,7 +266,6 @@ namespace Pushover
                         form.Add(new StringContent(item.Value), "\"" + item.Key + "\"");
                     }
 
-
                     WebClient client = null;
                     Stream stream = null;
 
@@ -274,7 +273,11 @@ namespace Pushover
                     {
                         // Getting the image from the URL.
                         client = new WebClient();
-                        stream = client.OpenRead(parameters["imageurl"]);
+
+                        // Web based stream :
+                        if (parameters["imageurl"].StartsWith("http")) stream = client.OpenRead(parameters["imageurl"]);
+                        // Local FS stream :
+                        else stream = File.OpenRead(parameters["imageurl"]);
 
                         // Adding it to the form.
                         var imageParameter = new StreamContent(stream);
@@ -292,9 +295,7 @@ namespace Pushover
                     // Closing potential streams and clients after being used.
                     if (stream != null)
                     {
-                        stream.Flush();
                         stream.Close();
-
                     }
                     if (client != null)
                     {
