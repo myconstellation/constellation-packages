@@ -35,10 +35,12 @@ namespace GoogleNest
 
     public class Program : PackageBase
     {
-        private const int SLEEP_AFTER_ERROR = 30000; //ms
-        private string AccessToken = "";
         private const string GOOGLE_API_REFRESH_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token?client_id={0}&client_secret={1}&refresh_token={2}&grant_type=refresh_token";
         private const string SDM_API_URI = "https://smartdevicemanagement.googleapis.com/v1/enterprises/{0}/devices/{1}";
+
+        private string AccessToken = "";
+        private bool isAuthRevoked = false;
+        private bool refreshTokenRequested = true;
 
         static void Main(string[] args)
         {
@@ -81,107 +83,168 @@ namespace GoogleNest
                 return;
             }
 
+            // Main loop to pull updated date from Google Nest API.
             Task.Factory.StartNew(() =>
             {
-                bool authRevoked = false;
-                bool refreshRequested = true;
-                while (PackageHost.IsRunning && !authRevoked)
+                while (PackageHost.IsRunning && !this.isAuthRevoked)
                 {
-                    HttpWebRequest request = null;
-                    try
-                    {
-                        if (refreshRequested == true)
-                        {
-                            PackageHost.WriteInfo("Renewing token from Google API ...");
-                            request = WebRequest.CreateHttp(string.Format(GOOGLE_API_REFRESH_TOKEN_URI, PackageHost.GetSettingValue<string>("ClientID"), PackageHost.GetSettingValue<string>("ClientSecret"), PackageHost.GetSettingValue<string>("RefreshToken")));
-                            request.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                            request.Method = "POST";
-                            request.ContentLength = 0;
-                            request.Accept = "text/event-stream";
+                    this.RefreshGoogleNestData();
 
-                            WebResponse response = request.GetResponse();
-                            using (Stream stream = response.GetResponseStream())
-                            using (StreamReader reader = new StreamReader(stream))
-                            {
-                                string line = null;
-                                while (null != (line = reader.ReadLine()) && !authRevoked)
-                                {
-                                    if (line.Trim().StartsWith("\"access_token\":"))
-                                    {
-                                        AccessToken = line.Trim().Replace("\"", "").Replace("access_token:", "").Replace(",", "");
-                                        refreshRequested = false;
-                                        PackageHost.WriteInfo("Token refreshed.");
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            PackageHost.WriteInfo("Connecting to smart device management API ...");
-                            request = WebRequest.CreateHttp(string.Format(SDM_API_URI, PackageHost.GetSettingValue<string>("ProjectId"), PackageHost.GetSettingValue<string>("DeviceId")));
-                            request.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                            request.Accept = "text/event-stream";
-                            request.Headers.Add(string.Format("Authorization: Bearer {0}", AccessToken));
-
-                            string content = "";
-                            try
-                            {
-                                WebResponse response = request.GetResponse();
-
-                                using (Stream stream = response.GetResponseStream())
-                                using (StreamReader reader = new StreamReader(stream))
-                                {
-                                    content = reader.ReadToEnd();
-                                }
-
-                            }
-                            catch (WebException ex)
-                            {
-                                refreshRequested = true;
-                                PackageHost.WriteInfo("Token looks expired.");
-                            }
-
-                            if (!string.IsNullOrEmpty(content))
-                            {
-                                content = content.Replace("sdm.devices.types.", "").Replace("sdm.devices.traits.", ""); // Easier to read.
-
-                                dynamic device = JsonConvert.DeserializeObject(content);
-                                PackageHost.PushStateObject(device.parentRelations[0].displayName.ToString(), device, "Nest." + device.type,
-                                    new Dictionary<string, object>()
-                                    {
-                                        { "DeviceId", PackageHost.GetSettingValue<string>("DeviceId") },
-                                        { "DeviceType", device.type },
-                                    }, 
-                                    PackageHost.GetSettingValue<int>("RefreshInterval")/1000*2);
-
-
-                                PackageHost.WriteInfo("Google Nest StateObjects updated.");
-                                Thread.Sleep(PackageHost.GetSettingValue<int>("RefreshInterval"));
-                            }
-                            else
-                            {
-                                PackageHost.WriteError("No content received.");
-                                Thread.Sleep(SLEEP_AFTER_ERROR);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        PackageHost.WriteError(ex.Message);
-                        Thread.Sleep(SLEEP_AFTER_ERROR);
-                    }
-                    finally
-                    {
-                        if (null != request)
-                        {
-                            request.Abort();
-                        }
-                    }
+                    Thread.Sleep(PackageHost.GetSettingValue<int>("RefreshInterval"));
                 }
             });
 
             // Started !
             PackageHost.WriteInfo("Nest package started!");
+        }
+
+        /// <summary>
+        /// Main function. Generates main StateObject for Nest and handles refreshing the token.
+        /// </summary>
+        private void RefreshGoogleNestData()
+        {
+            this.GenerateStateobject();
+
+            if (this.refreshTokenRequested == true)
+            {
+                this.RefreshToken();
+
+                // Pulling the refreshed data right after receiving the new token.
+                this.GenerateStateobject();
+            }
+        }
+
+        /// <summary>
+        /// Calls the Google SMD API to get last data and pushs a state object from what it retreived. 
+        /// Changes the this.refreshTokenRequested to true if call fails because of revoked token.
+        /// </summary>
+        private void GenerateStateobject()
+        {
+            HttpWebRequest request = null;
+            try
+            {
+                PackageHost.WriteInfo("Connecting to smart device management API ...");
+
+                // Preparing the request.
+                request = WebRequest.CreateHttp(string.Format(SDM_API_URI, PackageHost.GetSettingValue<string>("ProjectId"), PackageHost.GetSettingValue<string>("DeviceId")));
+                request.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+                request.Accept = "text/event-stream";
+                request.Headers.Add(string.Format("Authorization: Bearer {0}", AccessToken));
+
+                string content = "";
+                try
+                {
+                    WebResponse response = request.GetResponse();
+
+                    using (Stream stream = response.GetResponseStream())
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        content = reader.ReadToEnd();
+                    }
+
+                }
+                catch (WebException)
+                {
+                    this.refreshTokenRequested = true;
+                    PackageHost.WriteInfo("Token looks expired, refresh requested.");
+                }
+
+                if (!string.IsNullOrEmpty(content))
+                {
+                    // Cleaning and extracting information in a StateObject.
+                    content = content.Replace("sdm.devices.types.", "").Replace("sdm.devices.traits.", ""); 
+
+                    dynamic device = JsonConvert.DeserializeObject(content);
+                    PackageHost.PushStateObject(device.parentRelations[0].displayName.ToString(), device, "Nest." + device.type,
+                        new Dictionary<string, object>()
+                        {
+                                        { "DeviceId", PackageHost.GetSettingValue<string>("DeviceId") },
+                                        { "DeviceType", device.type },
+                        },
+                        PackageHost.GetSettingValue<int>("RefreshInterval") / 1000 * 2);
+
+                    PackageHost.WriteInfo("Google Nest StateObjects updated.");
+                }
+                else
+                {
+                    PackageHost.WriteError("No content received, Google Nest StateObjects were not updated.");
+                }
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError("Exception while generating StateObject : ", ex.Message);
+            }
+            finally
+            {
+                if (null != request)
+                {
+                    request.Abort();
+                    request = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Renews the token from Google refresh token API. Pushes it as a StateObject.
+        /// Changes the this.refreshTokenRequested to false once it's done.
+        /// </summary>
+        private void RefreshToken()
+        {
+            HttpWebRequest request = null;
+
+            try
+            {
+                PackageHost.WriteInfo("Renewing token from Google API ...");
+
+                // Preparing request.
+                request = WebRequest.CreateHttp(string.Format(GOOGLE_API_REFRESH_TOKEN_URI, PackageHost.GetSettingValue<string>("ClientID"), PackageHost.GetSettingValue<string>("ClientSecret"), PackageHost.GetSettingValue<string>("RefreshToken")));
+                request.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+                request.Method = "POST";
+                request.ContentLength = 0;
+                request.Accept = "text/event-stream";
+
+                int lifetimeAccessToken = 0;
+
+                WebResponse response = request.GetResponse();
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string line = null;
+                    while (null != (line = reader.ReadLine()) && !this.isAuthRevoked)
+                    {
+                        if (line.Trim().StartsWith("\"access_token\":"))
+                        {
+                            // Searching for the access token among the response lines.
+                            this.AccessToken = line.Trim().Replace("\"", "").Replace("access_token:", "").Replace(",", "");
+                            this.refreshTokenRequested = false;
+                            PackageHost.WriteInfo("Token refreshed.");
+                        }
+
+                        if (line.Trim().StartsWith("\"expires_in\":"))
+                        {
+                            lifetimeAccessToken = Convert.ToInt32(line.Trim().Replace("\"", "").Replace("expires_in:", "").Replace(",", "").Trim());
+                        }
+                    }
+
+                    // Refreshing the Access Token StateObject.
+                    if (!string.IsNullOrEmpty(this.AccessToken) && lifetimeAccessToken != 0)
+                    {
+                        PackageHost.PushStateObject("AccessToken", this.AccessToken, lifetime: lifetimeAccessToken);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError("Exception while refreshing token : ", ex.Message);
+            }
+            finally
+            {
+                if (null != request)
+                {
+                    request.Abort();
+                    request = null;
+                }
+            }
         }
 
         /// <summary>
@@ -223,8 +286,8 @@ namespace GoogleNest
         [MessageCallback]
         private bool SetFanTimer(string timerModeValue, int? durationValue = null)
         {
-            var dict = new Dictionary<string, object>() {{ "timerMode", timerModeValue }};
-            if (durationValue.HasValue) dict.Add("duration", string.Format("{0}s", durationValue) );
+            var dict = new Dictionary<string, object>() { { "timerMode", timerModeValue } };
+            if (durationValue.HasValue) dict.Add("duration", string.Format("{0}s", durationValue));
 
             return this.ExecuteCommand("sdm.devices.commands.Fan.SetTimer", JsonConvert.SerializeObject(dict));
         }
@@ -247,6 +310,59 @@ namespace GoogleNest
         private bool SetMode(string value)
         {
             return this.ExecuteCommand("sdm.devices.commands.ThermostatMode.SetMode", JsonConvert.SerializeObject(new Dictionary<string, object>() { { "mode", value } }));
+        }
+
+        /// <summary>
+        /// Fonction récéptionnant le push du service pub/sub GCP.
+        /// </summary>
+        [MessageCallback()]
+        public void ReceivePush(object data)
+        {
+            PackageHost.WriteWarn("Push nest triggered by remote API. Checking data integrity before refreshing.");
+
+            // Extracting data from payload.
+            string jwt = ((dynamic)data)?.message?.data;
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                // Decoding JWT.
+                string jwtDecoded = Encoding.UTF8.GetString(Convert.FromBase64String(jwt));
+                if (!string.IsNullOrEmpty(jwtDecoded))
+                {
+                    string name = null;
+                    dynamic json = JObject.Parse(jwtDecoded);
+
+                    try
+                    {
+                        // Extracting the name of the device which originated the push.
+                        name = Convert.ToString(json.resourceUpdate.name);
+
+                        // Checking if the device matches our config.
+                        if (!string.IsNullOrEmpty(name) &&
+                                name.Contains(PackageHost.GetSettingValue<string>("ProjectId")) &&
+                                name.Contains(PackageHost.GetSettingValue<string>("DeviceId")))
+                        {
+                            // Request refresh.
+                            this.RefreshGoogleNestData();
+                        }
+                        else
+                        {
+                            PackageHost.WriteError("ProjectId or DeviceId received are invalid : " + name);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        PackageHost.WriteError("Failed to check Client ID in received message (resourceUpdate.name) : " + jwtDecoded);
+                    }
+                }
+                else
+                {
+                    PackageHost.WriteError("Received data JWT conversion failed : " + jwt);
+                }
+            }
+            else
+            {
+                PackageHost.WriteError("Received data extracting failed : " + data);
+            }
         }
 
         private bool ExecuteCommand(string command, string param, int tries = 3)

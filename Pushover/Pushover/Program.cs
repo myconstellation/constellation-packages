@@ -28,7 +28,10 @@ namespace Pushover
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
+    using System.Threading.Tasks;
     using System.Web;
 
     public class Program : PackageBase
@@ -99,6 +102,7 @@ namespace Pushover
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="title">The message's title, otherwise the app's name is used.</param>
+        /// <param name="image_url">An url to an attachement to the push message. The package will try and download the image in order to send it to pushover.</param>
         /// <param name="url">A supplementary URL to show with your message.</param>
         /// <param name="user">The user/group key (not e-mail address) of your user (or you), viewable when logged into our dashboard. By default we use the "userId" define in settings</param>
         /// <param name="devices">The user's device name to send the message directly to that device, rather than all of the user's devices.</param>
@@ -108,7 +112,7 @@ namespace Pushover
         /// <param name="emergencyOptions">The optional emergency options if the notification is sent with emergency-priority.</param>
         /// <returns></returns>
         [MessageCallback]
-        public PushoverResponse PushNotification(string message, string title = null, Url url = null, string user = null, string[] devices = null, Sound sound = Sound.Pushover, Priority priority = Priority.Normal, int timestamp = 0, EmergencyOptions emergencyOptions = null)
+        public PushoverResponse PushNotification(string message, string title = null, string image_url = null, Url url = null, string user = null, string[] devices = null, Sound sound = Sound.Pushover, Priority priority = Priority.Normal, int timestamp = 0, EmergencyOptions emergencyOptions = null)
         {
             var parameters = new Dictionary<string, string>
             {
@@ -117,13 +121,17 @@ namespace Pushover
             };
             if (parameters.Any(p => string.IsNullOrEmpty(p.Value)))
             {
-                return new PushoverResponse() { Errors = new string[] { "Some arguments are missing !" }  };
+                return new PushoverResponse() { Errors = new string[] { "Some arguments are missing !" } };
             }
             else
             {
                 if (title != null)
                 {
                     parameters["title"] = title;
+                }
+                if (image_url != null)
+                {
+                    parameters["imageurl"] = image_url;
                 }
                 if (devices != null)
                 {
@@ -155,12 +163,13 @@ namespace Pushover
                     }
                 }
 
-                PushoverResponse response = this.DoRequest<PushoverResponse>("messages.json", parameters);
-                if (!response.Status)
+                Task<PushoverResponse> response = Task.Run<PushoverResponse>(async () => await this.DoRequestAsync<PushoverResponse>("messages.json", parameters));
+                if (response.Result == null || response.Status == TaskStatus.Faulted)
                 {
-                    PackageHost.WriteError("Unable to send the notificaiton ", string.Join(", ", response.Errors));
+                    PackageHost.WriteError("Unable to send the notification : " + response.Exception.ToString());
                 }
-                return response;
+
+                return response.Result;
             }
         }
 
@@ -221,6 +230,105 @@ namespace Pushover
                     PackageHost.WriteError("Response error: {0}", ex.ToString());
                 }
             }
+            // Process response
+            if (string.IsNullOrEmpty(strResponse))
+            {
+                return default(T);
+            }
+            else
+            {
+                if (typeof(T) == typeof(string))
+                {
+                    return strResponse as T;
+                }
+                else
+                {
+                    return JsonConvert.DeserializeObject<T>(strResponse, PushoverContractResolver.Settings);
+                }
+            }
+        }
+
+        private async System.Threading.Tasks.Task<T> DoRequestAsync<T>(string path, Dictionary<string, string> parameters = null) where T : class
+        {
+            string strResponse = null;
+
+            parameters["token"] = PackageHost.GetSettingValue("Token");
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    MultipartFormDataContent form = new MultipartFormDataContent();
+
+                    // Creating the form with the parameters.
+                    foreach (var item in parameters.Where(p => p.Key != "imageurl"))
+                    {
+                        form.Add(new StringContent(item.Value), "\"" + item.Key + "\"");
+                    }
+
+                    WebClient client = null;
+                    Stream stream = null;
+
+                    if (parameters.ContainsKey("imageurl") == true)
+                    {
+                        // Getting the image from the URL.
+                        client = new WebClient();
+
+                        // Web based stream :
+                        if (parameters["imageurl"].StartsWith("http")) stream = client.OpenRead(parameters["imageurl"]);
+                        // Local FS stream :
+                        else stream = File.OpenRead(parameters["imageurl"]);
+
+                        // Adding it to the form.
+                        var imageParameter = new StreamContent(stream);
+                        imageParameter.Headers.ContentType = MediaTypeHeaderValue.Parse("image/png"); // The type doesn't seem to be important as long as it is an image
+                        form.Add(imageParameter, "attachment", "image.png");
+                    }
+
+                    // Removing content types.
+                    foreach (var param in form)
+                        param.Headers.ContentType = null;
+
+                    // Sending request.
+                    HttpResponseMessage responseMessage = await httpClient.PostAsync(API_ROOT_URI + path, form);
+
+                    // Closing potential streams and clients after being used.
+                    if (stream != null)
+                    {
+                        stream.Close();
+                    }
+                    if (client != null)
+                    {
+                        client.Dispose();
+                    }
+
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+                        strResponse = await responseMessage.Content.ReadAsStringAsync();
+
+                        if (responseMessage.Headers.Contains("X-Limit-App-Limit"))
+                        {
+                            // Updating state object for rates/limits based on headers informations.
+                            var t = int.Parse(responseMessage.Headers.GetValues("X-Limit-App-Limit").FirstOrDefault());
+                            PackageHost.PushStateObject("RateLimit", new
+                            {
+                                Limit = int.Parse(responseMessage.Headers.GetValues("X-Limit-App-Limit").FirstOrDefault()),
+                                Remaining = int.Parse(responseMessage.Headers.GetValues("X-Limit-App-Remaining").FirstOrDefault()),
+                                Reset = int.Parse(responseMessage.Headers.GetValues("X-Limit-App-Reset").FirstOrDefault())
+                            }, "Pushover.RateLimit");
+                        }
+                    }
+                    else
+                    {
+                        PackageHost.WriteError($"Push request failed with status {(int)responseMessage.StatusCode} {responseMessage.StatusCode}: {responseMessage.Content.ReadAsStringAsync().Result}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                PackageHost.WriteError("Push error: {0}", ex.ToString());
+            }
+
             // Process response
             if (string.IsNullOrEmpty(strResponse))
             {

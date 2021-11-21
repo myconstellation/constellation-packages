@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="GoogleNest"
-         Version="1.0"
+         Version="1.1"
          Author="Lucas Dupuis"
          Icon="nest.png"
          Description="Connect Google Nest devices to Constellation"

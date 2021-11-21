@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Pushover"
          Icon="pushover.png"
-         Version="1.0.2"
+         Version="1.1.2"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Send notifications to your devices and friends.">
