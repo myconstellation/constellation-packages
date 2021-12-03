@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Constellation;
 using Constellation.Package;
 using RFLinkNet;
 
@@ -22,6 +23,18 @@ namespace RfLink
         public override void OnStart()
         {
             PackageHost.WriteInfo("Package starting - IsRunning: {0} - IsConnected: {1}", PackageHost.IsRunning, PackageHost.IsConnected);
+
+            PackageHost.LastStateObjectsReceived += (s, e) =>
+            {
+                if (e.StateObjects != null)
+                {
+                    PackageHost.WriteInfo($"Rechargement des {e.StateObjects.Count} anciens StateObjects");
+                    foreach (StateObject so in e.StateObjects)
+                    {
+                        PackageHost.PushStateObject(so.Name, so.DynamicValue, so.Type, so.Metadatas, so.Lifetime);
+                    }
+                }
+            };
 
             // Get the custom names
             this.soCustomNames = PackageHost.GetSettingAsJsonObject<Dictionary<string, Tuple<string, int>>>("soCustomNames");
