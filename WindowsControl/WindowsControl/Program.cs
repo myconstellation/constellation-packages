@@ -253,5 +253,38 @@ namespace WindowsControl
                 }
             }
         }
+
+        /// <summary>  
+        /// Executes a command.
+        /// </summary>  
+        [MessageCallback]
+        public void Execute(string cmd)
+        {
+            ExecuteCommand(cmd);
+        }
+
+        static void ExecuteCommand(string command)
+        {
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+
+            var process = Process.Start(processInfo);
+
+            process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                PackageHost.WriteInfo("output>> " + e.Data);
+            process.BeginOutputReadLine();
+
+            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+                PackageHost.WriteError("error>> " + e.Data);
+            process.BeginErrorReadLine();
+
+            process.WaitForExit();
+
+            PackageHost.WriteError("ExitCode: {0}", process.ExitCode);
+            process.Close();
+        }
     }
 }

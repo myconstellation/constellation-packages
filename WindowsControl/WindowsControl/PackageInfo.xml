@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="WindowsControl"
-         Version="1.5"
+         Version="1.6"
          Author="Sebastien Warin"
          URL="http://sebastien.warin.fr"
          Description="Control your Windows from Constellation"
