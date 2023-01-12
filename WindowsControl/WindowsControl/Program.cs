@@ -265,6 +265,7 @@ namespace WindowsControl
 
         static void ExecuteCommand(string command)
         {
+            PackageHost.WriteInfo("Executing command : " + command);
             var processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
             processInfo.CreateNoWindow = true;
             processInfo.UseShellExecute = false;
