@@ -271,6 +271,7 @@ namespace HuaweiMobileRouter
 
         private void RenewToken()
         {
+            this.cookieContainer = new CookieContainer();
             if (this.ExecuteWebRequestAsync(new Uri($"http://{this.Host}/")).Wait(DEFAULT_TIMEOUT))
             {
                 this.requestVerificationTokens.Clear();
