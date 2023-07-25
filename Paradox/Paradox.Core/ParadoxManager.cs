@@ -31,7 +31,6 @@ namespace Paradox
     /*
      *   Not implemented :
      *      - Virtual Inputs & Virtual PGM Events
-     *      - Emergency Panic, Medical Panic, Fire Panic & Smoke Reset
      *      - Utility Keys
      */
 
@@ -253,6 +252,46 @@ namespace Paradox
         public async Task<bool> AreaDisarm(Area area, string pinCode)
         {
             return await this.Interface.SendCommandWithAcknowledgement("AD" + Utils.GetStringId(area) + pinCode);
+        }
+
+        /// <summary>
+        /// Emergency Panic
+        /// </summary>
+        /// <param name="area">The area.</param>
+        /// <returns></returns>
+        public async Task<bool> EmergencyPanic(Area area)
+        {
+            return await this.Interface.SendCommandWithAcknowledgement("PE" + Utils.GetStringId(area));
+        }
+
+        /// <summary>
+        /// Medical Panic
+        /// </summary>
+        /// <param name="area">The area.</param>
+        /// <returns></returns>
+        public async Task<bool> MedicalPanic(Area area)
+        {
+            return await this.Interface.SendCommandWithAcknowledgement("PM" + Utils.GetStringId(area));
+        }
+
+        /// <summary>
+        /// Fire Panic
+        /// </summary>
+        /// <param name="area">The area.</param>
+        /// <returns></returns>
+        public async Task<bool> FirePanic(Area area)
+        {
+            return await this.Interface.SendCommandWithAcknowledgement("PF" + Utils.GetStringId(area));
+        }
+
+        /// <summary>
+        /// Smoke Reset
+        /// </summary>
+        /// <param name="area">The area.</param>
+        /// <returns></returns>
+        public async Task<bool> SmokeReset(Area area)
+        {
+            return await this.Interface.SendCommandWithAcknowledgement("SR" + Utils.GetStringId(area));
         }
 
         #endregion
