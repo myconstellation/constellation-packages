@@ -87,7 +87,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 UniqueId = $"{this.Identifier}_alarm_panel",
                 ObjectId = $"{this.Identifier}_alarm_panel",
                 Name = HomeAssistantIntegration.Instance.Configuration.Label,
-                Code = RemoteCode,
+                Code = string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.PIN) ? RemoteCode : null,
                 CommandTemplate = CommandTemplate,
                 StateTopic = MqttAlarmStateTopic,
                 JsonAttributesTopic = MqttAlarmAttributesTopic,

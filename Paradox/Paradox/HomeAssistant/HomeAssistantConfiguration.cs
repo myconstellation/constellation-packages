@@ -23,6 +23,11 @@ namespace Paradox.HomeAssistant
         public string Identifier { get; set; } = nameof(Paradox);
 
         /// <summary>
+        /// Gets or sets the PIN code to enable or disable the alarm without code on the frontend. If not defined, the PIN code will be requested on the frontend and it will be sent on MQTT to the package (optional, default: None).
+        /// </summary>
+        public string PIN { get; set; }
+
+        /// <summary>
         /// Gets or sets the MQTT configuration (required if enable).
         /// </summary>
         public MqttConfiguration Mqtt { get; set; }
