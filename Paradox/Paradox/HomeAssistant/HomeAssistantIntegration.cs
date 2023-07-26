@@ -152,23 +152,23 @@ namespace Paradox.HomeAssistant
             {
                 if (e.InAlarm)
                 {
-                    await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Triggered, retain: true);
+                    await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.Triggered);
                 }
                 else if (e.Status == AreaStatus.Armed)
                 {
-                    await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.ArmedAway, retain: true);
+                    await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.ArmedAway, false);
                 }
                 else if (e.Status == AreaStatus.ForceArmed || e.Status == AreaStatus.InstantArmed)
                 {
-                    await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.ArmedForced, retain: true);
+                    await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.ArmedForced, false);
                 }
                 else if (e.Status == AreaStatus.StayArmed)
                 {
-                    await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.ArmedHome, retain: true);
+                    await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.ArmedHome, false);
                 }
                 else if (e.Status == AreaStatus.Disarmed)
                 {
-                    await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Disarmed, retain: true);
+                    await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.Disarmed, false);
                 }
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Trouble), ToOnOff(e.HasTrouble), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Strobe), ToOnOff(e.Strobe), retain: true);
@@ -203,16 +203,23 @@ namespace Paradox.HomeAssistant
             this.paradox.EventManager.ZoneInAlarm += async (s, e) => await managedMqttClient.EnqueueAsync(configsFactory.GetMqttZoneTopic((int)e.Zone, HomeAssistantZoneSensor.Alarm), BinaryState.On, retain: true);
             this.paradox.EventManager.ZoneAlarmRestored += async (s, e) =>  await managedMqttClient.EnqueueAsync(configsFactory.GetMqttZoneTopic((int)e.Zone, HomeAssistantZoneSensor.Alarm), BinaryState.Off, retain: true);
 
+            this.paradox.EventManager.Arming += (s, e) =>
+            {
+                // Force to refresh the area
+                previousState = null;
+                paradox.RequestArea(Area.Area1);
+            };
+
             this.paradox.AreaDisarmed += async (s, e) =>
             {
-                await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Disarmed, retain: true);
+                await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.Disarmed);
             };
 
             this.paradox.EventManager.Status1Changed += async (s, e) =>
             {
                 if (e.StatusType == Status1EventType.AudibleAlarm)
                 {
-                    await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Triggered, retain: true);
+                    await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.Triggered);
                 }
             };
 
@@ -236,10 +243,10 @@ namespace Paradox.HomeAssistant
                         await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.AreaThreat), BinaryState.Off, retain: true);
                         break;
                     case Status2EventType.ExitDelay:
-                        await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Arming, retain: true);
+                        await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.Arming);
                         break;
                     case Status2EventType.EntryDelay:
-                        await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Pending, retain: true);
+                        await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.Pending);
                         break;
                     case Status2EventType.SystemInTrouble:
                         await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Trouble), BinaryState.On, retain: true);
@@ -254,6 +261,18 @@ namespace Paradox.HomeAssistant
             this.paradox.EventManager.TroubleRestored += async (s, e) => await UpdateTrouble(managedMqttClient, e, BinaryState.Off);
             this.paradox.EventManager.ModuleTrouble += async (s, e) => await UpdateModuleTrouble(managedMqttClient, e, BinaryState.On);
             this.paradox.EventManager.ModuleTroubleRestored += async (s, e) => await UpdateModuleTrouble(managedMqttClient, e, BinaryState.Off);
+        }
+
+        private string previousState = null;
+        private async Task SetAlarmState(IManagedMqttClient managedMqttClient, string alarmState, bool force = true)
+        {
+            if (!force)
+            {
+                // Do not update the alarm state when Entry or Exit delays occurs
+                if (previousState == HomeAssistantAlarmState.Pending || previousState == HomeAssistantAlarmState.Arming) return;
+            }
+            await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, alarmState, retain: true);
+            previousState = alarmState;
         }
 
         private async Task UpdateTrouble(IManagedMqttClient managedMqttClient, TroubleEventArgs e, string state)
