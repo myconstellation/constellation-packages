@@ -110,6 +110,7 @@ namespace Paradox.HomeAssistant
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.BatteryFailure), BinaryState.Off, retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.BellAbsent), BinaryState.Off, retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.ClockTrouble), BinaryState.Off, retain: true);
+                await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.CombusFault), BinaryState.Off, retain: true);
 
                 // Zone states
                 foreach (var zone in Configuration.Zones)
@@ -196,6 +197,7 @@ namespace Paradox.HomeAssistant
                     Tamper = ToOnOff(e.EventGroup == EventGroup.ZoneTampered),
                     Status = ToOnOff(e.EventGroup == EventGroup.ZoneOpen)
                 }), retain: true);
+                paradox.RequestArea(Area.Area1);
             };
 
             this.paradox.EventManager.ZoneInAlarm += async (s, e) => await managedMqttClient.EnqueueAsync(configsFactory.GetMqttZoneTopic((int)e.Zone, HomeAssistantZoneSensor.Alarm), BinaryState.On, retain: true);
@@ -211,6 +213,18 @@ namespace Paradox.HomeAssistant
                 if (e.StatusType == Status1EventType.AudibleAlarm)
                 {
                     await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Triggered, retain: true);
+                }
+            };
+
+            this.paradox.EventManager.SpecialEvent += async (s, e) =>
+            {
+                if (e.EventType == SpecialEventType.WinLoadInConnected || e.EventType == SpecialEventType.InstallerInProgramming)
+                {
+                    await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Programming), ToOnOff(true), retain: true);
+                }
+                else if (e.EventType == SpecialEventType.WinLoadOutDisconnected || e.EventType == SpecialEventType.InstallerOutOfProgramming)
+                {
+                    await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Programming), ToOnOff(false), retain: true);
                 }
             };
 
@@ -238,6 +252,8 @@ namespace Paradox.HomeAssistant
 
             this.paradox.EventManager.Trouble += async (s, e) => await UpdateTrouble(managedMqttClient, e, BinaryState.On);
             this.paradox.EventManager.TroubleRestored += async (s, e) => await UpdateTrouble(managedMqttClient, e, BinaryState.Off);
+            this.paradox.EventManager.ModuleTrouble += async (s, e) => await UpdateModuleTrouble(managedMqttClient, e, BinaryState.On);
+            this.paradox.EventManager.ModuleTroubleRestored += async (s, e) => await UpdateModuleTrouble(managedMqttClient, e, BinaryState.Off);
         }
 
         private async Task UpdateTrouble(IManagedMqttClient managedMqttClient, TroubleEventArgs e, string state)
@@ -246,6 +262,17 @@ namespace Paradox.HomeAssistant
                                          e.TroubleType == TroubleType.BatteryFailure ? HomeAssistantAlarmSensor.BatteryFailure :
                                          e.TroubleType == TroubleType.BellAbsent ? HomeAssistantAlarmSensor.BellAbsent :
                                          e.TroubleType == TroubleType.ClockTrouble ? HomeAssistantAlarmSensor.ClockTrouble : null;
+            if (sensor != null)
+            {
+                await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(sensor), state, retain: true);
+            }
+        }
+
+        private async Task UpdateModuleTrouble(IManagedMqttClient managedMqttClient, ModuleTroubleEventArgs e, string state)
+        {
+            var sensor = e.ModuleTroubleType == ModuleTroubleType.ACFailure ? HomeAssistantAlarmSensor.ACFailure :
+                                         e.ModuleTroubleType == ModuleTroubleType.BatteryFailure ? HomeAssistantAlarmSensor.BatteryFailure :
+                                         e.ModuleTroubleType == ModuleTroubleType.CombusFault ? HomeAssistantAlarmSensor.CombusFault : null;
             if (sensor != null)
             {
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(sensor), state, retain: true);

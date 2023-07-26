@@ -73,6 +73,10 @@
         /// Bell Absent sensor
         /// </summary>
         public static readonly string BellAbsent = nameof(BellAbsent);
+        /// <summary>
+        /// Combus Fault sensor
+        /// </summary>
+        public static readonly string CombusFault = nameof(CombusFault);
     }
 
     /// <summary>

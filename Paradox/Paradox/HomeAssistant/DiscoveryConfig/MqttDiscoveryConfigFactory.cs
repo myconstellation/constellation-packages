@@ -97,15 +97,16 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
             };
             configs.Add(alarmPanel);
             // Add the alarm's sensors
-            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Trouble, HomeAssistantBinarySensorClass.Problem));
-            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Strobe, HomeAssistantBinarySensorClass.Problem));
+            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Trouble, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Ready, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.ZoneMemory, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
+            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Strobe, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Programming, HomeAssistantBinarySensorClass.Lock, HomeAssistantEntityCategory.Diagnostic));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.ACFailure, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic, label: "AC", icon: "mdi:power-plug-outline"));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.BatteryFailure, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic, label: "Battery", icon: "mdi:battery-charging"));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.ClockTrouble, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic, label: "Clock", icon: "mdi:clock-check"));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.BellAbsent, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic, label: "Bell", icon: "mdi:bell-check"));
+            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.CombusFault, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic, label: "Combus", icon: "mdi:connection"));
 
             // Add Zones
             foreach (var zone in HomeAssistantIntegration.Instance.Configuration.Zones)
