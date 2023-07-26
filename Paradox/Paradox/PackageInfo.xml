@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Paradox"
-         Version="2.1.0"
+         Version="2.1.1"
          Author="Sebastien Warin"
          Icon="paradox.png"
          URL="http://sebastien.warin.fr"
@@ -21,7 +21,7 @@
 		<Setting name="numberofZones" type="Int32" isRequired="true" description="Number of Zone to load"/>
 		<Setting name="AntiBruteForceMaxTries" type="Int32" isRequired="false" defaultValue="5" description="Block the Arming/Disarming method if wrong PIN code (0 to disable)" />
 		<Setting name="MessagesLogFilePath" type="String" isRequired="false" description="File path to log each message sent/rcv with the PRT3 (leave empty to disable)" defaultValue="" ignoreLocalValue="true" />
-		<Setting name="HomeAssistant" type="JsonObject" isRequired="false" description="HomeAssistant MQTT Alarm Control Panel integration" ignoreDefaultValue="true">
+		<Setting name="HomeAssistant" type="JsonObject" isRequired="false" description="HomeAssistant MQTT Alarm Control Panel integration" ignoreLocalValue="true" ignoreDefaultValue="true">
 			<defaultContent>
 				<![CDATA[
           {
