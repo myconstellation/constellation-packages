@@ -31,6 +31,11 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
         public string MqttAlarmStateTopic => $"{MqttTopicPrefix}/alarm";
 
         /// <summary>
+        /// Gets the MQTT alarm attributes topic.
+        /// </summary>
+        public string MqttAlarmAttributesTopic => $"{MqttAlarmStateTopic}/attributes";
+
+        /// <summary>
         /// Gets the MQTT alarm command topic.
         /// </summary>
         public string MqttAlarmCommandTopic => $"{MqttAlarmStateTopic}/set";
@@ -85,6 +90,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 Code = RemoteCode,
                 CommandTemplate = CommandTemplate,
                 StateTopic = MqttAlarmStateTopic,
+                JsonAttributesTopic = MqttAlarmAttributesTopic,
                 CommandTopic = MqttAlarmCommandTopic,
                 AvailabilityTopic = MqttAvailabilityTopic,
                 PayloadArmAway = HomeAssistantAlarmCommand.ArmAway,

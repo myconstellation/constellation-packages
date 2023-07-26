@@ -99,7 +99,7 @@ namespace Paradox.HomeAssistant
 
                 // Alarm states
                 var areaInfo = constellationPackage.GetItem<AreaInfo>((int)Area.Area1);
-                await managedMqttClient.EnqueueAsync(configsFactory.MqttAvailabilityTopic, AvailabilityState.Online);
+                await managedMqttClient.EnqueueAsync(configsFactory.MqttAvailabilityTopic, AvailabilityState.Online, retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, ToAlarmState(areaInfo), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Trouble), ToOnOff(areaInfo.HasTrouble), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Strobe), ToOnOff(areaInfo.Strobe), retain: true);
@@ -203,16 +203,17 @@ namespace Paradox.HomeAssistant
             this.paradox.EventManager.ZoneInAlarm += async (s, e) => await managedMqttClient.EnqueueAsync(configsFactory.GetMqttZoneTopic((int)e.Zone, HomeAssistantZoneSensor.Alarm), BinaryState.On, retain: true);
             this.paradox.EventManager.ZoneAlarmRestored += async (s, e) =>  await managedMqttClient.EnqueueAsync(configsFactory.GetMqttZoneTopic((int)e.Zone, HomeAssistantZoneSensor.Alarm), BinaryState.Off, retain: true);
 
-            this.paradox.EventManager.Arming += (s, e) =>
+            this.paradox.EventManager.Arming += async (s, e) =>
             {
                 // Force to refresh the area
                 previousState = null;
                 paradox.RequestArea(Area.Area1);
+                await PublishUserInfo(managedMqttClient, e.UserId);
             };
-
-            this.paradox.AreaDisarmed += async (s, e) =>
+            this.paradox.EventManager.Disarming += async (s, e) =>
             {
                 await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.Disarmed);
+                await PublishUserInfo(managedMqttClient, e.UserId);
             };
 
             this.paradox.EventManager.Status1Changed += async (s, e) =>
@@ -261,6 +262,17 @@ namespace Paradox.HomeAssistant
             this.paradox.EventManager.TroubleRestored += async (s, e) => await UpdateTrouble(managedMqttClient, e, BinaryState.Off);
             this.paradox.EventManager.ModuleTrouble += async (s, e) => await UpdateModuleTrouble(managedMqttClient, e, BinaryState.On);
             this.paradox.EventManager.ModuleTroubleRestored += async (s, e) => await UpdateModuleTrouble(managedMqttClient, e, BinaryState.Off);
+        }
+
+        private async Task PublishUserInfo(IManagedMqttClient managedMqttClient, int userId)
+        {
+            var constellationPackage = PackageHost.Package as Program;
+            var userInfo = constellationPackage.GetItem<UserInfo>(userId);
+            await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmAttributesTopic, JsonConvert.SerializeObject(new
+            {
+                LastUserIdAction = userInfo.Id,
+                LastUserAction = userInfo.Name,
+            }), retain: true);
         }
 
         private string previousState = null;
