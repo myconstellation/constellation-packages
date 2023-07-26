@@ -34,7 +34,7 @@ namespace Paradox.Events
         /// <value>
         /// The area.
         /// </value>
-        public Area Area { get { return (Area)this.EventNumber; } }
+        public Area Area { get { return (Area)this.AreaNumber; } }
 
         /// <summary>
         /// Gets the type of the status.
@@ -42,6 +42,6 @@ namespace Paradox.Events
         /// <value>
         /// The type of the status.
         /// </value>
-        public TEventType StatusType { get { return (TEventType)(object)this.AreaNumber; } }
+        public TEventType StatusType { get { return (TEventType)(object)this.EventNumber; } }
     }
 }
