@@ -168,13 +168,13 @@ namespace Paradox.Events
         /// Occurs when module has trouble.
         /// </summary>
         [ParadoxGroupEvent(38)]
-        public event EventHandler<TroubleEventArgs> ModuleTrouble;
+        public event EventHandler<ModuleTroubleEventArgs> ModuleTrouble;
 
         /// <summary>
         /// Occurs when module trouble is restored.
         /// </summary>
         [ParadoxGroupEvent(39)]
-        public event EventHandler<TroubleEventArgs> ModuleTroubleRestored;
+        public event EventHandler<ModuleTroubleEventArgs> ModuleTroubleRestored;
 
         /// <summary>
         /// Occurs during a special event.

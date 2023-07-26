@@ -22,24 +22,18 @@
 namespace Paradox.Events
 {
     /// <summary>
-    /// Non-Reportable event type
+    /// Module trouble type
     /// </summary>
-    public enum NonReportableEventType
+    public enum ModuleTroubleType
     {
-        TLMTrouble = 0,
-        SmokeDetectorReset = 1,
-        ArmWithNoEntryDelay = 2,
-        ArmInStayMode = 3,
-        ArmInAwayMode = 4,
-        FullArmWhenInStayMode = 5,
-        VoiceModuleAccess = 6,
-        RemoteControlAccess = 7,
-        PCFailToCommunicate = 8,
-        Midnight = 9,
-        NEwareUserLogin = 10,
-        NEwareUserLogout = 11,
-        UserInitiatedCallup = 12,
-        ForceAnswer = 13,
-        ForceHangup = 14
+        CombusFault = 0,
+        ModuleTamper = 1,
+        ROMRAMError = 2,
+        TLMTrouble = 3,
+        FailToCommunicate = 4,
+        PrinterFault = 5,
+        ACFailure = 6,
+        BatteryFailure = 7,
+        AuxiliaryFailure = 8
     }
 }
