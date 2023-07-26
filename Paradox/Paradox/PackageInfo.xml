@@ -1,25 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Paradox"
-         Version="1.5.0"
+         Version="2.0.0"
          Author="Sebastien Warin"
          Icon="paradox.png"
          URL="http://sebastien.warin.fr"
-         Description="Paradox Security connector for Constellation"
+         Description="Paradox Security connector for Constellation and HomeAssistant"
          EnableControlHub="false">
-  <Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
-    <Platforms>
-      <Platform id="Win32NT" isCompliant="true" />
-      <Platform id="Unix" isCompliant="true" />
-    </Platforms>
-  </Compatibility>
-  <Settings>
-    <Setting name="PortCom" type="String" isRequired="true" description="The port to use (for example COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux)" defaultValue="COM1"/>
-    <Setting name="PortBaudRate" type="Int32" isRequired="false" description="The serial port baud rate (57600 by defaut)" defaultValue="57600"/>    
-    <Setting name="numberofAreas" type="Int32" isRequired="true" description="Number of Area to load"/>
-    <Setting name="numberofUsers" type="Int32" isRequired="true" description="Number of User to load"/>
-    <Setting name="numberofZones" type="Int32" isRequired="true" description="Number of Zone to load"/>
-    <Setting name="AntiBruteForceMaxTries" type="Int32" isRequired="false" defaultValue="5" description="Block the Arming/Disarming method if wrong PIN code (0 to disable)" />
-    <Setting name="MessagesLogFilePath" type="String" isRequired="false" description="File path to log each message sent/rcv with the PRT3 (leave empty to disable)" defaultValue="" ignoreLocalValue="true" />
-  </Settings>
+	<Compatibility constellationVersion="1.8" dotNetTargetPlatform="net45">
+		<Platforms>
+			<Platform id="Win32NT" isCompliant="true" />
+			<Platform id="Unix" isCompliant="true" />
+		</Platforms>
+	</Compatibility>
+	<Settings>
+		<Setting name="PortCom" type="String" isRequired="true" description="The port to use (for example COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux)" defaultValue="COM1"/>
+		<Setting name="PortBaudRate" type="Int32" isRequired="false" description="The serial port baud rate (57600 by defaut)" defaultValue="57600"/>
+		<Setting name="numberofAreas" type="Int32" isRequired="true" description="Number of Area to load"/>
+		<Setting name="numberofUsers" type="Int32" isRequired="true" description="Number of User to load"/>
+		<Setting name="numberofZones" type="Int32" isRequired="true" description="Number of Zone to load"/>
+		<Setting name="AntiBruteForceMaxTries" type="Int32" isRequired="false" defaultValue="5" description="Block the Arming/Disarming method if wrong PIN code (0 to disable)" />
+		<Setting name="MessagesLogFilePath" type="String" isRequired="false" description="File path to log each message sent/rcv with the PRT3 (leave empty to disable)" defaultValue="" ignoreLocalValue="true" />
+		<Setting name="HomeAssistant" type="JsonObject" isRequired="false" description="HomeAssistant MQTT Alarm Control Panel integration" ignoreDefaultValue="true">
+			<defaultContent>
+				<![CDATA[
+          {
+            "Enable": true,
+            "Mqtt":
+            {
+              "Server": "mqtt.my.com",
+              "Port": 1883,
+              "Username": "demo",
+              "Password": "demo"
+            },
+            "Zones":
+            [
+              {
+                "Id": 1,
+                "Label": "My Door",
+                "Area": "Living room",
+                "Manufacturer": "Becuwe",
+                "Model": "IM9700",
+                "Type": "door"
+              },
+   
+              {
+                "Id": 2,
+                "Label": "Kitchen Motion",
+                "Area": "Kitchen",
+                "Manufacturer": "Paradox",
+                "Model": "DG75",
+                "Type": "motion"
+              },
+              {
+                "Id": 4,
+                "Label": "Kitchen Window",
+                "Area": "Kitchen",
+                "Manufacturer": "Becuwe",
+                "Model": "IM9700",
+                "Type": "window"
+              },   
+              {
+                "Id": 8,
+                "Label": "EVO192 protection",
+                "Area": "Garage",
+                "Manufacturer": "Paradox",
+                "Model": "EVO192",
+                "Type": "tamper"
+              }
+            ]
+          }
+				]]>
+			</defaultContent>
+		</Setting>
+	</Settings>
 </Package>

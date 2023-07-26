@@ -24,6 +24,7 @@ namespace Paradox
     using Constellation;
     using Constellation.Package;
     using Paradox.Events;
+    using Paradox.HomeAssistant;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -265,6 +266,13 @@ namespace Paradox
             // Refresh all
             this.RefreshAll();
 
+            // HomeAssistant integration
+            var config = PackageHost.GetSettingAsJsonObject<HomeAssistantConfiguration>("HomeAssistant", true);
+            if (config != null && config.Enable && config.Mqtt != null)
+            {
+                HomeAssistantIntegration.Start(config);
+            }
+
             // Initialization OK
             PackageHost.WriteInfo("Paradox System is loaded");
         }
@@ -347,6 +355,16 @@ namespace Paradox
             {
                 PackageHost.WriteError("Error to RefreshAll : " + ex.ToString());
             }
+        }
+
+        internal TItem GetItem<TItem>(int id) where TItem : BaseParadoxItem
+        {
+            string identifiant = typeof(TItem).Name + id;
+            if (items.ContainsKey(identifiant))
+            {
+                return this.items[identifiant] as TItem;
+            }
+            return default;
         }
 
         private void PushItem<TItem>(int id, Action<TItem> updateAction = null) where TItem : BaseParadoxItem, new()

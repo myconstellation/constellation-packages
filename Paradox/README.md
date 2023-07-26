@@ -1,6 +1,8 @@
 # Paradox connector for Constellation
 
-This package connects a Paradox security system to Constellation by using the PRT3 interface module.
+This package connects a Paradox security system to Constellation & Home Assistant by using the PRT3 interface module.
+
+New in version 2.0 : supports HomeAssistant MQTT Alarm Panel integration
 
 ### StateObjects
 
@@ -66,6 +68,73 @@ Declare the package in a Sentinel by specifiying the COM port to the Paradox PRT
   </settings>
 </package>
 ```
+
+### Home Assistant Alarm Panel integration
+
+Add the MQTT integration, then provide your broker�s hostname (or IP address) and port and (if required) the username and password that Home Assistant should use :
+
+1. Browse to your Home Assistant instance.
+2. Go to Settings > Devices & Services.
+3. In the bottom right corner, select the Add Integration button.
+4. From the list, select MQTT.
+5. Follow the instructions on screen to complete the setup.
+
+Then add the "HomeAssistant" setting on your Paradox Constellation package :
+
+```xml
+<setting key="HomeAssistant">
+    <content>
+          {
+            "Enable": true,
+            "Mqtt":
+            {
+              "Server": "mqtt.demo.net",
+              "Port": 1883,
+              "Username": "demo",
+              "Password": "demo"
+            },
+            "Zones":
+            [
+              {
+                "Id": 1,
+                "Label": "My Door",
+                "Area": "Living room",
+                "Manufacturer": "Becuwe",
+                "Model": "IM9700",
+                "Type": "door"
+              },
+   
+              {
+                "Id": 2,
+                "Label": "Kitchen Motion",
+                "Area": "Kitchen",
+                "Manufacturer": "Paradox",
+                "Model": "DG75",
+                "Type": "motion"
+              },
+              {
+                "Id": 4,
+                "Label": "Kitchen Window",
+                "Area": "Kitchen",
+                "Manufacturer": "Becuwe",
+                "Model": "IM9700",
+                "Type": "window"
+              },   
+              {
+                "Id": 8,
+                "Label": "EVO192 protection",
+                "Area": "Garage",
+                "Manufacturer": "Paradox",
+                "Model": "EVO192",
+                "Type": "tamper"
+              }
+            ]
+          }
+    </content>
+</setting>
+```
+
+See the `Paradox\HomeAssistant\HomeAssistantConfiguration.cs` file for more information about the schema.
 
 License
 ----
