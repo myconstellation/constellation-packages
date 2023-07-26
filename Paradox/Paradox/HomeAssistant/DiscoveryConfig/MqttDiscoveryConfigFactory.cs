@@ -98,8 +98,8 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
             configs.Add(alarmPanel);
             // Add the alarm's sensors
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Trouble, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
-            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Ready, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
-            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.ZoneMemory, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
+            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Area, HomeAssistantBinarySensorClass.Safety, HomeAssistantEntityCategory.Diagnostic, icon: "mdi:shield-home"));
+            configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.AlarmInMemory, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic, label: "Alarm in memory"));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Strobe, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Programming, HomeAssistantBinarySensorClass.Lock, HomeAssistantEntityCategory.Diagnostic));
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.ACFailure, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic, label: "AC", icon: "mdi:power-plug-outline"));

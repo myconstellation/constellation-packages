@@ -46,13 +46,13 @@
         /// </summary>
         public static readonly string Strobe = nameof(Strobe);
         /// <summary>
-        /// Ready sensor
+        /// Area sensor
         /// </summary>
-        public static readonly string Ready = nameof(Ready);
+        public static readonly string Area = nameof(Area);
         /// <summary>
-        /// ZoneMemory sensor
+        /// Alarm In Memory sensor
         /// </summary>
-        public static readonly string ZoneMemory = nameof(ZoneMemory);
+        public static readonly string AlarmInMemory = nameof(AlarmInMemory);
         /// <summary>
         /// Programming sensor
         /// </summary>
