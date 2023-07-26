@@ -103,7 +103,7 @@ namespace Paradox.HomeAssistant
                 await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, ToAlarmState(areaInfo), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Trouble), ToOnOff(areaInfo.HasTrouble), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Strobe), ToOnOff(areaInfo.Strobe), retain: true);
-                await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Area), ToOnOff(!areaInfo.IsReady), retain: true);
+                await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.AreaThreat), ToOnOff(!areaInfo.IsReady), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.AlarmInMemory), ToOnOff(areaInfo.ZoneInMemory), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Programming), ToOnOff(areaInfo.IsInProgramming), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.ACFailure), BinaryState.Off, retain: true);
@@ -172,7 +172,7 @@ namespace Paradox.HomeAssistant
                 }
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Trouble), ToOnOff(e.HasTrouble), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Strobe), ToOnOff(e.Strobe), retain: true);
-                await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Area), ToOnOff(!e.IsReady), retain: true);
+                await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.AreaThreat), ToOnOff(!e.IsReady), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.AlarmInMemory), ToOnOff(e.ZoneInMemory), retain: true);
                 await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Programming), ToOnOff(e.IsInProgramming), retain: true);
             };
@@ -233,7 +233,7 @@ namespace Paradox.HomeAssistant
                 switch (e.StatusType)
                 {
                     case Status2EventType.Ready:
-                        await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.Area), BinaryState.Off, retain: true);
+                        await managedMqttClient.EnqueueAsync(configsFactory.GetMqttAlarmTopic(HomeAssistantAlarmSensor.AreaThreat), BinaryState.Off, retain: true);
                         break;
                     case Status2EventType.ExitDelay:
                         await managedMqttClient.EnqueueAsync(configsFactory.MqttAlarmStateTopic, HomeAssistantAlarmState.Arming, retain: true);

@@ -46,9 +46,9 @@
         /// </summary>
         public static readonly string Strobe = nameof(Strobe);
         /// <summary>
-        /// Area sensor
+        /// Area Threat sensor
         /// </summary>
-        public static readonly string Area = nameof(Area);
+        public static readonly string AreaThreat = nameof(AreaThreat);
         /// <summary>
         /// Alarm In Memory sensor
         /// </summary>
