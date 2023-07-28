@@ -87,7 +87,9 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 UniqueId = $"{this.Identifier}_alarm_panel",
                 ObjectId = $"{this.Identifier}_alarm_panel",
                 Name = HomeAssistantIntegration.Instance.Configuration.Label,
-                Code = string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.PIN) ? RemoteCode : null,
+                Code = string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.Code) ? RemoteCode : null,
+                CodeArmRequired = !string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.Code) ? HomeAssistantIntegration.Instance.Configuration.CodeArmRequired : null,
+                CodeDisarmRequired = !string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.Code) ? HomeAssistantIntegration.Instance.Configuration.CodeDisarmRequired : null,
                 CommandTemplate = CommandTemplate,
                 StateTopic = MqttAlarmStateTopic,
                 JsonAttributesTopic = MqttAlarmAttributesTopic,
@@ -123,12 +125,12 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                     {
                         Identifiers = new List<string> { $"{this.Identifier}:Zone{zone.Id:000}" },
                         Manufacturer = zone.Manufacturer ?? nameof(Paradox),
-                        Model = zone.Model,
+                        Model = zone.Model,                        
                         Name = zone.Label ?? (PackageHost.Package as Program)?.GetItem<ZoneInfo>(zone.Id)?.Name ?? $"Zone {zone.Id:000}",
                         ViaDevice = alarmPanel.Device.Identifiers.FirstOrDefault(),
                         SuggestedArea = zone.Area
                     };
-                    configs.Add(CreateZoneBinarySensorConfig(zone, zoneDevice, HomeAssistantZoneSensor.Status, zone.Type, topic: StateTopicName));
+                    configs.Add(CreateZoneBinarySensorConfig(zone, zoneDevice, HomeAssistantZoneSensor.Status, zone.Type, topic: StateTopicName, icon: zone.Icon));
                     configs.Add(CreateZoneBinarySensorConfig(zone, zoneDevice, HomeAssistantZoneSensor.Tamper, HomeAssistantBinarySensorClass.Tamper, topic: StateTopicName));
                     configs.Add(CreateZoneBinarySensorConfig(zone, zoneDevice, HomeAssistantZoneSensor.Alarm, HomeAssistantBinarySensorClass.Problem));
                     configs.Add(CreateZoneBinarySensorConfig(zone, zoneDevice, HomeAssistantZoneSensor.Supervision, HomeAssistantBinarySensorClass.Connectivity, HomeAssistantEntityCategory.Diagnostic));
@@ -148,7 +150,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
             return configs;
         }
 
-        private MqttBinarySensorDiscoveryConfig CreateZoneBinarySensorConfig(HomeAssistantConfiguration.ZoneConfiguration zone, MqttDiscoveryDevice zoneDevice, string id, string className, string entityCategory = null, string label = null, string topic = null)
+        private MqttBinarySensorDiscoveryConfig CreateZoneBinarySensorConfig(HomeAssistantConfiguration.ZoneConfiguration zone, MqttDiscoveryDevice zoneDevice, string id, string className, string entityCategory = null, string label = null, string topic = null, string icon = null)
         {
             return new MqttBinarySensorDiscoveryConfig
             {
@@ -158,6 +160,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 Name = $"{zone.Label} {label ?? id}",
                 EntityCategory = entityCategory,
                 DeviceClass = className,
+                Icon = icon,
                 StateTopic = this.GetMqttZoneTopic(zone.Id, topic ?? id),
                 ValueTemplate = topic != null ? $"{{{{ value_json.{id}}}}}" : null,
                 AvailabilityTopic = MqttAvailabilityTopic

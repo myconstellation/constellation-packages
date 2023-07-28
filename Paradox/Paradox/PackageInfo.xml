@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package xmlns="http://schemas.myconstellation.io/Constellation/1.8/PackageManifest"
          Name="Paradox"
-         Version="2.1.1"
+         Version="2.1.2"
          Author="Sebastien Warin"
          Icon="paradox.png"
          URL="http://sebastien.warin.fr"
@@ -58,7 +58,8 @@
                 "Area": "Kitchen",
                 "Manufacturer": "Becuwe",
                 "Model": "IM9700",
-                "Type": "window"
+                "Type": "window",
+				"Icon": "mdi:door-sliding"
               },   
               {
                 "Id": 8,

@@ -25,7 +25,19 @@ namespace Paradox.HomeAssistant
         /// <summary>
         /// Gets or sets the PIN code to enable or disable the alarm without code on the frontend. If not defined, the PIN code will be requested on the frontend and it will be sent on MQTT to the package (optional, default: None).
         /// </summary>
-        public string PIN { get; set; }
+        public string Code { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the code is required to arm the alarm (optional, default: true).
+        /// Only works if the PIN code is defined. 
+        /// </summary>
+        public bool? CodeArmRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the code is required to disarm the alarm (optional, default: true).
+        /// Only works if the PIN code is defined. 
+        /// </summary>
+        public bool? CodeDisarmRequired { get; set; }
 
         /// <summary>
         /// Gets or sets the MQTT configuration (required if enable).
@@ -104,6 +116,11 @@ namespace Paradox.HomeAssistant
             /// Eg: door, garage_door, motion, tamper, smoke, vibration, window
             /// </summary>
             public string Type { get; set; }
+
+            /// <summary>
+            /// Gets or sets the icon (optional).
+            /// </summary>
+            public string Icon { get; set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether this <see cref="ZoneConfiguration"/> is battery-based (optional, default: False).

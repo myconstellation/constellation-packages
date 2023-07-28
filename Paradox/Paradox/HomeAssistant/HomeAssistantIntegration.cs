@@ -75,12 +75,12 @@ namespace Paradox.HomeAssistant
                     if (data[0] == HomeAssistantAlarmCommand.Disarm)
                     {
                         // Disarm
-                        await this.paradox.AreaDisarm(Area.Area1, Configuration.PIN ?? data[1]);
+                        await this.paradox.AreaDisarm(Area.Area1, Configuration.Code ?? data[1]);
                     }
                     else if (Enum.TryParse<ArmingMode>(data[0], out var armingMode))
                     {
                         // Arm
-                        await this.paradox.AreaArm(Area.Area1, armingMode, Configuration.PIN ?? data[1]);
+                        await this.paradox.AreaArm(Area.Area1, armingMode, Configuration.Code ?? data[1]);
                     }
                 };
                 await managedMqttClient.SubscribeAsync(configsFactory.MqttAlarmCommandTopic);
