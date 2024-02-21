@@ -13,6 +13,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
         private const string CommandTemplate = "{{ action }};{{ code }}";
         private const string RemoteCode = "REMOTE_CODE";
         private const string ParadoxPrtModelName = "APR-PRT3";
+        private const string AlarmPanelName = "Alarm Panel";
         private const string StateTopicName = "state";
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 },
                 UniqueId = $"{this.Identifier}_alarm_panel",
                 ObjectId = $"{this.Identifier}_alarm_panel",
-                Name = HomeAssistantIntegration.Instance.Configuration.Label,
+                Name = AlarmPanelName,
                 Code = string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.Code) ? RemoteCode : null,
                 CodeArmRequired = !string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.Code) ? HomeAssistantIntegration.Instance.Configuration.CodeArmRequired : null,
                 CodeDisarmRequired = !string.IsNullOrEmpty(HomeAssistantIntegration.Instance.Configuration.Code) ? HomeAssistantIntegration.Instance.Configuration.CodeDisarmRequired : null,
@@ -157,7 +158,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 UniqueId = $"{this.Identifier}_Zone{zone.Id:000}_{id}",
                 ObjectId = $"{this.Identifier}_Zone{zone.Id:000}_{id}",
                 Device = zoneDevice,
-                Name = $"{zone.Label} {label ?? id}",
+                Name = label ?? id,
                 EntityCategory = entityCategory,
                 DeviceClass = className,
                 Icon = icon,
@@ -174,7 +175,7 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 UniqueId = $"{alarmPanel.UniqueId}_{id}",
                 ObjectId = $"{alarmPanel.ObjectId}_{id}",
                 Device = alarmPanel.Device,
-                Name = $"{alarmPanel.Name} {label ?? id}",
+                Name = label ?? id,
                 EntityCategory = entityCategory,
                 DeviceClass = className,
                 Icon = icon,
