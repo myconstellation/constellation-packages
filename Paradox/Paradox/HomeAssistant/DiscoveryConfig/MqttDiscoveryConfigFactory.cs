@@ -100,10 +100,15 @@ namespace Paradox.HomeAssistant.DiscoveryConfig
                 PayloadArmHome = HomeAssistantAlarmCommand.ArmHome,
                 PayloadArmNight = HomeAssistantAlarmCommand.ArmHome,
                 PayloadArmVacation = HomeAssistantAlarmCommand.ArmAway,
-                PayloadArmCustomBypass = HomeAssistantAlarmCommand.ArmBypass,
+                PayloadArmCustomBypass = HomeAssistantIntegration.Instance.Configuration.AllowBypassMode ? HomeAssistantAlarmCommand.ArmBypass : HomeAssistantAlarmCommand.ArmAway,
                 PayloadDisarm = HomeAssistantAlarmCommand.Disarm,
+                SupportedFeatures = new List<string>() { HomeAssistantAlarmFeature.ArmAway, HomeAssistantAlarmFeature.ArmHome },
                 Qos = 1
             };
+            if (HomeAssistantIntegration.Instance.Configuration.AllowBypassMode)
+            {
+                alarmPanel.SupportedFeatures.Add(HomeAssistantAlarmFeature.ArmCustomBypass);
+            }
             configs.Add(alarmPanel);
             // Add the alarm's sensors
             configs.Add(CreateAlarmBinarySensorConfig(alarmPanel, HomeAssistantAlarmSensor.Trouble, HomeAssistantBinarySensorClass.Problem, HomeAssistantEntityCategory.Diagnostic));

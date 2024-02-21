@@ -40,6 +40,11 @@ namespace Paradox.HomeAssistant
         public bool? CodeDisarmRequired { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the armed-custom-bypass mode (equivalent to Force arm in Paradox) is allow (optional, default: true).
+        /// </summary>
+        public bool AllowBypassMode { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the MQTT configuration (required if enable).
         /// </summary>
         public MqttConfiguration Mqtt { get; set; }

@@ -111,6 +111,37 @@
     }
 
     /// <summary>
+    /// HomeAssistant alarm features
+    /// </summary>
+    public class HomeAssistantAlarmFeature
+    {
+        /// <summary>
+        /// Arm with home mode
+        /// </summary>
+        public static readonly string ArmHome = "arm_home";
+        /// <summary>
+        /// Arm with away mode
+        /// </summary>
+        public static readonly string ArmAway = "arm_away";
+        /// <summary>
+        /// Arm with night mode
+        /// </summary>
+        public static readonly string ArmNight = "arm_night";
+        /// <summary>
+        /// Arm with vacation mode
+        /// </summary>
+        public static readonly string ArmVacation = "arm_vacation";
+        /// <summary>
+        /// Arm with custom bypass mode
+        /// </summary>
+        public static readonly string ArmCustomBypass = "arm_custom_bypass";
+        /// <summary>
+        /// Trigger
+        /// </summary>
+        public static readonly string Trigger = "trigger";
+    }
+
+    /// <summary>
     /// HomeAssistant alarm states
     /// </summary>
     public class HomeAssistantAlarmState

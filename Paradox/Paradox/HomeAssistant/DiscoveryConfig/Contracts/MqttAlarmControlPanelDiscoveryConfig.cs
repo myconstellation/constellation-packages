@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Paradox.HomeAssistant.DiscoveryConfig.Contracts
 {
@@ -155,6 +156,12 @@ namespace Paradox.HomeAssistant.DiscoveryConfig.Contracts
         ///</summary> 
         [JsonProperty("payload_trigger")]
         public string PayloadTrigger { get; set; }
+
+        /// <summary>
+        /// A list of features that the alarm control panel supports. The available list options are arm_home, arm_away, arm_night, arm_vacation, arm_custom_bypass, and trigger.
+        /// </summary>
+        [JsonProperty("supported_features")]
+        public List<string> SupportedFeatures { get; set; }
 
         ///<summary>
         /// The maximum QoS level of the state topic.
