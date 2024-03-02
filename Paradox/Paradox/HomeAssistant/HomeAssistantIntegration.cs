@@ -160,7 +160,7 @@ namespace Paradox.HomeAssistant
                 }
                 else if (e.Status == AreaStatus.ForceArmed || e.Status == AreaStatus.InstantArmed)
                 {
-                    await SetAlarmState(managedMqttClient, HomeAssistantAlarmState.ArmedForced, false);
+                    await SetAlarmState(managedMqttClient, Configuration.AllowBypassMode ? HomeAssistantAlarmState.ArmedForced : HomeAssistantAlarmState.ArmedAway, false);
                 }
                 else if (e.Status == AreaStatus.StayArmed)
                 {
