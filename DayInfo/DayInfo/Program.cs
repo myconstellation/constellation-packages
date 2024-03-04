@@ -64,10 +64,7 @@ namespace DayInfo
         /// <param name="date">The date.</param>
         /// <returns></returns>
         [MessageCallback]
-        public string GetNameDay(Date date)
-        {
-            return NameDayUtils.GetNameDay(new DateTime(date.Year, date.Month, date.Day));
-        }
+        public string GetNameDay(Date date) => NameDayUtils.GetNameDay(new DateTime(date.Year, date.Month, date.Day));
 
         /// <summary>
         /// Calculate the Universal Coordinated Time (UTC) of sunset and sunrise for the given day at the given location on earth
@@ -78,18 +75,13 @@ namespace DayInfo
         /// <param name="longitude">The longitude.</param>
         /// <returns></returns>
         [MessageCallback]
-        public SunInfo GetSunInfo(Date date, int timezone, double latitude, double longitude)
-        {
-            return this.GetSunInfo(new DateTime(date.Year, date.Month, date.Day), timezone, latitude, longitude);
-        }
+        public SunInfo GetSunInfo(Date date, int timezone, double latitude, double longitude) => this.GetSunInfo(new DateTime(date.Year, date.Month, date.Day), timezone, latitude, longitude);
 
         private SunInfo GetSunInfo(DateTime date, int timezone, double latitude, double longitude)
         {
-            // Calcul Sunrise & sunset
             double jdDate = NAAUtils.calcJD(date);
-            double sunRise = NAAUtils.calcSunRiseUTC(jdDate, latitude, longitude);
-            double sunSet = NAAUtils.calcSunSetUTC(jdDate, latitude, longitude);
             bool isDaylightSavingTime = TimeZoneInfo.Local.IsDaylightSavingTime(date);
+
             // Return result
             return new SunInfo
             {
@@ -98,9 +90,27 @@ namespace DayInfo
                 Longitude = longitude,
                 Latitude = latitude,
                 DayLightSavings = isDaylightSavingTime,
-                Sunrise = NAAUtils.getDateTime(sunRise, timezone, DateTime.Now, isDaylightSavingTime).Value.TimeOfDay,
-                Sunset = NAAUtils.getDateTime(sunSet, timezone, DateTime.Now, isDaylightSavingTime).Value.TimeOfDay
+                Sunrise = this.GetSunrise(jdDate, latitude, longitude, timezone, isDaylightSavingTime),
+                Sunset = this.GetSunset(jdDate, latitude, longitude, timezone, isDaylightSavingTime),
+                CivilianSunrise = this.GetSunrise(jdDate, latitude, longitude, timezone, isDaylightSavingTime, TwilightOffset.Civilian),
+                CivilianSunset = this.GetSunset(jdDate, latitude, longitude, timezone, isDaylightSavingTime, TwilightOffset.Civilian),
+                NauticalSunrise = this.GetSunrise(jdDate, latitude, longitude, timezone, isDaylightSavingTime, TwilightOffset.Nautical),
+                NauticalSunset = this.GetSunset(jdDate, latitude, longitude, timezone, isDaylightSavingTime, TwilightOffset.Nautical),
+                AstronomicalSunrise = this.GetSunrise(jdDate, latitude, longitude, timezone, isDaylightSavingTime, TwilightOffset.Astronomical),
+                AstronomicalSunset = this.GetSunset(jdDate, latitude, longitude, timezone, isDaylightSavingTime, TwilightOffset.Astronomical)
             };
+        }
+
+        private TimeSpan GetSunrise(double jdDate, double latitude, double longitude, int timezone, bool isDaylightSavingTime, TwilightOffset offset = TwilightOffset.None)
+        {
+            double sunRise = NAAUtils.calcSunRiseUTC(jdDate, latitude, longitude, offset);
+            return NAAUtils.getDateTime(sunRise, timezone, DateTime.Now, isDaylightSavingTime).Value.TimeOfDay;
+        }
+
+        private TimeSpan GetSunset(double jdDate, double latitude, double longitude, int timezone, bool isDaylightSavingTime, TwilightOffset offset = TwilightOffset.None)
+        {
+            double sunRise = NAAUtils.calcSunSetUTC(jdDate, latitude, longitude, offset);
+            return NAAUtils.getDateTime(sunRise, timezone, DateTime.Now, isDaylightSavingTime).Value.TimeOfDay;
         }
     }
 
@@ -187,5 +197,47 @@ namespace DayInfo
         /// The sunset time.
         /// </value>
         public TimeSpan Sunset { get; set; }
+        /// <summary>
+        /// Gets ot sets the civilian sunrise time
+        /// </summary>
+        /// <value>
+        /// The civilian sunrise time.
+        /// </value>
+        public TimeSpan CivilianSunrise { get; set; }
+        /// <summary>
+        /// Gets or sets the civilian sunset time
+        /// </summary>
+        /// <value>
+        /// The civilian sunset time.
+        /// </value>
+        public TimeSpan CivilianSunset { get; set; }
+        /// <summary>
+        /// Gets ot sets the nautical sunrise time
+        /// </summary>
+        /// <value>
+        /// The nautical sunrise time.
+        /// </value>
+        public TimeSpan NauticalSunrise { get; set; }
+        /// <summary>
+        /// Gets or sets the nautical sunset time
+        /// </summary>
+        /// <value>
+        /// The nautical sunset time.
+        /// </value>
+        public TimeSpan NauticalSunset { get; set; }
+        /// <summary>
+        /// Gets ot sets the astronomical sunrise time
+        /// </summary>
+        /// <value>
+        /// The astronomical sunrise time.
+        /// </value>
+        public TimeSpan AstronomicalSunrise { get; set; }
+        /// <summary>
+        /// Gets or sets the astronomical sunset time
+        /// </summary>
+        /// <value>
+        /// The astronomical sunset time.
+        /// </value>
+        public TimeSpan AstronomicalSunset { get; set; }
     }
 }
